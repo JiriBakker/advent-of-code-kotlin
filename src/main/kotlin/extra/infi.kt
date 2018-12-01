@@ -1,6 +1,6 @@
 package extra
 
-import java.util.*
+import java.util.PriorityQueue
 
 private data class MazeCell(val y: Int, val x: Int, var distance: Int, val char: Char, val iteration: Int = 0) {
     fun isTopOpen(): Boolean {
@@ -122,8 +122,8 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>) 
     }
 
     fun runDijkstra(processNeighbour: (MazeCell) -> MazeCell): Int {
-        val toVisit: Queue<MazeCell> =
-            PriorityQueue<MazeCell>(width * height) { p0, p1 -> p0.distance - p1.distance }
+        val toVisit: PriorityQueue<MazeCell> =
+            PriorityQueue(width * height) { p0, p1 -> p0.distance - p1.distance }
 
         val topLeft = cellAt(0, 0, 0)
         topLeft.distance = 0
