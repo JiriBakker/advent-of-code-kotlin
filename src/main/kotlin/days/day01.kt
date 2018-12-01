@@ -8,13 +8,11 @@ fun day01a(changes: List<String>): Int {
 
 fun day01b(changes: List<String>): Int {
     val visited: MutableSet<Int> = mutableSetOf()
-    var currentIndex = 0;
-    var currentFrequency = 0;
-    while (true) {
-        if (visited.contains(currentFrequency))
-            return currentFrequency
-        visited.add(currentFrequency)
-        currentFrequency += changes[currentIndex].toInt()
-        currentIndex = (currentIndex + 1) % changes.count()
-    }
+    return generateSequence(0) { (it + 1) % changes.count() }
+        .fold(0) { frequency, changeIndex ->
+            if (visited.contains(frequency))
+                return frequency
+            visited.add(frequency)
+            frequency + changes[changeIndex].toInt()
+        }
 }
