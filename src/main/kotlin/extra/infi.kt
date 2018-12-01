@@ -2,7 +2,7 @@ package extra
 
 import java.util.*
 
-data class MazeCell(val y: Int, val x: Int, var distance: Int, val char: Char, val iteration: Int = 0) {
+private data class MazeCell(val y: Int, val x: Int, var distance: Int, val char: Char, val iteration: Int = 0) {
     fun isTopOpen(): Boolean {
         return char in setOf('║', '╠', '╚', '╝', '╬', '╩', '╣')
     }
@@ -20,11 +20,7 @@ data class MazeCell(val y: Int, val x: Int, var distance: Int, val char: Char, v
     }
 }
 
-fun hash(y: Int, x: Int, iteration: Int): String {
-    return "${y}_${x}_$iteration"
-}
-
-infix fun Int.safeMod(mod: Int): Int {
+private infix fun Int.safeMod(mod: Int): Int {
     var value = this
     while (value < 0) {
         value += mod
@@ -32,8 +28,12 @@ infix fun Int.safeMod(mod: Int): Int {
     return value % mod
 }
 
-class Maze private constructor(private val mazeChars: List<List<Char>>) {
-    private val cells: MutableMap<String, MazeCell> = mutableMapOf()
+private class Maze private constructor(private val mazeChars: List<List<Char>>) {
+    private val visitedCells: MutableMap<String, MazeCell> = mutableMapOf()
+
+    // We assume the maze is a square
+    private val height = mazeChars.count()
+    private val width = mazeChars.count()
 
     companion object {
         fun parse(mazeLines: List<String>): Maze {
@@ -49,15 +49,7 @@ class Maze private constructor(private val mazeChars: List<List<Char>>) {
         }
     }
 
-    fun height(): Int {
-        return mazeChars.count()
-    }
-
-    fun width(): Int {
-        return height()
-    }
-
-    fun getReachableNeighbours(cell: MazeCell): List<MazeCell> {
+    private fun getReachableNeighbours(cell: MazeCell): List<MazeCell> {
         val reachableNeighbours: MutableList<MazeCell> = mutableListOf()
         if (cell.y > 0 && cell.isTopOpen()) {
             val cellAbove = cellAt(cell.y - 1, cell.x, cell.iteration)
@@ -65,7 +57,7 @@ class Maze private constructor(private val mazeChars: List<List<Char>>) {
                 reachableNeighbours.add(cellAbove)
             }
         }
-        if (cell.y < height() - 1 && cell.isBottomOpen()) {
+        if (cell.y < height - 1 && cell.isBottomOpen()) {
             val cellBelow = cellAt(cell.y + 1, cell.x, cell.iteration)
             if (cellBelow.isTopOpen()) {
                 reachableNeighbours.add(cellBelow)
@@ -74,11 +66,10 @@ class Maze private constructor(private val mazeChars: List<List<Char>>) {
         if (cell.x > 0 && cell.isLeftOpen()) {
             val cellLeft = cellAt(cell.y, cell.x - 1, cell.iteration)
             if (cellLeft.isRightOpen()) {
-
                 reachableNeighbours.add(cellLeft)
             }
         }
-        if (cell.x < width() - 1  && cell.isRightOpen()) {
+        if (cell.x < width - 1  && cell.isRightOpen()) {
             val cellRight = cellAt(cell.y, cell.x + 1, cell.iteration)
             if (cellRight.isLeftOpen()) {
                 reachableNeighbours.add(cellRight)
@@ -87,89 +78,83 @@ class Maze private constructor(private val mazeChars: List<List<Char>>) {
         return reachableNeighbours
     }
 
-    fun cellAt(y: Int, x: Int, iteration: Int): MazeCell {
-        val (initialY, initialX) = initialPos(y, x, iteration)
-        val hash = hash(y, x, iteration)
-        return cells.getOrElse(hash) {
-            val cell = MazeCell(y, x, Int.MAX_VALUE, mazeChars[initialY][initialX], iteration)
-            cells[hash] = cell
+    private fun findChar(y: Int, x: Int, iteration: Int): Char {
+        val (initialY, initialX) = applyShifts(y, x, iteration downTo 0, Int::minus)
+        return mazeChars[initialY][initialX]
+    }
+
+    private fun applyShifts(y: Int, x: Int, iterator: IntProgression, operator: (Int, Int) -> Int): Pair<Int, Int> {
+        return iterator.fold(Pair(y, x)) { (curY, curX): Pair<Int, Int>, iteration: Int ->
+            val shiftRow = iteration % 2 == 1
+            val onShiftingRow = shiftRow && curY == (iteration - 1) % height
+            val onShiftingColumn = !shiftRow && curX == (iteration - 1) % width
+
+            when {
+                onShiftingRow    -> Pair(curY, operator(curX, 1) safeMod width)
+                onShiftingColumn -> Pair(operator(curY, 1) safeMod height, curX)
+                else             -> Pair(curY, curX)
+            }
+        }
+    }
+
+    private fun postAfterNextShift(cell: MazeCell): Pair<Int, Int> {
+        val nextIteration = cell.iteration + 1
+        return applyShifts(cell.y, cell.x, nextIteration..nextIteration, Int::plus)
+    }
+
+
+    private fun isBottomRightCell(cell: MazeCell): Boolean {
+        return cell.x == width - 1 && cell.y == height - 1
+    }
+
+    private fun cellAt(y: Int, x: Int, iteration: Int): MazeCell {
+        val hash = "${y}_${x}_$iteration"
+        return visitedCells.getOrElse(hash) {
+            val cell = MazeCell(y, x, Int.MAX_VALUE, findChar(y, x, iteration), iteration)
+            visitedCells[hash] = cell
             cell
         }
     }
 
-    fun iteratePos(y: Int, x: Int, iterator: IntProgression, operator: (Int, Int) -> Int): Pair<Int, Int> {
-        var curY = y
-        var curX = x
-        for (iteration in iterator) {
-            val shiftRow = iteration % 2 == 1
-            if (shiftRow) {
-                if (curY == (iteration - 1) % height()) {
-                    curX = operator(curX, 1) safeMod width()
+    fun cellAfterNextShift(cell: MazeCell): MazeCell {
+        val (nextY, nextX) = postAfterNextShift(cell)
+        return cellAt(nextY, nextX, cell.iteration + 1)
+    }
+
+    fun runDijkstra(processNeighbour: (MazeCell) -> MazeCell): Int {
+        val toVisit: Queue<MazeCell> =
+            PriorityQueue<MazeCell>(width * height) { p0, p1 -> p0.distance - p1.distance }
+
+        val topLeft = cellAt(0, 0, 0)
+        topLeft.distance = 0
+        toVisit.offer(topLeft)
+
+        while (toVisit.size > 0) {
+            val currentCell = toVisit.poll()
+            if (isBottomRightCell(currentCell)) {
+                return currentCell.distance
+            }
+
+            getReachableNeighbours(currentCell).forEach { neighbourCell ->
+                val processedNeighbour = processNeighbour(neighbourCell)
+                if (processedNeighbour.distance == Int.MAX_VALUE) {
+                    processedNeighbour.distance = Math.min(currentCell.distance + 1, processedNeighbour.distance)
+                    toVisit.add(processedNeighbour)
                 }
             }
-            else {
-                if (curX == (iteration - 1) % width()) {
-                    curY = operator(curY, 1) safeMod height()
-                }
-            }
-        }
-        return Pair(curY, curX)
-    }
-
-    fun initialPos(y: Int, x: Int, iteration: Int): Pair<Int, Int> {
-        return iteratePos(y, x, iteration downTo 0, Int::minus)
-    }
-
-    fun nextPos(cell: MazeCell): Pair<Int, Int> {
-        val nextIteration = cell.iteration + 1
-        return iteratePos(cell.y, cell.x, nextIteration..nextIteration, Int::plus)
-    }
-
-}
-
-private fun runDijkstraOnMaze(mazeLines: List<String>, processNeighbours: (MazeCell, Int, Queue<MazeCell>, Maze) -> Unit): Int {
-    val maze = Maze.parse(mazeLines)
-    val topLeft = maze.cellAt(0, 0, 0)
-    topLeft.distance = 0
-
-    val toVisit: Queue<MazeCell> =
-        PriorityQueue<MazeCell>(maze.width() * maze.height()) { p0, p1 -> p0.distance - p1.distance }
-
-    toVisit.offer(topLeft)
-
-    while (toVisit.size > 0) {
-        val currentCell = toVisit.poll()
-        if (currentCell.x == maze.width() - 1 && currentCell.y == maze.height() - 1) {
-            return currentCell.distance
         }
 
-        maze.getReachableNeighbours(currentCell).forEach { cell ->
-            processNeighbours(cell, currentCell.distance + 1, toVisit, maze)
-        }
+        throw Exception("No path from top-left to bottom-right")
     }
-
-    throw Exception("No path from top-left to bottom-right")
 }
 
 fun infiA(mazeLines: List<String>): Int {
-    return runDijkstraOnMaze(mazeLines) { cell, newDistance, toVisit, _ ->
-        if (cell.distance == Int.MAX_VALUE) {
-            toVisit.add(cell)
-        }
-        cell.distance = Math.min(newDistance, cell.distance)
-    }
+    val maze = Maze.parse(mazeLines)
+    return maze.runDijkstra { cell -> cell }
 }
 
 fun infiB(mazeLines: List<String>): Int {
-    return runDijkstraOnMaze(mazeLines) { cell, newDistance, toVisit, maze ->
-        val (nextY, nextX) = maze.nextPos(cell)
-        val cellAtNextPos = maze.cellAt(nextY, nextX, cell.iteration + 1)
-
-        if (toVisit.contains(cellAtNextPos)) {
-            toVisit.remove(cellAtNextPos)
-        }
-        cellAtNextPos.distance = Math.min(newDistance, cellAtNextPos.distance)
-        toVisit.add(cellAtNextPos)
-    }
+    val maze = Maze.parse(mazeLines)
+    return maze.runDijkstra { cell -> maze.cellAfterNextShift(cell) }
 }
 
