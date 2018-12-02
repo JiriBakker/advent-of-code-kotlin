@@ -3,7 +3,7 @@ package days
 fun day02a(ids: List<String>): Int {
     val countLetters = { id: String ->
         id.toCharArray()
-            .fold(mutableMapOf()) { counts: MutableMap<Char, Int>, char: Char ->
+            .fold(mutableMapOf()) { counts: MutableMap<Char, Int>, char ->
                 counts[char] = counts.getOrDefault(char, 0) + 1
                 counts
             }
@@ -21,9 +21,8 @@ fun day02a(ids: List<String>): Int {
     return sums.first * sums.second
 }
 
-
 fun day02b(ids: List<String>): String {
-    val idIntersection = { id1: String, id2: String ->
+    val computeIdIntersection = { id1: String, id2: String ->
         val chars1 = id1.toCharArray()
         val chars2 = id2.toCharArray()
         val intersection: MutableList<Char> = mutableListOf()
@@ -44,7 +43,7 @@ fun day02b(ids: List<String>): String {
 
     for (i1 in 0 until ids.count()) {
         for (i2 in (i1 + 1) until ids.count()) {
-            val intersection = idIntersection(ids[i1], ids[i2])
+            val intersection = computeIdIntersection(ids[i1], ids[i2])
             if (intersection.size == ids[i1].length - 1) {
                 return String(intersection.toCharArray())
             }

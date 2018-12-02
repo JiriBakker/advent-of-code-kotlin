@@ -3,7 +3,6 @@ package days
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 class Day02aTests {
     @Test fun testExampleInput1() {
         assertEquals(12, day02a(listOf("abcdef","bababc","abbcde","abcccd","aabcdd","abcdee","ababab")))
