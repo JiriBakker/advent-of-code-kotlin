@@ -28,7 +28,12 @@ private infix fun Int.safeMod(mod: Int): Int {
     return value % mod
 }
 
-private class Maze private constructor(private val mazeChars: List<List<Char>>) {
+private enum class MazeType {
+    STATIC,
+    SHIFTING
+}
+
+private class Maze private constructor(private val mazeChars: List<List<Char>>, private val mazeType: MazeType) {
     private val visitedCells: MutableMap<String, MazeCell> = mutableMapOf()
 
     // We assume the maze is a square
@@ -36,7 +41,7 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>) 
     private val width = mazeChars.count()
 
     companion object {
-        fun parse(mazeLines: List<String>): Maze {
+        fun of(mazeLines: List<String>, mazeType: MazeType): Maze {
             val maze: MutableList<MutableList<Char>> = mutableListOf()
             for (y in 0 until mazeLines.count()) {
                 val mazeRow: MutableList<Char> = mutableListOf()
@@ -45,7 +50,7 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>) 
                 }
                 maze.add(y, mazeRow)
             }
-            return Maze(maze)
+            return Maze(maze, mazeType)
         }
     }
 
@@ -116,12 +121,12 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>) 
         }
     }
 
-    fun cellAfterNextShift(cell: MazeCell): MazeCell {
+    private fun cellAfterNextShift(cell: MazeCell): MazeCell {
         val (nextY, nextX) = postAfterNextShift(cell)
         return cellAt(nextY, nextX, cell.iteration + 1)
     }
 
-    fun runDijkstra(processNeighbour: (MazeCell) -> MazeCell): Int {
+    fun runDijkstra(): Int {
         val toVisit: PriorityQueue<MazeCell> =
             PriorityQueue(width * height) { p0, p1 -> p0.distance - p1.distance }
 
@@ -136,9 +141,12 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>) 
             }
 
             getReachableNeighbours(currentCell).forEach { neighbourCell ->
-                val processedNeighbour = processNeighbour(neighbourCell)
+                val processedNeighbour = when (mazeType) {
+                    MazeType.STATIC -> neighbourCell
+                    MazeType.SHIFTING ->  cellAfterNextShift(neighbourCell)
+                }
                 if (processedNeighbour.distance == Int.MAX_VALUE) {
-                    processedNeighbour.distance = Math.min(currentCell.distance + 1, processedNeighbour.distance)
+                    processedNeighbour.distance = currentCell.distance + 1
                     toVisit.add(processedNeighbour)
                 }
             }
@@ -149,12 +157,12 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>) 
 }
 
 fun infiA(mazeLines: List<String>): Int {
-    val maze = Maze.parse(mazeLines)
-    return maze.runDijkstra { cell -> cell }
+    return Maze.of(mazeLines, MazeType.STATIC)
+        .runDijkstra()
 }
 
 fun infiB(mazeLines: List<String>): Int {
-    val maze = Maze.parse(mazeLines)
-    return maze.runDijkstra { cell -> maze.cellAfterNextShift(cell) }
+    return Maze.of(mazeLines, MazeType.SHIFTING)
+        .runDijkstra()
 }
 
