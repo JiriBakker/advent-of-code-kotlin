@@ -11,4 +11,6 @@ fun main(args: Array<String>) {
     println("InfiB: " + infiB(readInputLines("infi")) )
     println("Day01a: " + day01a(readInputLines("day01")) )
     println("Day01b: " + day01b(readInputLines("day01")) )
+    println("Day02a: " + day02a(readInputLines("day02")) )
+    println("Day02b: " + day02b(readInputLines("day02")) )
 }
