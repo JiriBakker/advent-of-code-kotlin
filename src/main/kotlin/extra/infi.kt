@@ -83,11 +83,6 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
         return reachableNeighbours
     }
 
-    private fun findChar(y: Int, x: Int, iteration: Int): Char {
-        val (initialY, initialX) = applyShifts(y, x, iteration downTo 0, Int::minus)
-        return mazeChars[initialY][initialX]
-    }
-
     private fun applyShifts(y: Int, x: Int, iterator: IntProgression, operator: (Int, Int) -> Int): Pair<Int, Int> {
         return iterator.fold(Pair(y, x)) { (curY, curX): Pair<Int, Int>, iteration: Int ->
             val shiftRow = iteration % 2 == 1
@@ -107,9 +102,14 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
         return applyShifts(cell.y, cell.x, nextIteration..nextIteration, Int::plus)
     }
 
+    private fun findChar(y: Int, x: Int, iteration: Int): Char {
+        val (initialY, initialX) = applyShifts(y, x, iteration downTo 0, Int::minus)
+        return mazeChars[initialY][initialX]
+    }
 
-    private fun isBottomRightCell(cell: MazeCell): Boolean {
-        return cell.x == width - 1 && cell.y == height - 1
+    private fun cellAfterNextShift(cell: MazeCell): MazeCell {
+        val (nextY, nextX) = postAfterNextShift(cell)
+        return cellAt(nextY, nextX, cell.iteration + 1)
     }
 
     private fun cellAt(y: Int, x: Int, iteration: Int): MazeCell {
@@ -121,9 +121,8 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
         }
     }
 
-    private fun cellAfterNextShift(cell: MazeCell): MazeCell {
-        val (nextY, nextX) = postAfterNextShift(cell)
-        return cellAt(nextY, nextX, cell.iteration + 1)
+    private fun isBottomRightCell(cell: MazeCell): Boolean {
+        return cell.x == width - 1 && cell.y == height - 1
     }
 
     fun runDijkstra(): Int {
@@ -142,8 +141,8 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
 
             getReachableNeighbours(currentCell).forEach { neighbourCell ->
                 val processedNeighbour = when (mazeType) {
-                    MazeType.STATIC -> neighbourCell
-                    MazeType.SHIFTING ->  cellAfterNextShift(neighbourCell)
+                    MazeType.STATIC   -> neighbourCell
+                    MazeType.SHIFTING -> cellAfterNextShift(neighbourCell)
                 }
                 if (processedNeighbour.distance == Int.MAX_VALUE) {
                     processedNeighbour.distance = currentCell.distance + 1
