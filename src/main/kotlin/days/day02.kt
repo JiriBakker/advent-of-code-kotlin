@@ -1,5 +1,7 @@
 package days
 
+import forEachCombinationPair
+
 fun day02a(ids: List<String>): Int {
     val countLetters = { id: String ->
         id.toCharArray()
@@ -41,12 +43,10 @@ fun day02b(ids: List<String>): String {
         intersection
     }
 
-    for (i1 in 0 until ids.count()) {
-        for (i2 in (i1 + 1) until ids.count()) {
-            val intersection = computeIdIntersection(ids[i1], ids[i2])
-            if (intersection.size == ids[i1].length - 1) {
-                return String(intersection.toCharArray())
-            }
+    ids.forEachCombinationPair {
+        val intersection = computeIdIntersection(it.first, it.second)
+        if (intersection.size == it.first.length - 1) {
+            return String(intersection.toCharArray())
         }
     }
 

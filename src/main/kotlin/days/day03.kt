@@ -1,5 +1,7 @@
 package days
 
+import forEachCombinationPair
+
 private class Fabric() {
     private val inches: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
 
@@ -41,17 +43,6 @@ private data class Claim private constructor(val id: Int, val x1: Int, val y1: I
     }
 }
 
-fun <T> List<T>.combinationPairs(): Sequence<Pair<T,T>> {
-    val list = this
-    return sequence {
-        for (i1 in 0 until list.size) {
-            for (i2 in (i1 + 1) until list.size) {
-                yield(Pair(list[i1], list[i2]))
-            }
-        }
-    }
-}
-
 fun day03a(claimLines: List<String>): Int {
     val claims = claimLines.map { Claim.parse(it) }
     val fabric = Fabric()
@@ -66,7 +57,7 @@ fun day03b(claimLines: List<String>): Int? {
 
     val idsWithoutOverlap: MutableSet<Int> = claims.map { it.id }.toMutableSet()
 
-    claims.combinationPairs().forEach {
+    claims.forEachCombinationPair {
         if (it.first.overlapsWith(it.second)) {
             idsWithoutOverlap.remove(it.first.id)
             idsWithoutOverlap.remove(it.second.id)
