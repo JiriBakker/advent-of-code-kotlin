@@ -21,4 +21,6 @@ fun main(args: Array<String>) {
     time { print("Day02b: " + day02b(readInputLines("day02"))) }
     time { print("Day03a: " + day03a(readInputLines("day03"))) }
     time { print("Day03b: " + day03b(readInputLines("day03"))) }
+    time { print("Day04a: " + day04a(readInputLines("day04"))) }
+    time { print("Day04b: " + day04b(readInputLines("day04"))) }
 }
