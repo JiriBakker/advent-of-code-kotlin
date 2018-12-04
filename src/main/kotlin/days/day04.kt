@@ -71,7 +71,7 @@ private data class SleepInterval(val startMinute: Int, val endMinute: Int) {
     val totalMinutes = endMinute - startMinute
 }
 
-private fun parseToGuardsWithShifts(eventLines: List<String>): List<Guard> {
+private fun parseToGuards(eventLines: List<String>): List<Guard> {
     return eventLines
         .sorted()
         .fold(Pair<MutableList<Event>, Int?>(mutableListOf(), null)) {
@@ -86,18 +86,20 @@ private fun parseToGuardsWithShifts(eventLines: List<String>): List<Guard> {
 }
 
 fun day04a(eventLines: List<String>): Int {
-    val guardsWithShifts = parseToGuardsWithShifts(eventLines)
+    val guards = parseToGuards(eventLines)
 
-    val mostAsleepGuard = guardsWithShifts.maxBy { it.totalMinutesAsleep }!!
+    val guardThatWasMostAsleep =
+        guards
+            .maxBy { it.totalMinutesAsleep }!!
 
-    return mostAsleepGuard.mostOftenAsleepAtMinute!! * mostAsleepGuard.guardId
+    return guardThatWasMostAsleep.mostOftenAsleepAtMinute!! * guardThatWasMostAsleep.guardId
 }
 
 fun day04b(eventLines: List<String>): Int {
-    val guardsWithShifts = parseToGuardsWithShifts(eventLines)
+    val guards = parseToGuards(eventLines)
 
     val guardThatWasMostAsleepOnASingleMinute =
-        guardsWithShifts
+        guards
             .maxBy { guard -> guard.getTimesAsleepPerMinute().map { it.value }.max() ?: -1 }!!
 
     return guardThatWasMostAsleepOnASingleMinute.mostOftenAsleepAtMinute!! * guardThatWasMostAsleepOnASingleMinute.guardId
