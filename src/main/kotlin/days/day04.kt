@@ -1,6 +1,5 @@
 package days
 
-
 private enum class EventType {
     SHIFT_START,
     SLEEP_START,
@@ -33,38 +32,17 @@ private class Event private constructor(val guardId: Int, val timestampMinute: I
 private class Guard private constructor(val guardId: Int, val sleepIntervals: List<SleepInterval>) {
     companion object {
         fun of(guardId: Int, events: List<Event>): Guard {
-            val sleepIntervals: MutableList<SleepInterval> = mutableListOf()
-
-            var currentShiftSleepEvents: MutableList<Event> = mutableListOf()
-
-            val storeCurrentShiftSleepIntervals = {
-                val currentShiftSleepIntervals =
-                    sequence {
-                        for (index in 0 until currentShiftSleepEvents.size step 2) {
-                            yield(
-                                SleepInterval(
-                                    currentShiftSleepEvents[index].timestampMinute,
-                                    currentShiftSleepEvents[index + 1].timestampMinute
-                                )
-                            )
-                        }
-                    }.toList()
-
-                sleepIntervals.addAll(currentShiftSleepIntervals)
-            }
-
-            events.forEach {
-                when (it.eventType) {
-                    EventType.SHIFT_START -> {
-                        if (currentShiftSleepEvents.isNotEmpty()) {
-                            storeCurrentShiftSleepIntervals()
-                        }
-                        currentShiftSleepEvents = mutableListOf()
-                    }
-                    else -> currentShiftSleepEvents.add(it)
+            val sleepIntervals = sequence {
+                val sleepEvents = events.filter { it.eventType != EventType.SHIFT_START }
+                for (index in 0 until sleepEvents.size step 2) {
+                    yield(
+                        SleepInterval(
+                            sleepEvents[index].timestampMinute,
+                            sleepEvents[index + 1].timestampMinute
+                        )
+                    )
                 }
-            }
-            storeCurrentShiftSleepIntervals()
+            }.toList()
 
             return Guard(guardId, sleepIntervals)
         }
@@ -72,7 +50,7 @@ private class Guard private constructor(val guardId: Int, val sleepIntervals: Li
 
     val totalMinutesAsleep = sleepIntervals.sumBy { it.totalMinutes }
 
-    fun getTimesAsleepAtMinute(): Map<Int, Int> {
+    fun getTimesAsleepPerMinute(): Map<Int, Int> {
         if (sleepIntervals.isEmpty()) {
             return mapOf()
         }
@@ -86,55 +64,41 @@ private class Guard private constructor(val guardId: Int, val sleepIntervals: Li
         return timesAsleepAtMinute
     }
 
-    val mostOftenAsleepMinute: Int? = getTimesAsleepAtMinute().maxBy { it.value }?.key
+    val mostOftenAsleepAtMinute: Int? = getTimesAsleepPerMinute().maxBy { it.value }?.key
 }
 
 private data class SleepInterval(val startMinute: Int, val endMinute: Int) {
     val totalMinutes = endMinute - startMinute
 }
 
-fun day04a(eventLines: List<String>): Int {
-    val events =
-        eventLines
-            .sorted()
-            .fold(Pair<MutableList<Event>, Int?>(mutableListOf(), null)) {
-                    (events, prevEventGuardId), eventLine ->
+private fun parseToGuardsWithShifts(eventLines: List<String>): List<Guard> {
+    return eventLines
+        .sorted()
+        .fold(Pair<MutableList<Event>, Int?>(mutableListOf(), null)) {
+            (events, prevEventGuardId), eventLine ->
                 val event = Event.parse(eventLine, prevEventGuardId)
                 events.add(event)
                 Pair(events, event.guardId)
             }
-            .first
+        .first
+        .groupBy { it.guardId }
+        .map { Guard.of(it.key, it.value) }
+}
 
-    val guardsWithShifts =
-        events
-            .groupBy { it.guardId }
-            .map { Guard.of(it.key, it.value) }
+fun day04a(eventLines: List<String>): Int {
+    val guardsWithShifts = parseToGuardsWithShifts(eventLines)
 
     val mostAsleepGuard = guardsWithShifts.maxBy { it.totalMinutesAsleep }!!
 
-    return mostAsleepGuard.mostOftenAsleepMinute!! * mostAsleepGuard.guardId
+    return mostAsleepGuard.mostOftenAsleepAtMinute!! * mostAsleepGuard.guardId
 }
 
 fun day04b(eventLines: List<String>): Int {
-    val events =
-        eventLines
-            .sorted()
-            .fold(Pair<MutableList<Event>, Int?>(mutableListOf(), null)) {
-                 (events, prevEventGuardId), eventLine ->
-                    val event = Event.parse(eventLine, prevEventGuardId)
-                    events.add(event)
-                    Pair(events, event.guardId)
-             }
-            .first
-
-    val guardsWithShifts =
-        events
-            .groupBy { it.guardId }
-            .map { Guard.of(it.key, it.value) }
+    val guardsWithShifts = parseToGuardsWithShifts(eventLines)
 
     val guardThatWasMostAsleepOnASingleMinute =
         guardsWithShifts
-            .maxBy { guard -> guard.getTimesAsleepAtMinute().map { it.value }.max() ?: -1 }!!
+            .maxBy { guard -> guard.getTimesAsleepPerMinute().map { it.value }.max() ?: -1 }!!
 
-    return guardThatWasMostAsleepOnASingleMinute.guardId * guardThatWasMostAsleepOnASingleMinute.mostOftenAsleepMinute!!
+    return guardThatWasMostAsleepOnASingleMinute.mostOftenAsleepAtMinute!! * guardThatWasMostAsleepOnASingleMinute.guardId
 }
