@@ -36,7 +36,7 @@ private data class ClosestAreaResult(val coordinateArea: CoordinateArea, val min
 private fun parseCoordinateLines(coordinateLines: List<String>): List<CoordinateArea> {
     return coordinateLines
         .map { it.split(", ") }
-        .mapIndexed { index, coordinates ->  CoordinateArea(index, coordinates[0].toInt(), coordinates[1].toInt()) }
+        .mapIndexed { index, coordinates -> CoordinateArea(index, coordinates[0].toInt(), coordinates[1].toInt()) }
 }
 
 fun day06a(coordinateLines: List<String>): Int? {
@@ -75,6 +75,17 @@ fun day06a(coordinateLines: List<String>): Int? {
     return coordinateAreas.filter { !it.isInfinite }.map { it.nrOfClaimedCells }.max()
 }
 
+private fun <T> List<T>.sumByWhile(selector: (T) -> Int, predicate: (Int) -> Boolean): Int {
+    return this.fold(0) {
+        sum, item ->
+            val newSum = sum + selector(item)
+            if (!predicate(newSum)) {
+                return newSum
+            }
+            newSum
+    }
+}
+
 fun day06b(coordinateLines: List<String>, limit: Int = 10000): Int {
     val coordinateAreas = parseCoordinateLines(coordinateLines)
 
@@ -84,7 +95,7 @@ fun day06b(coordinateLines: List<String>, limit: Int = 10000): Int {
 
     for (x in minX..maxX) {
         for (y in minY..maxY) {
-            val summedDistance = coordinateAreas.sumBy { it.distanceTo(x, y) }
+            val summedDistance = coordinateAreas.sumByWhile({ it.distanceTo(x, y) }) { it < limit }
             if (summedDistance < limit) {
                 nrOfCellsWithinLimit++
             }
