@@ -31,7 +31,7 @@ private fun buildDependencyGraph(instructionLines: List<String>): List<Step> {
     return steps.values.toList()
 }
 
-private fun doIt(instructionLines: List<String>, nrOfWorkers: Int, baseDuration: Int): Pair<Int, List<Char>> {
+private fun performSteps(instructionLines: List<String>, nrOfWorkers: Int, baseDuration: Int): Pair<Int, List<Char>> {
     val steps = buildDependencyGraph(instructionLines)
 
     val workers: MutableMap<Char, Int> = mutableMapOf()
@@ -74,11 +74,11 @@ private fun doIt(instructionLines: List<String>, nrOfWorkers: Int, baseDuration:
 }
 
 fun day07a(instructionLines: List<String>): String {
-    val (_, stepsFinished) = doIt(instructionLines, 1, 0)
+    val (_, stepsFinished) = performSteps(instructionLines, 1, 0)
     return String(stepsFinished.toCharArray())
 }
 
 fun day07b(instructionLines: List<String>, nrOfWorkers: Int = 5, baseDuration: Int = 60): Int {
-    val (second, _) = doIt(instructionLines, nrOfWorkers, baseDuration)
+    val (second, _) = performSteps(instructionLines, nrOfWorkers, baseDuration)
     return second - 1
 }
