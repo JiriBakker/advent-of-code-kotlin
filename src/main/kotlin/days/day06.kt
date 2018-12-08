@@ -49,25 +49,23 @@ fun day06a(coordinateLines: List<String>): Int? {
     for (x in minX..maxX) {
         for (y in minY..maxY) {
             val closestAreaResult =
-                coordinateAreas.fold(null as ClosestAreaResult?) {
-                    intermediateResult, coordinateArea ->
-                        val distance = coordinateArea.distanceTo(x, y)
-                        if (intermediateResult == null || distance < intermediateResult.minDistance) {
-                            ClosestAreaResult(coordinateArea, distance, false)
-                        }
-                        else if (distance == intermediateResult.minDistance) {
-                            ClosestAreaResult(coordinateArea, distance, true)
-                        }
-                        else {
-                            intermediateResult
-                        }
+                coordinateAreas.fold(null as ClosestAreaResult?) { intermediateResult, coordinateArea ->
+                    val distance = coordinateArea.distanceTo(x, y)
+                    if (intermediateResult == null || distance < intermediateResult.minDistance) {
+                        ClosestAreaResult(coordinateArea, distance, false)
+                    } else if (distance == intermediateResult.minDistance) {
+                        ClosestAreaResult(coordinateArea, distance, true)
+                    } else {
+                        intermediateResult
+                    }
                 }!!
 
-            if (isOuterBoundCoordinate(x, y)) {
-                closestAreaResult.coordinateArea.markAsInfinite()
-            }
-            else if (!closestAreaResult.hasConflict) {
-                closestAreaResult.coordinateArea.claimCell()
+            if (!closestAreaResult.hasConflict) {
+                if (isOuterBoundCoordinate(x, y)) {
+                    closestAreaResult.coordinateArea.markAsInfinite()
+                } else {
+                    closestAreaResult.coordinateArea.claimCell()
+                }
             }
         }
     }
