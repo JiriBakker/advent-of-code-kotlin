@@ -15,13 +15,13 @@ private class Event private constructor(val guardId: Int, val timestampMinute: I
             val eventType = when (firstWord) {
                 "Guard" -> EventType.SHIFT_START
                 "falls" -> EventType.SLEEP_START
-                else    -> EventType.SLEEP_END
+                else -> EventType.SLEEP_END
             }
 
             val guardId = when {
                 eventType == EventType.SHIFT_START -> secondWord.replace("#", "").toInt()
-                prevEventGuardId != null           -> prevEventGuardId
-                else                               -> throw Exception("Error parsing, unable to determine current guard")
+                prevEventGuardId != null -> prevEventGuardId
+                else -> throw Exception("Error parsing, unable to determine current guard")
             }
 
             return Event(guardId, minute, eventType)

@@ -74,7 +74,7 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
                 reachableNeighbours.add(cellLeft)
             }
         }
-        if (cell.x < width - 1  && cell.isRightOpen()) {
+        if (cell.x < width - 1 && cell.isRightOpen()) {
             val cellRight = cellAt(cell.y, cell.x + 1, cell.iteration)
             if (cellRight.isLeftOpen()) {
                 reachableNeighbours.add(cellRight)
@@ -90,9 +90,9 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
             val onShiftingColumn = !shiftRow && curX == (iteration - 1) % width
 
             when {
-                onShiftingRow    -> Pair(curY, operator(curX, 1) safeMod width)
+                onShiftingRow -> Pair(curY, operator(curX, 1) safeMod width)
                 onShiftingColumn -> Pair(operator(curY, 1) safeMod height, curX)
-                else             -> Pair(curY, curX)
+                else -> Pair(curY, curX)
             }
         }
     }
@@ -141,7 +141,7 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
 
             getReachableNeighbours(currentCell).forEach { neighbourCell ->
                 val processedNeighbour = when (mazeType) {
-                    MazeType.STATIC   -> neighbourCell
+                    MazeType.STATIC -> neighbourCell
                     MazeType.SHIFTING -> cellAfterNextShift(neighbourCell)
                 }
                 if (processedNeighbour.distance == Int.MAX_VALUE) {
@@ -164,4 +164,3 @@ fun infiB(mazeLines: List<String>): Int {
     return Maze.of(mazeLines, MazeType.SHIFTING)
         .runDijkstra()
 }
-

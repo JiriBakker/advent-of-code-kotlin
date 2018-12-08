@@ -1,5 +1,16 @@
-import days.*
-import extra.*
+import days.day01a
+import days.day01b
+import days.day02a
+import days.day02b
+import days.day03a
+import days.day03b
+import days.day04a
+import days.day04b
+import days.day05a
+import days.day06a
+import days.day06b
+import extra.infiA
+import extra.infiB
 import java.io.File
 import kotlin.system.measureTimeMillis
 
@@ -28,8 +39,7 @@ fun main(args: Array<String>) {
     time { print("Day04a: " + day04a(readInputLines("day04_sorted"))) }
     time { print("Day04b: " + day04b(readInputLines("day04_sorted"))) }
     time { print("Day05a: " + day05a(readInputLine("day05"))) }
- //   time { print("Day05b: " + day05b(readInputLine("day05"))) } // SLOW
+    //   time { print("Day05b: " + day05b(readInputLine("day05"))) } // SLOW
     time { print("Day06a: " + day06a(readInputLines("day06"))) }
     time { print("Day06b: " + day06b(readInputLines("day06"))) }
-
 }

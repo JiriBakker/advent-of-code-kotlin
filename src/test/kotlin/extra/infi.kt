@@ -3,7 +3,6 @@ package extra
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 class InfiATests {
     @Test fun testExampleInput() {
         assertEquals(6, infiA(listOf("╔═╗║", "╠╗╠║", "╬╬╣╬", "╚╩╩═")))

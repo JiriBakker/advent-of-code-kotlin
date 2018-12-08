@@ -2,7 +2,7 @@ package days
 
 import forEachCombinationPair
 
-private class Fabric() {
+private class Fabric {
     private val inches: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
 
     fun applyClaim(claim: Claim) {
@@ -20,7 +20,7 @@ private class Fabric() {
     }
 }
 
-private data class Claim private constructor(val id: Int, val x1: Int, val y1: Int, private val width: Int, private val height: Int) {
+private class Claim private constructor(val id: Int, val x1: Int, val y1: Int, width: Int, height: Int) {
     val x2 = x1 + width
     val y2 = y1 + height
 

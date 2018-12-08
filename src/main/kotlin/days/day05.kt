@@ -11,8 +11,7 @@ private fun computeReactedPolymerLength(polymerChars: List<Char>): Int {
             units.removeAt(index + 1)
             units.removeAt(index)
             index = Math.max(index - 1, 0)
-        }
-        else {
+        } else {
             index++
         }
     }

@@ -29,7 +29,4 @@ class Day05bTests {
     @Test fun testExampleInput1() {
         assertEquals(4, day05b("dabAcCaCBAcCcaDA"))
     }
-
-
 }
-

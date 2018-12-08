@@ -3,7 +3,6 @@ package days
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-
 class Day01aTests {
     private fun exampleInputToArray(exampleInput: String): List<String> {
         return exampleInput.split(", ")
@@ -47,4 +46,3 @@ class Day01bTests {
         assertEquals(14, day01b(exampleInputToArray("+7, +7, -2, -7, -4")))
     }
 }
-

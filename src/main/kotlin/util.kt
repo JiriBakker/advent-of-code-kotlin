@@ -1,4 +1,4 @@
-inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T,T>) -> Unit): Unit {
+inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
     val list = this
     return sequence {
         for (i1 in 0 until list.size) {

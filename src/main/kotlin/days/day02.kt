@@ -12,8 +12,7 @@ fun day02a(ids: List<String>): Int {
     }
 
     val sums = ids.map(countLetters)
-        .fold(Pair(0, 0))
-            { sums, letterCounts ->
+        .fold(Pair(0, 0)) { sums, letterCounts ->
                 Pair(
                     sums.first + (if (letterCounts.containsValue(2)) 1 else 0),
                     sums.second + (if (letterCounts.containsValue(3)) 1 else 0)
@@ -35,8 +34,7 @@ fun day02b(ids: List<String>): String {
                     break
                 }
                 differenceFound = true
-            }
-            else {
+            } else {
                 intersection.add(chars1[i])
             }
         }
