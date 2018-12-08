@@ -1,4 +1,4 @@
-package days
+package days.day04
 
 private enum class EventType {
     SHIFT_START,

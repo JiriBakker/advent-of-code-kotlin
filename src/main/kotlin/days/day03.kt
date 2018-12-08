@@ -1,4 +1,4 @@
-package days
+package days.day03
 
 import forEachCombinationPair
 

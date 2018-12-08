@@ -1,4 +1,4 @@
-package days
+package days.day07
 
 import java.util.PriorityQueue
 

@@ -1,4 +1,4 @@
-package days
+package days.day01
 
 fun day01a(changes: List<String>): Int {
     return changes.sumBy { it.toInt() }

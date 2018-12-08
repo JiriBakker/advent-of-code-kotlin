@@ -1,19 +1,21 @@
-import days.day01a
-import days.day01b
-import days.day02a
-import days.day02b
-import days.day03a
-import days.day03b
-import days.day04a
-import days.day04b
-import days.day05a
-// import days.day05b
-import days.day06a
-import days.day06b
-import days.day07a
-import days.day07b
-import extra.infiA
-import extra.infiB
+import days.day01.day01a
+import days.day01.day01b
+import days.day02.day02a
+import days.day02.day02b
+import days.day03.day03a
+import days.day03.day03b
+import days.day04.day04a
+import days.day04.day04b
+import days.day05.day05a
+// import days.day05.day05b
+import days.day06.day06a
+import days.day06.day06b
+import days.day07.day07a
+import days.day07.day07b
+import days.day08.day08a
+import days.day08.day08b
+import extra.infi.infiA
+import extra.infi.infiB
 import kotlin.system.measureTimeMillis
 
 private fun time(func: () -> Unit) {
@@ -38,4 +40,6 @@ fun main(args: Array<String>) {
     time { print("Day06b: " + day06b(readInputLines("day06"))) }
     time { print("Day07a: " + day07a(readInputLines("day07"))) }
     time { print("Day07b: " + day07b(readInputLines("day07"))) }
+    time { print("Day08a: " + day08a(readInputLine("day08"))) }
+    time { print("Day08b: " + day08b(readInputLine("day08"))) }
 }

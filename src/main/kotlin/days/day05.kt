@@ -1,4 +1,4 @@
-package days
+package days.day05
 
 private fun computeReactedPolymerLength(polymerChars: List<Char>): Int {
     val units = polymerChars.toMutableList()

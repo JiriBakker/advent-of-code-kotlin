@@ -1,4 +1,4 @@
-package days
+package days.day06
 
 private data class CoordinateArea(val id: Int, val x: Int, val y: Int) {
     var isInfinite = false

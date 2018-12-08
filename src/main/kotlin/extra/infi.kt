@@ -1,4 +1,4 @@
-package extra
+package extra.infi
 
 import java.util.PriorityQueue
 

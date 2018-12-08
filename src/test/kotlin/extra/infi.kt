@@ -1,4 +1,4 @@
-package extra
+package extra.infi
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
