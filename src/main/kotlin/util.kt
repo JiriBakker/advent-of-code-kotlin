@@ -1,3 +1,5 @@
+import java.io.File
+
 inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
     val list = this
     return sequence {
@@ -7,4 +9,12 @@ inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
             }
         }
     }.forEach(action)
+}
+
+fun readInputLines(fileName: String): List<String> {
+    return File("input/$fileName").readLines()
+}
+
+fun readInputLine(fileName: String): String {
+    return readInputLines(fileName).single()
 }

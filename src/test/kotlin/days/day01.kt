@@ -2,6 +2,7 @@ package days
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import readInputLines
 
 class Day01aTests {
     private fun exampleInputToArray(exampleInput: String): List<String> {
@@ -22,6 +23,10 @@ class Day01aTests {
 
     @Test fun testExampleInput4() {
         assertEquals(-6, day01a(exampleInputToArray("-1, -2, -3")))
+    }
+
+    @Test fun testActualInput() {
+        assertEquals(576, day01a(readInputLines("day01")))
     }
 }
 
@@ -44,5 +49,9 @@ class Day01bTests {
 
     @Test fun testExampleInput4() {
         assertEquals(14, day01b(exampleInputToArray("+7, +7, -2, -7, -4")))
+    }
+
+    @Test fun testActualInput() {
+        assertEquals(77674, day01b(readInputLines("day01")))
     }
 }

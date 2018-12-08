@@ -2,6 +2,7 @@ package days
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
+import readInputLines
 
 class Day04aTests {
     @Test fun testExampleInput1() {
@@ -24,6 +25,10 @@ class Day04aTests {
             "[1518-11-05 00:45] falls asleep",
             "[1518-11-05 00:55] wakes up"
         )))
+    }
+
+    @Test fun testActualInput() {
+        assertEquals(103720, day04a(readInputLines("day04")))
     }
 }
 
@@ -82,5 +87,9 @@ class Day04bTests {
             "[1518-11-04 00:03] falls asleep",
             "[1518-11-04 00:04] wakes up"
         )))
+    }
+
+    @Test fun testActualInput() {
+        assertEquals(110913, day04b(readInputLines("day04")))
     }
 }
