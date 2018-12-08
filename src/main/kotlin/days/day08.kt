@@ -3,15 +3,15 @@ package days.day08
 import java.util.LinkedList
 import java.util.Queue
 
-private data class Node(val children: List<Node>, val metadata: List<Int>)
+private class Node(val children: List<Node>, val metadata: List<Int>)
 
 private fun toIntQueue(treeData: String): Queue<Int> {
     return LinkedList(treeData.split(" ").map { it.toInt() })
 }
 
 private fun parse(input: Queue<Int>): Node {
-    var nrOfChildren = input.poll()
-    var nrOfMetadataItems = input.poll()
+    val nrOfChildren = input.poll()
+    val nrOfMetadataItems = input.poll()
 
     val children = sequence { repeat(nrOfChildren) { yield(parse(input)) } }
     val metadata = sequence { repeat(nrOfMetadataItems) { yield(input.poll()) } }
@@ -48,11 +48,11 @@ private fun collectComplex(node: Node): Sequence<Int> {
 }
 
 fun day08a(treeData: String): Int {
-    var rootNode = parse(toIntQueue(treeData))
+    val rootNode = parse(toIntQueue(treeData))
     return collectSimple(rootNode).sum()
 }
 
 fun day08b(treeData: String): Int {
-    var rootNode = parse(toIntQueue(treeData))
+    val rootNode = parse(toIntQueue(treeData))
     return collectComplex(rootNode).sum()
 }
