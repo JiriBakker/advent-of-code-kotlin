@@ -3,40 +3,20 @@ package days.day08
 import java.util.LinkedList
 import java.util.Queue
 
-private class Node(val parent: Node?, val id: Int) {
-    val metadata: MutableList<Int> = mutableListOf()
-
-    val children: MutableList<Node> = mutableListOf()
-}
-
-private class IdProvider {
-    private var curId = 0
-
-    fun next(): Int {
-        return curId++
-    }
-}
+private data class Node(val children: List<Node>, val metadata: List<Int>)
 
 private fun toIntQueue(treeData: String): Queue<Int> {
     return LinkedList(treeData.split(" ").map { it.toInt() })
 }
 
-private fun parse(input: Queue<Int>, parent: Node?, idProvider: IdProvider): Node {
+private fun parse(input: Queue<Int>): Node {
     var nrOfChildren = input.poll()
     var nrOfMetadataItems = input.poll()
 
-    var node = Node(parent, idProvider.next())
+    val children = sequence { repeat(nrOfChildren) { yield(parse(input)) } }
+    val metadata = sequence { repeat(nrOfMetadataItems) { yield(input.poll()) } }
 
-    for (i in 0 until nrOfChildren) {
-        val child = parse(input, node, idProvider)
-        node.children.add(child)
-    }
-
-    for (i in 0 until nrOfMetadataItems) {
-        node.metadata.add(input.poll())
-    }
-
-    return node
+    return Node(children.toList(), metadata.toList())
 }
 
 private fun collectSimple(node: Node): Sequence<Int> {
@@ -68,11 +48,11 @@ private fun collectComplex(node: Node): Sequence<Int> {
 }
 
 fun day08a(treeData: String): Int {
-    var rootNode = parse(toIntQueue(treeData), null, IdProvider())
+    var rootNode = parse(toIntQueue(treeData))
     return collectSimple(rootNode).sum()
 }
 
 fun day08b(treeData: String): Int {
-    var rootNode = parse(toIntQueue(treeData), null, IdProvider())
+    var rootNode = parse(toIntQueue(treeData))
     return collectComplex(rootNode).sum()
 }
