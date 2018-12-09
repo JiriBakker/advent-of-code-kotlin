@@ -1,5 +1,7 @@
 package days.day05
 
+import java.util.stream.Collectors
+
 private fun computeReactedPolymerLength(polymerChars: List<Char>): Int {
     val units = polymerChars.toMutableList()
 
@@ -26,11 +28,15 @@ fun day05a(polymer: String): Int {
 fun day05b(polymer: String): Int {
     val alphabet = 'a'..'z'
 
+    val polymerChars = polymer.toList()
+
     return alphabet
-        .map {
-            letter ->
-                val polymerWithoutLetter = polymer.toList().filter { it.toLowerCase() != letter }
-                computeReactedPolymerLength(polymerWithoutLetter)
+        .toList()
+        .parallelStream()
+        .map { letter ->
+            val polymerWithoutLetter = polymerChars.filter { char -> char.toLowerCase() != letter }
+            computeReactedPolymerLength(polymerWithoutLetter)
         }
+        .collect(Collectors.toList())
         .min()!!
 }

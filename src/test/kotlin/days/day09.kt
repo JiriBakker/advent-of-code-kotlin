@@ -38,9 +38,9 @@ class Day09aTests {
     }
 }
 
-// class Day09bTests {
-//     // SLOW
-//     @Test fun testActualInput() {
-//         assertEquals(3276488008, day09b(readInputLine("day09")))
-//     }
-// }
+class Day09bTests {
+//    // SLOW (~1s)
+//    @Test fun testActualInput() {
+//        assertEquals(3276488008, day09b(readInputLine("day09")))
+//    }
+}
