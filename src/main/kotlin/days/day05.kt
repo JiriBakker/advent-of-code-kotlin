@@ -1,30 +1,29 @@
 package days.day05
 
-import java.util.LinkedList
 import java.util.Stack
 
-private fun computeReactedPolymerLength(polymerChars: List<Char>): Int {
-    val units = LinkedList<Char>(polymerChars)
-    val buffer = Stack<Char>()
+private fun computeReactedPolymerLength(polymerChars: List<Char>, letterToIgnore: Char? = null): Int {
+    val leftBuffer = Stack<Char>()
+    val rightBuffer = Stack<Char>()
+    rightBuffer.addAll(polymerChars.reversed().filter { it.toLowerCase() != letterToIgnore })
 
-    while (units.isNotEmpty()) {
-        val next = units.poll()
+    while (rightBuffer.isNotEmpty()) {
+        val next = rightBuffer.pop()
 
-        if (buffer.isEmpty()) {
-            buffer.push(next)
+        if (leftBuffer.isEmpty()) {
+            leftBuffer.push(next)
             continue
         }
 
-        val prev = buffer.peek()
-
+        val prev = leftBuffer.peek()
         if (prev.isLowerCase() != next.isLowerCase() && prev.equals(next, true)) {
-            buffer.pop()
+            leftBuffer.pop()
         } else {
-            buffer.push(next)
+            leftBuffer.push(next)
         }
     }
 
-    return buffer.size
+    return leftBuffer.size
 }
 
 fun day05a(polymer: String): Int {
@@ -32,13 +31,6 @@ fun day05a(polymer: String): Int {
 }
 
 fun day05b(polymer: String): Int {
-    val alphabet = 'a'..'z'
-
     val polymerChars = polymer.toList()
-
-    return alphabet.map { letter ->
-            val polymerWithoutLetter = polymerChars.filter { char -> char.toLowerCase() != letter }
-            computeReactedPolymerLength(polymerWithoutLetter)
-        }
-        .min()!!
+    return ('a'..'z').map { computeReactedPolymerLength(polymerChars, it) }.min()!!
 }
