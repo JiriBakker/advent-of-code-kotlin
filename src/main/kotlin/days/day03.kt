@@ -2,21 +2,25 @@ package days.day03
 
 import forEachCombinationPair
 
-private class Fabric {
-    private val inches: MutableMap<Pair<Int, Int>, Int> = mutableMapOf()
+private class Fabric(private val minX: Int, maxX: Int, private val minY: Int, maxY: Int) {
+    private val inches: Array<Array<Int>> = Array(maxX - minX + 1) { Array(maxY - minY + 1) { 0 } }
+
+    var overlapCount = 0
+        private set
 
     fun applyClaim(claim: Claim) {
         for (x in claim.x1 until claim.x2) {
             for (y in claim.y1 until claim.y2) {
-                val pos = Pair(x, y)
-                val current = inches.getOrDefault(pos, 0)
-                inches[pos] = current + 1
+                val xNormalized = x - minX
+                val yNormalized = y - minY
+
+                val curValue = inches[xNormalized][yNormalized]
+                if (curValue == 1) {
+                    overlapCount++
+                }
+                inches[xNormalized][yNormalized]++
             }
         }
-    }
-
-    fun countOverlaps(): Int {
-        return inches.count { it.value > 1 }
     }
 }
 
@@ -43,13 +47,23 @@ private class Claim private constructor(val id: Int, val x1: Int, val y1: Int, w
     }
 }
 
+private fun getGridBounds(claims: List<Claim>): List<Int> {
+    val minX = claims.map { it.x1 }.min()!!
+    val maxX = claims.map { it.x2 }.max()!!
+    val minY = claims.map { it.y1 }.min()!!
+    val maxY = claims.map { it.y2 }.max()!!
+
+    return listOf(minX, maxX, minY, maxY)
+}
+
 fun day03a(claimLines: List<String>): Int {
     val claims = claimLines.map { Claim.parse(it) }
-    val fabric = Fabric()
+    val (minX, maxX, minY, maxY) = getGridBounds(claims)
+    val fabric = Fabric(minX, maxX, minY, maxY)
 
     claims.forEach { fabric.applyClaim(it) }
 
-    return fabric.countOverlaps()
+    return fabric.overlapCount
 }
 
 fun day03b(claimLines: List<String>): Int? {
