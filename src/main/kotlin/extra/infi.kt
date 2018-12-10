@@ -151,7 +151,7 @@ private class Maze private constructor(private val mazeChars: List<List<Char>>, 
             }
         }
 
-        throw Exception("No path from top-left to bottom-right")
+        throw Exception("No path from top-prev to bottom-next")
     }
 }
 

@@ -1,19 +1,22 @@
 package days.day09
 
 private class Marble(val number: Int) {
-    var left: Marble = this
+    var prev: Marble = this
         private set
 
-    var right: Marble = this
+    var next: Marble = this
         private set
 
-    fun connectLeft(other: Marble) {
-        this.left = other
-        other.right = this
+    fun disconnectSelf() {
+        this.prev.next = this.next
+        this.next.prev = this.prev
     }
 
-    fun connectRight(other: Marble) {
-        other.connectLeft(this)
+    fun insertAfter(other: Marble) {
+        this.prev = other
+        this.next = other.next
+        other.next.prev = this
+        other.next = this
     }
 }
 
@@ -23,18 +26,17 @@ private fun placeMarbles(nrOfPlayers: Int, nrOfMarbles: Int): Array<Long> {
     var currentMarble = Marble(0)
     for (marbleNr in 1..nrOfMarbles) {
         if (marbleNr % 23 == 0) {
-            repeat(7) { currentMarble = currentMarble.left }
+            repeat(7) { currentMarble = currentMarble.prev }
 
             val currentPlayerNr = (marbleNr - 1) % nrOfPlayers
             playerScores[currentPlayerNr] += (marbleNr + currentMarble.number).toLong()
 
-            currentMarble.left.connectRight(currentMarble.right)
-            currentMarble = currentMarble.right
+            currentMarble.disconnectSelf()
+            currentMarble = currentMarble.next
         } else {
-            currentMarble = currentMarble.right
+            currentMarble = currentMarble.next
             val newMarble = Marble(marbleNr)
-            newMarble.connectRight(currentMarble.right)
-            newMarble.connectLeft(currentMarble)
+            newMarble.insertAfter(currentMarble)
             currentMarble = newMarble
         }
     }
