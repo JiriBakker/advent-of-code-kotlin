@@ -6,8 +6,7 @@ import days.day03.day03a
 import days.day03.day03b
 import days.day04.day04a
 import days.day04.day04b
-import days.day05.day05a
-// import days.day05.day05b
+import days.day05.day05b
 import days.day06.day06a
 import days.day06.day06b
 import days.day07.day07a
@@ -36,8 +35,7 @@ fun main(args: Array<String>) {
     time { print("Day03b: " + day03b(readInputLines("day03"))) }
     time { print("Day04a: " + day04a(readInputLines("day04"))) }
     time { print("Day04b: " + day04b(readInputLines("day04"))) }
-    time { print("Day05a: " + day05a(readInputLine("day05"))) }
-    // time { print("Day05b: " + day05b(readInputLine("day05"))) } // SLOW (~1s)
+    time { print("Day05b: " + day05b(readInputLine("day05"))) }
     time { print("Day06a: " + day06a(readInputLines("day06"))) }
     time { print("Day06b: " + day06b(readInputLines("day06"))) }
     time { print("Day07a: " + day07a(readInputLines("day07"))) }

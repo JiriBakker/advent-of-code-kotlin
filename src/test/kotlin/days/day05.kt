@@ -35,8 +35,7 @@ class Day05bTests {
         assertEquals(4, day05b("dabAcCaCBAcCcaDA"))
     }
 
-//    // SLOW (~1s)
-//    @Test fun testActualInput() {
-//        assertEquals(4552, day05b(readInputLine("day05")))
-//    }
+    @Test fun testActualInput() {
+        assertEquals(4552, day05b(readInputLine("day05")))
+    }
 }

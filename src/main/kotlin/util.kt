@@ -1,3 +1,5 @@
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.io.File
 
 inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
@@ -9,6 +11,10 @@ inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
             }
         }
     }.forEach(action)
+}
+
+fun <A, B> Iterable<A>.parallelMap(f: suspend (A) -> B): List<B> = runBlocking {
+    map { async { f(it) } }.map { it.await() }
 }
 
 fun readInputLines(fileName: String): List<String> {
