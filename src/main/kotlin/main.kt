@@ -45,5 +45,5 @@ fun main(args: Array<String>) {
     time { print("Day08a: " + day08a(readInputLine("day08"))) }
     time { print("Day08b: " + day08b(readInputLine("day08"))) }
     time { print("Day09a: " + day09a(readInputLine("day09"))) }
-    time { print("Day09b: " + day09b(readInputLine("day09"))) } // SLOW (~1s)
+    time { print("Day09b: " + day09b(readInputLine("day09"))) }
 }

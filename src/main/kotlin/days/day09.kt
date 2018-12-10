@@ -20,30 +20,6 @@ private class Marble(val number: Int) {
     }
 }
 
-private fun placeMarbles(nrOfPlayers: Int, nrOfMarbles: Int): Array<Long> {
-    val playerScores = Array(nrOfPlayers) { 0L }
-
-    var currentMarble = Marble(0)
-    for (marbleNr in 1..nrOfMarbles) {
-        if (marbleNr % 23 == 0) {
-            repeat(7) { currentMarble = currentMarble.prev }
-
-            val currentPlayerNr = (marbleNr - 1) % nrOfPlayers
-            playerScores[currentPlayerNr] += (marbleNr + currentMarble.number).toLong()
-
-            currentMarble.disconnectSelf()
-            currentMarble = currentMarble.next
-        } else {
-            currentMarble = currentMarble.next
-            val newMarble = Marble(marbleNr)
-            newMarble.insertAfter(currentMarble)
-            currentMarble = newMarble
-        }
-    }
-
-    return playerScores
-}
-
 private fun parse(inputLine: String): Pair<Int, Int> {
     val inputParts = inputLine.split(" ")
     val nrOfPlayers = inputParts[0].toInt()
@@ -51,16 +27,46 @@ private fun parse(inputLine: String): Pair<Int, Int> {
     return Pair(nrOfPlayers, nrOfMarbles)
 }
 
+private fun findMaxAfterPlacingMarbles(nrOfPlayers: Int, nrOfMarbles: Int): Long {
+    val playerScores = Array(nrOfPlayers) { 0L }
+
+    var maxScore = 0L
+
+    fun registerScore(playerNr: Int, score: Long) {
+        val newScore = playerScores[playerNr] + score
+        if (newScore > maxScore) {
+            maxScore = newScore
+        }
+        playerScores[playerNr] = newScore
+    }
+
+    var currentMarble = Marble(0)
+    for (marbleNr in 1..nrOfMarbles) {
+        if (marbleNr % 23 == 0) {
+            repeat(6) { currentMarble = currentMarble.prev }
+
+            val marbleToRemove = currentMarble.prev
+            marbleToRemove.disconnectSelf()
+
+            val playerNr = (marbleNr - 1) % nrOfPlayers
+            val score = (marbleNr + marbleToRemove.number).toLong()
+            registerScore(playerNr, score)
+        } else {
+            val newMarble = Marble(marbleNr)
+            newMarble.insertAfter(currentMarble.next)
+            currentMarble = newMarble
+        }
+    }
+
+    return maxScore
+}
+
 fun day09a(inputLine: String): Long {
     val (nrOfPlayers, nrOfMarbles) = parse(inputLine)
-
-    val scores = placeMarbles(nrOfPlayers, nrOfMarbles)
-    return scores.max()!!
+    return findMaxAfterPlacingMarbles(nrOfPlayers, nrOfMarbles)
 }
 
 fun day09b(inputLine: String): Long {
     val (nrOfPlayers, nrOfMarbles) = parse(inputLine)
-
-    val scores = placeMarbles(nrOfPlayers, nrOfMarbles * 100)
-    return scores.max()!!
+    return findMaxAfterPlacingMarbles(nrOfPlayers, nrOfMarbles * 100)
 }
