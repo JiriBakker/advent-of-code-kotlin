@@ -19,7 +19,7 @@ import days.day09.day09b
 import days.day10.day10a
 import days.day10.day10b
 import days.day11.day11a
-// import days.day11.day11b
+import days.day11.day11b
 import extra.infi.infiA
 import extra.infi.infiB
 import kotlin.system.measureTimeMillis
@@ -53,5 +53,5 @@ fun main(args: Array<String>) {
     time { print("Day10a: " + day10a(readInputLines("day10"))) }
     time { print("Day10b: " + day10b(readInputLines("day10"))) }
     time { print("Day11a: " + day11a(readInputLine("day11"))) }
-    // time { print("Day11b: " + day11b(readInputLine("day11"))) } // SLOW (~15s)
+    time { print("Day11b: " + day11b(readInputLine("day11"), 1..20)) } // Using limited search range to ensure faster computation
 }

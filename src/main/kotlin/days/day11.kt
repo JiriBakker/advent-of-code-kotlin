@@ -40,7 +40,7 @@ fun day11a(serialNumberString: String): Pair<Int, Int> {
     return Pair(maxPowerSquare!!.x, maxPowerSquare!!.y)
 }
 
-fun day11b(serialNumberString: String): Triple<Int, Int, Int> {
+fun day11b(serialNumberString: String, expectedRange: IntRange = 1..300): Triple<Int, Int, Int> {
     val serialNumber = serialNumberString.toInt()
     val powerLevels = Array(300) { x -> Array(300) { y -> computePowerLevel(x + 1, y + 1, serialNumber) } }
 
@@ -59,7 +59,7 @@ fun day11b(serialNumberString: String): Triple<Int, Int, Int> {
 
     var maxPowerSquare = PowerSquare(Int.MIN_VALUE, 0, 0, 0)
 
-    for (size in 1..300) {
+    for (size in expectedRange) {
         val max = 300 - size
         for (x in 1..max) {
             for (y in 1..max) {
