@@ -18,3 +18,11 @@ fun readInputLines(fileName: String): List<String> {
 fun readInputLine(fileName: String): String {
     return readInputLines(fileName).single()
 }
+
+fun <T> List<T>.getBounds(xSelector: (T) -> Int, ySelector: (T) -> Int): List<Int> {
+    val minX = xSelector(this.minBy(xSelector)!!)
+    val maxX = xSelector(this.maxBy(xSelector)!!)
+    val minY = ySelector(this.minBy(ySelector)!!)
+    val maxY = ySelector(this.maxBy(ySelector)!!)
+    return listOf(minX, maxX, minY, maxY)
+}

@@ -1,5 +1,7 @@
 package days.day06
 
+import getBounds
+
 private data class CoordinateArea(val id: Int, val x: Int, val y: Int) {
     var isInfinite = false
         private set
@@ -20,17 +22,6 @@ private data class CoordinateArea(val id: Int, val x: Int, val y: Int) {
     }
 }
 
-private fun getGridBounds(coordinateAreas: List<CoordinateArea>): List<Int> {
-    val xCoordinates = coordinateAreas.map { it.x }
-    val yCoordinates = coordinateAreas.map { it.y }
-    val minX = xCoordinates.min()!!
-    val maxX = xCoordinates.max()!!
-    val minY = yCoordinates.min()!!
-    val maxY = yCoordinates.max()!!
-
-    return listOf(minX, maxX, minY, maxY)
-}
-
 private data class ClosestAreaResult(val coordinateArea: CoordinateArea, val minDistance: Int, val hasConflict: Boolean)
 
 private fun parseCoordinateLines(coordinateLines: List<String>): List<CoordinateArea> {
@@ -42,7 +33,7 @@ private fun parseCoordinateLines(coordinateLines: List<String>): List<Coordinate
 fun day06a(coordinateLines: List<String>): Int? {
     val coordinateAreas = parseCoordinateLines(coordinateLines)
 
-    val (minX, maxX, minY, maxY) = getGridBounds(coordinateAreas)
+    val (minX, maxX, minY, maxY) = coordinateAreas.getBounds({ it.x }, { it.y })
 
     val isOuterBoundCoordinate = { x: Int, y: Int -> x == minX || x == maxX || y == minY || y == maxY }
 
@@ -87,7 +78,7 @@ private fun <T> List<T>.sumByWhile(selector: (T) -> Int, predicate: (Int) -> Boo
 fun day06b(coordinateLines: List<String>, limit: Int = 10000): Int {
     val coordinateAreas = parseCoordinateLines(coordinateLines)
 
-    val (minX, maxX, minY, maxY) = getGridBounds(coordinateAreas)
+    val (minX, maxX, minY, maxY) = coordinateAreas.getBounds({ it.x }, { it.y })
 
     var nrOfCellsWithinLimit = 0
 

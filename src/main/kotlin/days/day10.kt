@@ -1,4 +1,6 @@
-package days.day09
+package days.day10
+
+import getBounds
 
 private class Light(private val startX: Int, private val startY: Int, val speedX: Int, val speedY: Int) {
     var posX = startX
@@ -26,19 +28,8 @@ private fun parse(inputLines: List<String>): List<Light> {
     }
 }
 
-private fun getBounds(lights: List<Light>): List<Int> {
-    val xCoordinates = lights.map { it.posX }
-    val yCoordinates = lights.map { it.posY }
-    val minX = xCoordinates.min()!!
-    val maxX = xCoordinates.max()!!
-    val minY = yCoordinates.min()!!
-    val maxY = yCoordinates.max()!!
-
-    return listOf(minX, maxX, minY, maxY)
-}
-
 private fun getSize(lights: List<Light>): Pair<Int, Int> {
-    val (minX, maxX, minY, maxY) = getBounds(lights)
+    val (minX, maxX, minY, maxY) = lights.getBounds({ it.posX }, { it.posY })
     val width = maxX - minX + 1
     val height = maxY - minY + 1
 
@@ -69,7 +60,7 @@ private fun waitForAlignedLights(lights: List<Light>): Int {
 }
 
 private fun alignedLightsToString(lights: List<Light>): String {
-    val (minX, maxX, minY, maxY) = getBounds(lights)
+    val (minX, maxX, minY, maxY) = lights.getBounds({ it.posX }, { it.posY })
     val width = maxX - minX + 1
     val height = maxY - minY + 1
 
