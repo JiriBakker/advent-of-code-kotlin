@@ -43,20 +43,19 @@ class Day11aTests {
 class Day11bTests {
     @Test fun testExampleInput1() {
         assertEquals(Triple(90, 269, 16),
-            day11b("18", 1..20)
+            day11b("18")
         )
     }
 
     @Test fun testExampleInput2() {
-        assertEquals(Triple(232,251,12),
-            day11b("42", 1..20)
+        assertEquals(Triple(232, 251, 12),
+            day11b("42")
         )
     }
 
     @Test fun testActualInput() {
         assertEquals(Triple(233, 282, 11),
-            day11b(readInputLine("day11"), 1..20)
+            day11b(readInputLine("day11"))
         )
     }
 }
-

@@ -18,7 +18,7 @@ fun day11a(serialNumberString: String): Pair<Int, Int> {
 
     var maxPowerSquare: PowerSquare? = null
 
-    fun computeTotalPower(powerLevels: Array<Array<Int>>, x: Int, y: Int): Int {
+    fun computePowerSquareLevel(powerLevels: Array<Array<Int>>, x: Int, y: Int): Int {
         return sequence {
             for (xi in x until (x + 3)) {
                 for (yi in y until (y + 3)) {
@@ -30,7 +30,7 @@ fun day11a(serialNumberString: String): Pair<Int, Int> {
 
     for (x in 1..298) {
         for (y in 1..298) {
-            val powerLevel = computeTotalPower(powerLevels, x - 1, y - 1)
+            val powerLevel = computePowerSquareLevel(powerLevels, x - 1, y - 1)
             if (maxPowerSquare == null || maxPowerSquare.powerLevel < powerLevel) {
                 maxPowerSquare = PowerSquare(powerLevel, x, y, 3)
             }
@@ -40,31 +40,38 @@ fun day11a(serialNumberString: String): Pair<Int, Int> {
     return Pair(maxPowerSquare!!.x, maxPowerSquare!!.y)
 }
 
-fun day11b(serialNumberString: String, expectedRange: IntRange = 1..300): Triple<Int, Int, Int> {
+fun day11b(serialNumberString: String): Triple<Int, Int, Int> {
     val serialNumber = serialNumberString.toInt()
     val powerLevels = Array(300) { x -> Array(300) { y -> computePowerLevel(x + 1, y + 1, serialNumber) } }
 
     val prevSizePowerSquares = Array(300) { Array(300) { 0 } }
-    fun computeTotalPower(powerLevels: Array<Array<Int>>, x: Int, y: Int, size: Int): Int {
-        val prevPowerLevel = prevSizePowerSquares[x + 1][y + 1]
-        return sequence {
-            for (xi in x until (x + size - 1)) {
-                yield(powerLevels[xi][y + size - 1])
-            }
-            for (yi in y until (y + size)) {
-                yield(powerLevels[x + size - 1][yi])
-            }
-        }.sum() + prevPowerLevel
+    val prevSizePowerRows = Array(300) { Array(300) { 0 } }
+    val prevSizePowerCols = Array(300) { Array(300) { 0 } }
+
+    fun computePowerSquareLevel(powerLevels: Array<Array<Int>>, topLeftX: Int, topLeftY: Int, size: Int): Int {
+        val bottomRightX = topLeftX + size - 1
+        val bottomRightY = topLeftY + size - 1
+        val prevPowerLevel = prevSizePowerSquares[topLeftX][topLeftY]
+        val prevPowerCol = prevSizePowerCols[bottomRightX][topLeftY]
+        val prevPowerRow = prevSizePowerRows[topLeftX][bottomRightY]
+        val powerBottomRight = powerLevels[bottomRightX][bottomRightY]
+
+        val powerLevel = prevPowerLevel + prevPowerCol + prevPowerRow + powerBottomRight
+
+        prevSizePowerSquares[topLeftX][topLeftY] = powerLevel
+        prevSizePowerCols[bottomRightX][topLeftY] = prevPowerCol + powerBottomRight
+        prevSizePowerRows[topLeftX][bottomRightY] = prevPowerRow + powerBottomRight
+
+        return powerLevel
     }
 
     var maxPowerSquare = PowerSquare(Int.MIN_VALUE, 0, 0, 0)
 
-    for (size in expectedRange) {
+    for (size in 1..300) {
         val max = 300 - size
         for (x in 1..max) {
             for (y in 1..max) {
-                val powerLevel = computeTotalPower(powerLevels, x - 1, y - 1, size)
-                prevSizePowerSquares[x][y] = powerLevel
+                val powerLevel = computePowerSquareLevel(powerLevels, x - 1, y - 1, size)
                 if (maxPowerSquare.powerLevel < powerLevel) {
                     maxPowerSquare = PowerSquare(powerLevel, x, y, size)
                 }

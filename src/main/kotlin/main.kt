@@ -53,5 +53,5 @@ fun main(args: Array<String>) {
     time { print("Day10a: " + day10a(readInputLines("day10"))) }
     time { print("Day10b: " + day10b(readInputLines("day10"))) }
     time { print("Day11a: " + day11a(readInputLine("day11"))) }
-    time { print("Day11b: " + day11b(readInputLine("day11"), 1..20)) } // Using limited search range to ensure faster computation
+    time { print("Day11b: " + day11b(readInputLine("day11"))) }
 }
