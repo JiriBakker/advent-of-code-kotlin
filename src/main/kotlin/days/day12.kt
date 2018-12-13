@@ -1,58 +1,29 @@
 package days.day12
 
-private class Pots(pots: Map<Int, Boolean>) {
-    var pots: MutableMap<Int, Boolean>
+private class Tunnel(pots: Map<Int, Boolean>) {
+    var pots: MutableMap<Int, Boolean> = pots.toMutableMap()
         private set
 
-    init {
-        this.pots = pots.toMutableMap()
-    }
-
-    fun applyNotesTrie(notesTrie: SubTrie) {
-        val nextPots = pots.map { Pair(it.key, false) }.toMap().toMutableMap()
-
-        for (i in (pots.keys.min()!! - 2)..(pots.keys.max()!! + 2)) {
-            val curPots = sequence {
-                for (offset in -2..2) {
-                    val potIndex = i + offset
-                    yield(pots.getOrDefault(potIndex, false))
-                }
-            }.toList()
-
-            val maybeHasPot = notesTrie.match(curPots, 0)
-
-            if (maybeHasPot != null && maybeHasPot) {
-                // println("Match at $i -> ${String(note.kernel.map {if (it) '#' else '.'}.toCharArray())}")
-                if ((!nextPots.containsKey(i) && maybeHasPot) || nextPots.containsKey(i)) {
-                    nextPots[i] = maybeHasPot
-                }
+    private fun getPotSegment(index: Int): List<Boolean> {
+        return sequence {
+            for (offset in -2..2) {
+                val potIndex = index + offset
+                yield(pots.getOrDefault(potIndex, false))
             }
-        }
-
-        this.pots = nextPots
+        }.toList()
     }
 
-    fun applyNotes(notes: List<Note>) {
-        val nextPots = pots.map { Pair(it.key, false) }.toMap().toMutableMap()
+    fun applyNotes(notesTrie: NotesTrie) {
+        val nextPots = pots.mapValues { false }.toMutableMap()
+        val minPotIndex = pots.keys.min()!! - 2
+        val maxPotIndex = pots.keys.max()!! + 2
 
-        notes.forEach { note ->
-            for (i in (pots.keys.min()!! - 2)..(pots.keys.max()!! + 2)) {
-                var isKernelMatch = true
-                for (offset in -2..2) {
-                    val potIndex = i + offset
-                    val hasPot = pots.getOrDefault(potIndex, false)
+        for (i in minPotIndex..maxPotIndex) {
+            val curPots = getPotSegment(i)
 
-                    if (note.kernel[offset + 2] != hasPot) {
-                        isKernelMatch = false
-                        break
-                    }
-                }
-                if (isKernelMatch) {
-                    // println("Match at $i -> ${String(note.kernel.map {if (it) '#' else '.'}.toCharArray())}")
-                    if ((!nextPots.containsKey(i) && note.resultsInPot) || nextPots.containsKey(i)) {
-                        nextPots[i] = note.resultsInPot
-                    }
-                }
+            val maybeHasPot: Boolean? = notesTrie.match(curPots, 0)
+            if (maybeHasPot != null && maybeHasPot) {
+                nextPots[i] = maybeHasPot
             }
         }
 
@@ -62,23 +33,31 @@ private class Pots(pots: Map<Int, Boolean>) {
 
 private class Note(val kernel: List<Boolean>, val resultsInPot: Boolean)
 
-private class SubTrie {
-    var withPots: SubTrie? = null
-    var withoutPots: SubTrie? = null
+private class NotesTrie private constructor() {
+    var withPots: NotesTrie? = null
+    var withoutPots: NotesTrie? = null
     var resultsInPot: Boolean? = null
+
+    companion object {
+        fun of(notes: List<Note>): NotesTrie {
+            var root = NotesTrie()
+            notes.forEach { root.add(it, 0) }
+            return root
+        }
+    }
 
     fun add(note: Note, index: Int) {
         when {
             index == 5 -> this.resultsInPot = note.resultsInPot
             note.kernel[index] -> {
                 if (withPots == null) {
-                    withPots = SubTrie()
+                    withPots = NotesTrie()
                 }
                 withPots!!.add(note, index + 1)
             }
             else -> {
                 if (withoutPots == null) {
-                    withoutPots = SubTrie()
+                    withoutPots = NotesTrie()
                 }
                 withoutPots!!.add(note, index + 1)
             }
@@ -86,31 +65,16 @@ private class SubTrie {
     }
 
     fun match(pots: List<Boolean>, index: Int): Boolean? {
-        if (index == 5) {
-            return resultsInPot
-        }
-        return if (pots[index]) {
-            if (withPots == null) {
-                return null
-            }
-            withPots!!.match(pots, index + 1)
-        } else {
-            if (withoutPots == null) {
-                return null
-            }
-            withoutPots!!.match(pots, index + 1)
+        return when {
+            index == 5 -> resultsInPot
+            pots[index] -> withPots!!.match(pots, index + 1)
+            else -> withoutPots!!.match(pots, index + 1)
         }
     }
 }
 
-private fun notesToTrie(notes: List<Note>): SubTrie {
-    var root = SubTrie()
-    notes.forEach { root.add(it, 0) }
-    return root
-}
-
-private fun parse(inputLines: List<String>): Pair<Pots, SubTrie> {
-    val initialPots = Pots(inputLines[0].substring(15).mapIndexed { index, char -> Pair(index, char == '#') }.toMap())
+private fun parse(inputLines: List<String>): Pair<Tunnel, NotesTrie> {
+    val initialPots = Tunnel(inputLines[0].substring(15).mapIndexed { index, char -> Pair(index, char == '#') }.toMap())
 
     val notes = sequence {
         for (i in 2 until inputLines.size) {
@@ -120,56 +84,35 @@ private fun parse(inputLines: List<String>): Pair<Pots, SubTrie> {
         }
     }.toList()
 
-    val trie = notesToTrie(notes)
-
+    val trie = NotesTrie.of(notes)
     return Pair(initialPots, trie)
 }
 
-private fun iterate(pots: Pots, trie: SubTrie, nrOfGenerations: Long): Long {
-    var prevPots = pots.pots.toMap()
-
-    var i = 0L
-    while (i < nrOfGenerations) {
-        pots.applyNotesTrie(trie)
-
-        if (pots.pots.all { it.value == prevPots.getOrDefault(it.key - 1, false) }) {
-            break
-        }
-        prevPots = pots.pots
-
-        i++
+private fun hasConverged(pots: Map<Int, Boolean>, prevPots: Map<Int, Boolean>): Boolean {
+    return pots.all { pot ->
+        val prevPotValue = prevPots.getOrDefault(pot.key - 1, false)
+        pot.value == prevPotValue
     }
+}
 
-    val a = nrOfGenerations - i - 1
-    return pots.pots.map { if (it.value) it.key + a else 0L }.sum()
+private fun evolvePots(pots: Tunnel, notesTrieNotes: NotesTrie, nrOfGenerations: Long): Long {
+    var i = 0L
+    do {
+        val prevPots = pots.pots
+        pots.applyNotes(notesTrieNotes)
+        i++
+    } while (i < nrOfGenerations && !hasConverged(pots.pots, prevPots))
+
+    val convergenceOffset = nrOfGenerations - i
+    return pots.pots.map { if (it.value) it.key + convergenceOffset else 0L }.sum()
 }
 
 fun day12a(inputLines: List<String>, nrOfGenerations: Long = 20L): Long {
-    val (pots, trie) = parse(inputLines)
-
-    repeat(nrOfGenerations.toInt()) {
-        pots.applyNotesTrie(trie)
-    }
-
-    return pots.pots.map { if (it.value) it.key.toLong() else 0L }.sum()
+    val (pots, notesTrie) = parse(inputLines)
+    return evolvePots(pots, notesTrie, nrOfGenerations)
 }
 
 fun day12b(inputLines: List<String>, nrOfGenerations: Long = 50000000000L): Long {
-    val (pots, trie) = parse(inputLines)
-    var prevPots = pots.pots.toMap()
-
-    var i = 0L
-    while (i < nrOfGenerations) {
-        pots.applyNotesTrie(trie)
-
-        if (pots.pots.all { it.value == prevPots.getOrDefault(it.key - 1, false) }) {
-            break
-        }
-        prevPots = pots.pots
-
-        i++
-    }
-
-    val a = nrOfGenerations - i - 1
-    return pots.pots.map { if (it.value) it.key + a else 0L }.sum()
+    val (pots, notesTrie) = parse(inputLines)
+    return evolvePots(pots, notesTrie, nrOfGenerations)
 }
