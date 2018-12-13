@@ -5,7 +5,7 @@ import org.junit.Test
 import readInputLines
 
 class Day12aTests {
-    @Test fun testExampleInput1_20generations() {
+    @Test fun testExampleInput1() {
         assertEquals(325,
             day12a(
                 listOf(
