@@ -36,17 +36,21 @@ fun day14a(input: String): String {
 }
 
 fun day14b(input: String): Int? {
-    val digitsToFind = input.map(Character::getNumericValue).reversed()
+    val digitsToFind = input.map(Character::getNumericValue)
+
     val recipes = mutableListOf(3, 7)
 
+    var matchCount = 0
     fun insertAndCheckIfAnswerFound(digit: Int): Boolean {
         recipes.add(digit)
-        for (index in 0 until digitsToFind.size) {
-            if (recipes[recipes.size - 1 - index] != digitsToFind[index]) {
-                return false
-            }
+
+        if (digitsToFind[matchCount] != digit) {
+            matchCount = 0
         }
-        return true
+        if (digitsToFind[matchCount] == digit) {
+            matchCount++
+        }
+        return matchCount == digitsToFind.size
     }
 
     iterateRecipes(
