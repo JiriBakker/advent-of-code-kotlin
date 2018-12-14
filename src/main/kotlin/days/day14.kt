@@ -41,9 +41,7 @@ fun day14b(input: String): Int? {
     val recipes = mutableListOf(3, 7)
 
     var matchCount = 0
-    fun insertAndCheckIfAnswerFound(digit: Int): Boolean {
-        recipes.add(digit)
-
+    fun hasRecipeBeenFound(digit: Int): Boolean {
         if (digitsToFind[matchCount] != digit) {
             matchCount = 0
         }
@@ -56,7 +54,7 @@ fun day14b(input: String): Int? {
     iterateRecipes(
         recipes,
         { true },
-        { insertAndCheckIfAnswerFound(it) }
+        { recipes.add(it); hasRecipeBeenFound(it) }
     )
 
     return recipes.size - digitsToFind.size
