@@ -23,7 +23,9 @@ private enum class TrackCellType {
     BOTTOMLEFT_TOPRIGHT
 }
 
-private typealias TrackCell = Pair<TrackCellType, Cart?>
+private class TrackCell(val type: TrackCellType, var cart: Cart?)
+
+private data class Pos(val x: Int, val y: Int)
 
 private class Cart(initialX: Int, initialY: Int, initialDirection: CartDirection) {
     var x = initialX
@@ -144,15 +146,15 @@ private class Tracks private constructor(private val grid: Array<Array<TrackCell
                 val cell = grid[x][y]
                 when {
                     cell == null -> print(" ")
-                    cell!!.second != null ->
-                        print(when (cell!!.second!!.direction) {
+                    cell!!.cart != null ->
+                        print(when (cell!!.cart!!.direction) {
                             CartDirection.LEFT -> '<'
                             CartDirection.UP -> '^'
                             CartDirection.RIGHT -> '>'
                             CartDirection.DOWN -> 'v'
                         })
                     else ->
-                        print(when (cell!!.first) {
+                        print(when (cell!!.type) {
                             TrackCellType.HORIZONTAL -> '-'
                             TrackCellType.VERTICAL -> '|'
                             TrackCellType.INTERSECTION -> '+'
@@ -165,62 +167,36 @@ private class Tracks private constructor(private val grid: Array<Array<TrackCell
         }
     }
 
-    fun findFirstCrash(): Pair<Int, Int>? {
-        while (true) {
-            val movedCarts: MutableList<Cart> = mutableListOf()
-
-            while (carts.isNotEmpty()) {
-                val cart = carts.poll()
-                val curCell = grid[cart.x][cart.y]!!
-                grid[cart.x][cart.y] = TrackCell(curCell.first, null)
-
-                val (nextX, nextY) = when (cart.direction) {
-                    CartDirection.LEFT -> Pair(cart.x - 1, cart.y)
-                    CartDirection.UP -> Pair(cart.x, cart.y - 1)
-                    CartDirection.RIGHT -> Pair(cart.x + 1, cart.y)
-                    CartDirection.DOWN -> Pair(cart.x, cart.y + 1)
-                }!!
-
-                val nextCell = grid[nextX][nextY]!!
-                if (nextCell.second != null) {
-                    return Pair(nextX, nextY)
-                }
-
-                cart.moveTo(nextX, nextY, nextCell.first)
-                grid[nextX][nextY] = Pair(nextCell.first, cart)
-                movedCarts.add(cart)
-            }
-
-            carts.addAll(movedCarts)
-        }
-    }
-
-    fun findLastCart(): Pair<Int, Int>? {
+    fun iterateCarts(shouldStopIteratingOnCrash: Boolean): Pos? {
         while (carts.size > 1) {
             val movedCarts: MutableList<Cart> = mutableListOf()
 
             while (carts.isNotEmpty()) {
                 val cart = carts.poll()
                 val curCell = grid[cart.x][cart.y]!!
-                grid[cart.x][cart.y] = TrackCell(curCell.first, null)
+                grid[cart.x][cart.y] = TrackCell(curCell.type, null)
 
                 val (nextX, nextY) = when (cart.direction) {
-                    CartDirection.LEFT -> Pair(cart.x - 1, cart.y)
-                    CartDirection.UP -> Pair(cart.x, cart.y - 1)
-                    CartDirection.RIGHT -> Pair(cart.x + 1, cart.y)
-                    CartDirection.DOWN -> Pair(cart.x, cart.y + 1)
+                    CartDirection.LEFT -> Pos(cart.x - 1, cart.y)
+                    CartDirection.UP -> Pos(cart.x, cart.y - 1)
+                    CartDirection.RIGHT -> Pos(cart.x + 1, cart.y)
+                    CartDirection.DOWN -> Pos(cart.x, cart.y + 1)
                 }!!
 
                 val nextCell = grid[nextX][nextY]!!
-                if (nextCell.second != null) {
-                    val otherCart = nextCell.second
+                if (nextCell.cart != null) {
+                    if (shouldStopIteratingOnCrash) {
+                        return Pos(nextX, nextY)
+                    }
+
+                    val otherCart = nextCell.cart
                     carts.remove(otherCart)
                     movedCarts.remove(otherCart)
-                    grid[nextX][nextY] = Pair(nextCell.first, null)
-                    grid[cart.x][cart.y] = Pair(curCell.first, null)
+                    grid[nextX][nextY] = TrackCell(nextCell.type, null)
+                    grid[cart.x][cart.y] = TrackCell(curCell.type, null)
                 } else {
-                    cart.moveTo(nextX, nextY, nextCell.first)
-                    grid[nextX][nextY] = Pair(nextCell.first, cart)
+                    cart.moveTo(nextX, nextY, nextCell.type)
+                    grid[nextX][nextY] = TrackCell(nextCell.type, cart)
                     movedCarts.add(cart)
                 }
             }
@@ -232,16 +208,18 @@ private class Tracks private constructor(private val grid: Array<Array<TrackCell
             return null
         }
         val lastCart = carts.poll()!!
-        return Pair(lastCart.x, lastCart.y)
+        return Pos(lastCart.x, lastCart.y)
     }
 }
 
 fun day13a(inputLines: List<String>): Pair<Int, Int>? {
     val tracks = Tracks.parse(inputLines)
-    return tracks.findFirstCrash()
+    val pos = tracks.iterateCarts(true)
+    return if (pos != null) Pair(pos.x, pos.y) else null
 }
 
 fun day13b(inputLines: List<String>): Pair<Int, Int>? {
     val tracks = Tracks.parse(inputLines)
-    return tracks.findLastCart()
+    val pos = tracks.iterateCarts(false)
+    return if (pos != null) Pair(pos.x, pos.y) else null
 }
