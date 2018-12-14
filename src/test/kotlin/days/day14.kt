@@ -61,10 +61,10 @@ class Day14bTests {
         )
     }
 
-//    // SLOW (~7s)
-//    @Test fun testActualInput() {
-//        assertEquals(20254833,
-//            day14b(readInputLine("day14"))
-//        )
-//    }
+    // SLOW (~7s)
+    @Test fun testActualInput() {
+        assertEquals(20254833,
+            day14b(readInputLine("day14"))
+        )
+    }
 }
