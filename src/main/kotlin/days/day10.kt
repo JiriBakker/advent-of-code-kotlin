@@ -36,22 +36,24 @@ private fun getSize(lights: List<Light>): Pair<Int, Int> {
     return Pair(width, height)
 }
 
+private fun getWidth(lights: List<Light>): Int {
+    val minX = lights.minBy { it.posX }!!.posX
+    val maxX = lights.maxBy { it.posX }!!.posX
+    return maxX - minX + 1
+}
+
 private fun waitForAlignedLights(lights: List<Light>): Int {
     var second = 0
     var minWidth = Int.MAX_VALUE
-    var minHeight = Int.MAX_VALUE
     do {
         lights.forEach { it.toSecond(second) }
         second++
 
-        val (width, height) = getSize(lights)
+        val width = getWidth(lights)
         if (width < minWidth) {
             minWidth = width
         }
-        if (height < minHeight) {
-            minHeight = height
-        }
-    } while (width == minWidth && height == minHeight) // Have the bounds starting expanding again?
+    } while (width == minWidth) // Have the bounds starting expanding again?
 
     second -= 2 // One 'second++' too many, and one iteration too many
 
