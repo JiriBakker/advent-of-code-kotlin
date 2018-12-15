@@ -109,3 +109,93 @@ class Day15aTests {
         )
     }
 }
+
+class Day15bTests {
+    @Test fun testExampleInput1() {
+        assertEquals(4988,
+            day15b(
+                listOf(
+                    "#######",
+                    "#.G...#",
+                    "#...EG#",
+                    "#.#.#G#",
+                    "#..G#E#",
+                    "#.....#",
+                    "#######"
+                )
+            )
+        )
+    }
+
+//    @Test fun testExampleInput3() {
+//        assertEquals(31284,
+//            day15b(
+//                listOf(
+//                    "#######",
+//                    "#E..EG#",
+//                    "#.#G.E#",
+//                    "#E.##E#",
+//                    "#G..#.#",
+//                    "#..E#.#",
+//                    "#######"
+//                )
+//            )
+//        )
+//    }
+
+    @Test fun testExampleInput4() {
+        assertEquals(3478,
+            day15b(
+                listOf(
+                    "#######",
+                    "#E.G#.#",
+                    "#.#G..#",
+                    "#G.#.G#",
+                    "#G..#.#",
+                    "#...E.#",
+                    "#######"
+                )
+            )
+        )
+    }
+
+    @Test fun testExampleInput5() {
+        assertEquals(6474,
+            day15b(
+                listOf(
+                    "#######",
+                    "#.E...#",
+                    "#.#..G#",
+                    "#.###.#",
+                    "#E#G#G#",
+                    "#...#G#",
+                    "#######"
+                )
+            )
+        )
+    }
+
+    @Test fun testExampleInput6() {
+        assertEquals(1140,
+            day15b(
+                listOf(
+                    "#########",
+                    "#G......#",
+                    "#.E.#...#",
+                    "#..##..G#",
+                    "#...##..#",
+                    "#...#...#",
+                    "#.G...G.#",
+                    "#.....G.#",
+                    "#########"
+                )
+            )
+        )
+    }
+
+    @Test fun testActualInput() {
+        assertEquals(197025,
+            day15b(readInputLines("day15"))
+        )
+    }
+}

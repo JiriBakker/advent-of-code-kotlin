@@ -7,7 +7,7 @@ private enum class FighterType {
     GOBLIN
 }
 
-private class Fighter private constructor(val type: FighterType, startX: Int, startY: Int) {
+private class Fighter private constructor(val type: FighterType, startX: Int, startY: Int, val attackPower: Int) {
     var x = startX
         private set
 
@@ -17,19 +17,17 @@ private class Fighter private constructor(val type: FighterType, startX: Int, st
     var hitPoints = 200
         private set
 
-    val attackPower = 3
-
     companion object {
-        fun elf(startX: Int, startY: Int): Fighter {
-            return Fighter(FighterType.ELF, startX, startY)
+        fun elf(startX: Int, startY: Int, attackPower: Int): Fighter {
+            return Fighter(FighterType.ELF, startX, startY, attackPower)
         }
         fun goblin(startX: Int, startY: Int): Fighter {
-            return Fighter(FighterType.GOBLIN, startX, startY)
+            return Fighter(FighterType.GOBLIN, startX, startY, 3)
         }
     }
 
-    fun receiveAttack(attacker: Fighter) {
-        hitPoints -= attacker.attackPower
+    fun receiveAttack(damage: Int) {
+        hitPoints -= damage
     }
 
     fun moveTo(x: Int, y: Int) {
@@ -109,17 +107,16 @@ private class Battlefield private constructor(private val fighters: MutableList<
                 })
             }
             print(" ")
-            val fightersOnLine =
-                grid[y]
-                    .filter { it.occupiedBy != null }
-                    .map { it.occupiedBy!! }
-                    .map { print("${if (it.type == FighterType.ELF) 'E' else 'G'}(${it.hitPoints}), ") }
+            grid[y]
+                .filter { it.occupiedBy != null }
+                .map { it.occupiedBy!! }
+                .map { print("${if (it.type == FighterType.ELF) 'E' else 'G'}(${it.hitPoints}), ") }
             println()
         }
     }
 
     companion object {
-        fun parse(inputLines: List<String>): Battlefield {
+        fun parse(inputLines: List<String>, elfAttackPower: Int): Battlefield {
             val height = inputLines.size
             val width = inputLines[0].length
             val fighters = mutableListOf<Fighter>()
@@ -129,7 +126,7 @@ private class Battlefield private constructor(private val fighters: MutableList<
                 for (x in 0 until width) {
                     val cell = when (inputLines[y][x]) {
                         'E' -> {
-                            val elf = Fighter.elf(x, y)
+                            val elf = Fighter.elf(x, y, elfAttackPower)
                             fighters.add(elf)
                             Cell.withFighter(x, y, elf)
                         }
@@ -223,10 +220,10 @@ private class Battlefield private constructor(private val fighters: MutableList<
         return nrOfElfsRemaining == 0 || nrOfGoblinsRemaining == 0
     }
 
-    fun runBattle() {
+    fun runBattle(haltIfElfDies: Boolean) {
         while (roundsCompleted < 500) {
-            println("Round $roundsCompleted")
-            printBattlefield()
+//            println("Round $roundsCompleted")
+//            printBattlefield()
 
             val orderedFighters = PriorityQueue<Fighter> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) }
             orderedFighters.addAll(fighters)
@@ -241,13 +238,13 @@ private class Battlefield private constructor(private val fighters: MutableList<
                 val action = determineAction(fighter) ?: continue
 
                 if (action.stepsNeeded > 0) {
-                    println("Moving from [${fighter.x},${fighter.y}] -> [${action.firstStepX},${action.firstStepY}] (stepsNeeded: ${action.stepsNeeded})")
+                    // println("Moving from [${fighter.x},${fighter.y}] -> [${action.firstStepX},${action.firstStepY}] (stepsNeeded: ${action.stepsNeeded})")
                     move(fighter, action.firstStepX, action.firstStepY)
                 }
                 if (action.stepsNeeded <= 1) {
-                    println("Attacking from [${fighter.x},${fighter.y}] -> [${action.target.x},${action.target.y}]")
+                    // println("Attacking from [${fighter.x},${fighter.y}] -> [${action.target.x},${action.target.y}]")
 
-                    action.target.receiveAttack(fighter)
+                    action.target.receiveAttack(fighter.attackPower)
                     if (action.target.hitPoints <= 0) {
                         fighters.remove(action.target)
                         orderedFighters.remove(action.target)
@@ -255,6 +252,9 @@ private class Battlefield private constructor(private val fighters: MutableList<
                         when (action.target.type) {
                             FighterType.ELF -> nrOfElfsRemaining--
                             FighterType.GOBLIN -> nrOfGoblinsRemaining--
+                        }
+                        if (haltIfElfDies && action.target.type == FighterType.ELF) {
+                            return
                         }
                     }
                 }
@@ -266,8 +266,23 @@ private class Battlefield private constructor(private val fighters: MutableList<
 }
 
 fun day15a(inputLines: List<String>): Int {
-    val battlefield = Battlefield.parse(inputLines)
+    val battlefield = Battlefield.parse(inputLines, 3)
 
-    battlefield.runBattle()
+    battlefield.runBattle(false)
     return battlefield.roundsCompleted * battlefield.sumHitPoints()
+}
+
+fun day15b(inputLines: List<String>): Int? {
+
+    var elfAttackPower = 3
+    do {
+        val battlefield = Battlefield.parse(inputLines, elfAttackPower)
+        battlefield.runBattle(true)
+        if (battlefield.nrOfGoblinsRemaining == 0) {
+            return battlefield.roundsCompleted * battlefield.sumHitPoints()
+        }
+        elfAttackPower++
+    } while (elfAttackPower <= 50)
+
+    return null
 }
