@@ -230,8 +230,8 @@ private class Battlefield private constructor(private val fighters: MutableList<
 
             while (orderedFighters.isNotEmpty()) {
                 if (isBattleFinished()) {
-                    println("Finished after $roundsCompleted with ${sumHitPoints()} HP remaining")
-                    printBattlefield()
+//                    println("Finished after $roundsCompleted with ${sumHitPoints()} HP remaining")
+//                    printBattlefield()
                     return
                 }
                 val fighter = orderedFighters.poll()
