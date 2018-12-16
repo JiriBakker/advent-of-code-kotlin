@@ -57,19 +57,10 @@ private class Cell private constructor (val x: Int, val y: Int, val isWall: Bool
     }
 
     fun claim(fighter: Fighter) {
-        if (isWall) {
-            throw Exception("[$x,$y] Not allowed to move into a wall")
-        }
-        if (occupiedBy != null) {
-            throw Exception("[$x,$y] Already occupied by fighter")
-        }
         occupiedBy = fighter
     }
 
     fun unclaim() {
-        if (occupiedBy == null) {
-            throw Exception("Nobody was occupying this cell")
-        }
         occupiedBy = null
     }
 
@@ -165,7 +156,6 @@ private class Battlefield private constructor(private val fighters: MutableList<
                 }
             }
 
-            // TODO rearrange for correct order? (Because traversing from target to attacker)
             addIfNotSeenYet(x, y + 1)
             addIfNotSeenYet(x + 1, y)
             addIfNotSeenYet(x - 1, y)
@@ -243,7 +233,6 @@ private class Battlefield private constructor(private val fighters: MutableList<
                 }
                 if (action.stepsNeeded <= 1) {
                     // println("Attacking from [${fighter.x},${fighter.y}] -> [${action.target.x},${action.target.y}]")
-
                     action.target.receiveAttack(fighter.attackPower)
                     if (action.target.hitPoints <= 0) {
                         fighters.remove(action.target)
@@ -267,7 +256,6 @@ private class Battlefield private constructor(private val fighters: MutableList<
 
 fun day15a(inputLines: List<String>): Int {
     val battlefield = Battlefield.parse(inputLines, 3)
-
     battlefield.runBattle(false)
     return battlefield.roundsCompleted * battlefield.sumHitPoints()
 }
@@ -282,7 +270,7 @@ fun day15b(inputLines: List<String>): Int? {
             return battlefield.roundsCompleted * battlefield.sumHitPoints()
         }
         elfAttackPower++
-    } while (elfAttackPower <= 50)
+    } while (elfAttackPower <= 50) // TODO shouldn't be required
 
     return null
 }
