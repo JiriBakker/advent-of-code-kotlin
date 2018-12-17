@@ -1,5 +1,6 @@
 package days.day15
 
+import java.util.BitSet
 import java.util.LinkedList
 import java.util.PriorityQueue
 
@@ -144,22 +145,28 @@ private class Battlefield private constructor(private val fighters: MutableList<
     }
 
     private fun <T : IPositioned> List<T>.sortedByReadingOrder(): List<T> {
-        return this.sortedWith(Comparator<IPositioned> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) })
+        return this.sortedWith(Comparator<IPositioned> { a, b -> (a.y * width + a.x).compareTo(b.y * width + b.x) })
     }
 
     private fun findPath(fighter: Fighter, otherFighter: Fighter): Triple<Int, Int, Int>? {
-        val seen = mutableSetOf<Pair<Int, Int>>()
-        val toVisit: PriorityQueue<Pair<Cell, Int>> =
-            PriorityQueue { p0, p1 ->
-                (p0.second * width * height + p0.first.y * height + p0.first.x)
-                    .compareTo(p1.second * width * height + p1.first.y * height + p1.first.x)
-            }
+        val seen = BitSet()
+        val toVisit = PriorityQueue<Triple<Int, Cell, Int>> { p0, p1 -> p0.first.compareTo(p1.first) }
+
+        fun offerToVisit(stepsNeeded: Int, x: Int, y: Int) {
+            val priority = stepsNeeded * width * height + y * width + x
+            toVisit.offer(Triple(priority, grid[y][x], stepsNeeded))
+        }
 
         fun addDirectNeighbours(x: Int, y: Int, stepsNeeded: Int) {
             fun addIfNotSeenYet(x: Int, y: Int) {
-                if (!seen.contains(Pair(x, y))) {
-                    toVisit.offer(Pair(grid[y][x], stepsNeeded))
-                    seen.add(Pair(x, y))
+                var cell = grid[y][x]
+                if (cell.isWall || (cell.occupiedBy != null && cell.occupiedBy != otherFighter)) {
+                    return
+                }
+                val seenBit = y * width + x
+                if (!seen.get(seenBit)) {
+                    offerToVisit(stepsNeeded, x, y)
+                    seen.set(seenBit)
                 }
             }
 
@@ -169,15 +176,11 @@ private class Battlefield private constructor(private val fighters: MutableList<
             addIfNotSeenYet(x, y - 1)
         }
 
-        toVisit.offer(Pair(grid[otherFighter.y][otherFighter.x], 0))
+        offerToVisit(0, otherFighter.x, otherFighter.y)
         addDirectNeighbours(otherFighter.x, otherFighter.y, 1)
 
         while (toVisit.isNotEmpty()) {
-            val (currentCell, stepsNeeded) = toVisit.poll()
-            if (currentCell.isWall || (currentCell.occupiedBy != null && currentCell.occupiedBy != otherFighter)) {
-                continue
-            }
-
+            val (_, currentCell, stepsNeeded) = toVisit.poll()
             if (currentCell.distanceTo(fighter.x, fighter.y) == 1) {
                 return Triple(stepsNeeded, currentCell.x, currentCell.y)
             }
