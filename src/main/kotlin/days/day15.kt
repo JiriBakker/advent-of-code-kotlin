@@ -1,20 +1,28 @@
 package days.day15
 
+import java.util.LinkedList
 import java.util.PriorityQueue
+
+private interface IPositioned {
+    val x: Int
+    val y: Int
+}
 
 private enum class FighterType {
     ELF,
     GOBLIN
 }
 
-private class Fighter private constructor(val type: FighterType, startX: Int, startY: Int, val attackPower: Int) {
-    var x = startX
+private const val STARTING_HIT_POINTS = 200
+
+private class Fighter private constructor(val type: FighterType, startX: Int, startY: Int, val attackPower: Int) : IPositioned {
+    override var x = startX
         private set
 
-    var y = startY
+    override var y = startY
         private set
 
-    var hitPoints = 200
+    var hitPoints = STARTING_HIT_POINTS
         private set
 
     companion object {
@@ -38,7 +46,7 @@ private class Fighter private constructor(val type: FighterType, startX: Int, st
 
 private class Action(val target: Fighter, val stepsNeeded: Int, val firstStepX: Int, val firstStepY: Int)
 
-private class Cell private constructor (val x: Int, val y: Int, val isWall: Boolean, occupiedBy: Fighter?) {
+private class Cell private constructor (override val x: Int, override val y: Int, val isWall: Boolean, occupiedBy: Fighter?) : IPositioned {
     var occupiedBy = occupiedBy
         private set
 
@@ -75,7 +83,6 @@ private class Battlefield private constructor(private val fighters: MutableList<
 
     val height = grid.size
     val width = grid[0].size
-    val nrOfNonWalls = grid.sumBy { row -> row.sumBy { if (it.isWall) 0 else 1 } }
 
     var nrOfElfsRemaining = fighters.count { it.type == FighterType.ELF }
         private set
@@ -136,17 +143,17 @@ private class Battlefield private constructor(private val fighters: MutableList<
         }
     }
 
+    private fun <T : IPositioned> List<T>.sortedByReadingOrder(): List<T> {
+        return this.sortedWith(Comparator<IPositioned> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) })
+    }
+
     private fun findPath(fighter: Fighter, otherFighter: Fighter): Triple<Int, Int, Int>? {
         val seen = mutableSetOf<Pair<Int, Int>>()
         val toVisit: PriorityQueue<Pair<Cell, Int>> =
-            PriorityQueue(nrOfNonWalls) {
-                    p0, p1 ->
-                        if (p0.second != p1.second) {
-                            p0.second - p1.second
-                        } else {
-                            (p0.first.y * height + p0.first.x).compareTo(p1.first.y * height + p1.first.x)
-                        }
-                }
+            PriorityQueue { p0, p1 ->
+                (p0.second * width * height + p0.first.y * height + p0.first.x)
+                    .compareTo(p1.second * width * height + p1.first.y * height + p1.first.x)
+            }
 
         fun addDirectNeighbours(x: Int, y: Int, stepsNeeded: Int) {
             fun addIfNotSeenYet(x: Int, y: Int) {
@@ -182,12 +189,12 @@ private class Battlefield private constructor(private val fighters: MutableList<
     }
 
     private fun determineAction(fighter: Fighter): Action? {
-        val orderedFighters = PriorityQueue<Fighter> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) }
-        orderedFighters.addAll(fighters.filter { it != fighter && it.type != fighter.type })
+        val orderedFighters = fighters
+            .filter { it != fighter && it.type != fighter.type }
+            .sortedByReadingOrder()
 
         var currentOptimalAction: Action? = null
-        while (orderedFighters.isNotEmpty()) {
-            val otherFighter = orderedFighters.poll()
+        for (otherFighter in orderedFighters) {
             val path = findPath(fighter, otherFighter) ?: continue
             val (stepsNeeded, firstStepX, firstStepY) = path
 
@@ -217,9 +224,7 @@ private class Battlefield private constructor(private val fighters: MutableList<
 
     fun runBattle(haltIfElfDies: Boolean) {
         while (true) {
-            val orderedFighters = PriorityQueue<Fighter> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) }
-            orderedFighters.addAll(fighters)
-
+            val orderedFighters = LinkedList<Fighter>(fighters.sortedByReadingOrder())
             while (orderedFighters.isNotEmpty()) {
                 if (isBattleFinished()) {
                     return
@@ -264,18 +269,8 @@ fun day15b(inputLines: List<String>): Int? {
         return Pair(battlefield.nrOfGoblinsRemaining == 0, battlefield.roundsCompleted * battlefield.sumHitPoints())
     }
 
-    fun findStartingMaxElfAttackPower(): Int {
-        val typicalMaxElfAttackPowers = listOf(30, 60, 100, 150)
-        typicalMaxElfAttackPowers.forEach {
-            if (runBattle(it).first) {
-                return it
-            }
-        }
-        return 200 // Theoretical max
-    }
-
     var minElfAttackPower = 3
-    var maxElfAttackPower = findStartingMaxElfAttackPower()
+    var maxElfAttackPower = STARTING_HIT_POINTS
 
     var lastSuccessResult: Int? = null
     while (true) {

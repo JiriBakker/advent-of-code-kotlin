@@ -1,7 +1,6 @@
 package days.day17
 
 import getBounds
-import kotlin.system.measureTimeMillis
 
 private class Pos(val x: Int, val y: Int)
 
@@ -16,8 +15,7 @@ private class Cell(var type: CellType) {
     var isInBucket = type == CellType.CLAY
 }
 
-private class Grid(grid: Array<Array<Cell>>, val springPos: Pos) {
-    private val grid: Array<Array<Cell>> = grid
+private class Grid(private val grid: Array<Array<Cell>>, val springPos: Pos) {
     private val height = grid.size
     private val width = grid[0].size
 
@@ -49,28 +47,40 @@ private class Grid(grid: Array<Array<Cell>>, val springPos: Pos) {
             val (minX, maxX, minY, maxY) = clayPositions.getBounds({ it.x }, { it.y })
             val normalizedClayPositions = clayPositions.map { Pos(it.x - minX + 1, it.y - minY) }
 
-            val grid = Array(maxY - minY + 1) { Array(maxX - minX + 3) { Cell(CellType.SAND) } }
+            val height = maxY - minY + 1
+            val width = maxX - minX + 1 + 2 // '+2' to ensure margins on both sides of the grid for water to spill over
+
+            val grid = Array(height) { Array(width) { Cell(CellType.SAND) } }
             normalizedClayPositions.forEach { grid[it.y][it.x] = Cell(CellType.CLAY) }
+
+            markInBucketCells(grid)
 
             return Grid(grid, Pos(500 - minX + 1, 0))
         }
-    }
 
-    fun markCells() {
-        for (y in height - 1 downTo 0) {
-            var leftClayX: Int? = null
-            for (x in 0 until width) {
-                if (grid[y][x].type == CellType.CLAY) {
-                    if (leftClayX != null) {
-                        for (x2 in leftClayX + 1 until x) {
-                            grid[y][x2].isInBucket = true
+        private fun markInBucketCells(grid: Array<Array<Cell>>) {
+            val height = grid.size
+            val width = grid[0].size
+
+            fun addToBucket(y: Int, minX: Int, maxX: Int) {
+                for (x in minX..maxX) {
+                    grid[y][x].isInBucket = true
+                }
+            }
+
+            for (y in height - 1 downTo 0) {
+                var leftClayX: Int? = null
+                for (x in 0 until width) {
+                    if (grid[y][x].type == CellType.CLAY) {
+                        if (leftClayX != null) {
+                            addToBucket(y, leftClayX + 1, x - 1)
                         }
-                    }
-                    leftClayX = x
-                } else {
-                    val isBelowInBucket = y < height - 1 && grid[y + 1][x].isInBucket
-                    if (!isBelowInBucket) {
-                        leftClayX = null
+                        leftClayX = x
+                    } else {
+                        val isBelowInBucket = y < height - 1 && grid[y + 1][x].isInBucket
+                        if (!isBelowInBucket) {
+                            leftClayX = null
+                        }
                     }
                 }
             }
@@ -84,28 +94,28 @@ private class Grid(grid: Array<Array<Cell>>, val springPos: Pos) {
             grid[y][x].type == CellType.STATIC_WATER
     }
 
-    fun visit(x: Int, y: Int, ifBelowBlockedAction: () -> Unit): Boolean {
+    private fun visit(x: Int, y: Int, ifBelowBlockedAction: () -> Unit): Boolean {
         if (isBlocked(x, y)) {
             return false
         }
-
-        if (grid[y][x].type == CellType.SAND) {
+        if (grid[y][x].type == CellType.MOVING_WATER) {
+            return true
         }
 
-        var isBlocked = false
-        if (grid[y][x].isInBucket) {
-            grid[y][x].type = CellType.STATIC_WATER
-            isBlocked = true
-            stillWaterCount++
-        } else {
-            grid[y][x].type = CellType.MOVING_WATER
-        }
+        waterCellCount++
 
         if (y < height - 1 && !visitBelow(x, y + 1)) {
             ifBelowBlockedAction()
         }
 
-        return !isBlocked
+        if (grid[y][x].isInBucket) {
+            grid[y][x].type = CellType.STATIC_WATER
+            stillWaterCount++
+            return false
+        }
+
+        grid[y][x].type = CellType.MOVING_WATER
+        return true
     }
 
     private fun visitLeft(x: Int, y: Int): Boolean {
@@ -124,8 +134,7 @@ private class Grid(grid: Array<Array<Cell>>, val springPos: Pos) {
     }
 
     fun runWater() {
-        val time = measureTimeMillis { visitBelow(springPos.x, springPos.y) }
-        println("visitBelow took $time ms")
+        visitBelow(springPos.x, springPos.y)
     }
 
     fun print() {
@@ -145,14 +154,12 @@ private class Grid(grid: Array<Array<Cell>>, val springPos: Pos) {
 
 fun day17a(inputLines: List<String>): Int {
     val grid = Grid.parse(inputLines)
-    grid.markCells()
     grid.runWater()
     return grid.waterCellCount
 }
 
 fun day17b(inputLines: List<String>): Int {
     val grid = Grid.parse(inputLines)
-    grid.markCells()
     grid.runWater()
     return grid.stillWaterCount
 }
