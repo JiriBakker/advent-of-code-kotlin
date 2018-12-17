@@ -1,14 +1,16 @@
 package days.day14
 
 private fun iterateRecipes(recipes: MutableList<Int>, loopCondition: () -> Boolean, addRecipeAndMaybeReturn: (Int) -> Boolean) {
-    fun move(curIndex: Int): Int {
-        return (curIndex + recipes[curIndex] + 1) % recipes.size
+    fun move(curIndex: Int, curRecipe: Int): Int {
+        return (curIndex + curRecipe + 1) % recipes.size
     }
 
     var firstElfIndex = 0
     var secondElfIndex = 1
     while (loopCondition()) {
-        val sum = recipes[firstElfIndex] + recipes[secondElfIndex]
+        val firstRecipe = recipes[firstElfIndex]
+        val secondRecipe = recipes[secondElfIndex]
+        val sum = firstRecipe + secondRecipe
 
         if (sum >= 10 && addRecipeAndMaybeReturn(sum / 10)) {
             return
@@ -17,8 +19,8 @@ private fun iterateRecipes(recipes: MutableList<Int>, loopCondition: () -> Boole
             return
         }
 
-        firstElfIndex = move(firstElfIndex)
-        secondElfIndex = move(secondElfIndex)
+        firstElfIndex = move(firstElfIndex, firstRecipe)
+        secondElfIndex = move(secondElfIndex, secondRecipe)
     }
 }
 
