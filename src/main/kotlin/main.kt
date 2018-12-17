@@ -32,6 +32,22 @@ import days.day16.day16a
 import days.day16.day16b
 import days.day17.day17a
 import days.day17.day17b
+// import days.day18.day18a
+// import days.day18.day18b
+// import days.day19.day19a
+// import days.day19.day19b
+// import days.day20.day20a
+// import days.day20.day20b
+// import days.day21.day21a
+// import days.day21.day21b
+// import days.day22.day22a
+// import days.day22.day22b
+// import days.day23.day23a
+// import days.day23.day23b
+// import days.day24.day24a
+// import days.day24.day24b
+// import days.day25.day25a
+// import days.day25.day25b
 import extra.infi.infiA
 import extra.infi.infiB
 import kotlin.system.measureTimeMillis
@@ -78,4 +94,20 @@ fun main(args: Array<String>) {
     time { print("Day16b: " + day16b(readInputLines("day16"))) }
     time { print("Day17a: " + day17a(readInputLines("day17"))) }
     time { print("Day17b: " + day17b(readInputLines("day17"))) }
+//    time { print("Day18a: " + day18a(readInputLines("day18"))) }
+//    time { print("Day18b: " + day18b(readInputLines("day18"))) }
+//    time { print("Day19a: " + day19a(readInputLines("day19"))) }
+//    time { print("Day19b: " + day19b(readInputLines("day19"))) }
+//    time { print("Day20a: " + day20a(readInputLines("day20"))) }
+//    time { print("Day20b: " + day20b(readInputLines("day20"))) }
+//    time { print("Day21a: " + day21a(readInputLines("day21"))) }
+//    time { print("Day21b: " + day21b(readInputLines("day21"))) }
+//    time { print("Day22a: " + day22a(readInputLines("day22"))) }
+//    time { print("Day22b: " + day22b(readInputLines("day22"))) }
+//    time { print("Day23a: " + day23a(readInputLines("day23"))) }
+//    time { print("Day23b: " + day23b(readInputLines("day23"))) }
+//    time { print("Day24a: " + day24a(readInputLines("day24"))) }
+//    time { print("Day24b: " + day24b(readInputLines("day24"))) }
+//    time { print("Day25a: " + day25a(readInputLines("day25"))) }
+//    time { print("Day25b: " + day25b(readInputLines("day25"))) }
 }
