@@ -172,7 +172,6 @@ private class Battlefield private constructor(private val fighters: MutableList<
             }
 
             if (currentCell.distanceTo(fighter.x, fighter.y) == 1) {
-                // println("Found path with $stepsNeeded and firstStep ${currentCell.x},${currentCell.y}")
                 return Triple(stepsNeeded, currentCell.x, currentCell.y)
             }
 
@@ -191,9 +190,15 @@ private class Battlefield private constructor(private val fighters: MutableList<
             val otherFighter = orderedFighters.poll()
             val path = findPath(fighter, otherFighter) ?: continue
             val (stepsNeeded, firstStepX, firstStepY) = path
-            if (currentOptimalAction == null ||
-                stepsNeeded < currentOptimalAction.stepsNeeded ||
-                (stepsNeeded == 0 && otherFighter.hitPoints < currentOptimalAction.target.hitPoints)) {
+
+            val isCloser = currentOptimalAction != null && stepsNeeded < currentOptimalAction.stepsNeeded
+            val isWithinRangeAndHasLessHitpoints =
+                currentOptimalAction != null &&
+                    stepsNeeded <= 1 &&
+                    currentOptimalAction.stepsNeeded == stepsNeeded &&
+                    otherFighter.hitPoints < currentOptimalAction.target.hitPoints
+
+            if (currentOptimalAction == null || isCloser || isWithinRangeAndHasLessHitpoints) {
                 currentOptimalAction = Action(otherFighter, stepsNeeded, firstStepX, firstStepY)
             }
         }
@@ -211,28 +216,21 @@ private class Battlefield private constructor(private val fighters: MutableList<
     }
 
     fun runBattle(haltIfElfDies: Boolean) {
-        while (roundsCompleted < 500) {
-//            println("Round $roundsCompleted")
-//            printBattlefield()
-
+        while (true) {
             val orderedFighters = PriorityQueue<Fighter> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) }
             orderedFighters.addAll(fighters)
 
             while (orderedFighters.isNotEmpty()) {
                 if (isBattleFinished()) {
-//                    println("Finished after $roundsCompleted with ${sumHitPoints()} HP remaining")
-//                    printBattlefield()
                     return
                 }
                 val fighter = orderedFighters.poll()
                 val action = determineAction(fighter) ?: continue
 
                 if (action.stepsNeeded > 0) {
-                    // println("Moving from [${fighter.x},${fighter.y}] -> [${action.firstStepX},${action.firstStepY}] (stepsNeeded: ${action.stepsNeeded})")
                     move(fighter, action.firstStepX, action.firstStepY)
                 }
                 if (action.stepsNeeded <= 1) {
-                    // println("Attacking from [${fighter.x},${fighter.y}] -> [${action.target.x},${action.target.y}]")
                     action.target.receiveAttack(fighter.attackPower)
                     if (action.target.hitPoints <= 0) {
                         fighters.remove(action.target)
@@ -248,7 +246,6 @@ private class Battlefield private constructor(private val fighters: MutableList<
                     }
                 }
             }
-
             roundsCompleted++
         }
     }
@@ -261,16 +258,39 @@ fun day15a(inputLines: List<String>): Int {
 }
 
 fun day15b(inputLines: List<String>): Int? {
-
-    var elfAttackPower = 3
-    do {
+    fun runBattle(elfAttackPower: Int): Pair<Boolean, Int> {
         val battlefield = Battlefield.parse(inputLines, elfAttackPower)
         battlefield.runBattle(true)
-        if (battlefield.nrOfGoblinsRemaining == 0) {
-            return battlefield.roundsCompleted * battlefield.sumHitPoints()
-        }
-        elfAttackPower++
-    } while (elfAttackPower <= 50) // TODO shouldn't be required
+        return Pair(battlefield.nrOfGoblinsRemaining == 0, battlefield.roundsCompleted * battlefield.sumHitPoints())
+    }
 
-    return null
+    fun findStartingMaxElfAttackPower(): Int {
+        val typicalMaxElfAttackPowers = listOf(30, 60, 100, 150)
+        typicalMaxElfAttackPowers.forEach {
+            if (runBattle(it).first) {
+                return it
+            }
+        }
+        return 200 // Theoretical max
+    }
+
+    var minElfAttackPower = 3
+    var maxElfAttackPower = findStartingMaxElfAttackPower()
+
+    var lastSuccessResult: Int? = null
+    while (true) {
+        val midElfAttackPower = minElfAttackPower + ((maxElfAttackPower - minElfAttackPower) / 2)
+
+        val midElfAttackPowerResult = runBattle(midElfAttackPower)
+        if (midElfAttackPowerResult.first) {
+            maxElfAttackPower = midElfAttackPower
+            lastSuccessResult = midElfAttackPowerResult.second
+        } else {
+            minElfAttackPower = midElfAttackPower
+        }
+
+        if (minElfAttackPower == maxElfAttackPower - 1) {
+            return lastSuccessResult
+        }
+    }
 }
