@@ -30,6 +30,8 @@ import days.day15.day15a
 // import days.day15.day15b
 import days.day16.day16a
 import days.day16.day16b
+// import days.day17.day17a
+// import days.day17.day17b
 import extra.infi.infiA
 import extra.infi.infiB
 import kotlin.system.measureTimeMillis
@@ -74,4 +76,6 @@ fun main(args: Array<String>) {
     // time { print("Day15b: " + day15b(readInputLines("day15"))) } // SLOW (~5s)
     time { print("Day16a: " + day16a(readInputLines("day16"))) }
     time { print("Day16b: " + day16b(readInputLines("day16"))) }
+    // time { print("Day17a: " + day17a(readInputLines("day17"))) } // SLOW (~10s)
+    // time { print("Day17b: " + day17b(readInputLines("day17"))) } // SLOW (~10s)
 }
