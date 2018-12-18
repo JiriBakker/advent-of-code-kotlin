@@ -6,7 +6,7 @@ private enum class CellType {
     WOODED
 }
 
-private data class Cell(val x: Int, val y: Int, var type: CellType) {
+private class Cell(val x: Int, val y: Int, var type: CellType) {
     var nrOfOpenNeighbours = 0
     var nrOfLumberyardNeighbours = 0
     var nrOfWoodedNeighbours = 0
@@ -34,17 +34,13 @@ private data class Cell(val x: Int, val y: Int, var type: CellType) {
 private typealias Grid = Array<Array<Cell>>
 
 private fun copyToPrev(grid: Grid) {
-    for (y in 0 until grid.size) {
-        for (x in 0 until grid[y].size) {
-            grid[y][x].copyToPrev()
-        }
-    }
+    grid.forEach { it.forEach { cell -> cell.copyToPrev() } }
 }
 
 private fun print(grid: Grid) {
-    for (y in 0 until grid.size) {
-        for (x in 0 until grid[y].size) {
-            print(when (grid[y][x].type) {
+    grid.forEach {
+        it.forEach { cell ->
+            print(when (cell.type) {
                 CellType.OPEN -> '.'
                 CellType.LUMBERYARD -> '#'
                 else -> '|'
@@ -55,28 +51,25 @@ private fun print(grid: Grid) {
 }
 
 private fun parse(inputLines: List<String>): Grid {
-    val listGrid: MutableList<MutableList<Cell>> = mutableListOf()
-    for (y in 0 until inputLines.size) {
-        listGrid.add(mutableListOf())
-        for (x in 0 until inputLines[y].length) {
-            val type = when (inputLines[y][x]) {
-                '.' -> CellType.OPEN
-                '#' -> CellType.LUMBERYARD
-                else -> CellType.WOODED
-            }
-            listGrid[y].add(Cell(x, y, type))
-        }
-    }
-
-    val grid = listGrid.map { it.toTypedArray() }.toTypedArray()
-    for (y in 0 until inputLines.size) {
-        for (x in 0 until inputLines[y].length) {
-            val type = grid[y][x].type
-            updateNeighbours(grid, x, y) {
+    val grid = inputLines.mapIndexed { y, row ->
+        row.mapIndexed { x, type ->
+            Cell(x, y,
                 when (type) {
-                    CellType.OPEN -> it.nrOfOpenNeighbours++
-                    CellType.LUMBERYARD -> it.nrOfLumberyardNeighbours++
-                    else -> it.nrOfWoodedNeighbours++
+                    '.' -> CellType.OPEN
+                    '#' -> CellType.LUMBERYARD
+                    else -> CellType.WOODED
+                }
+            )
+        }.toTypedArray()
+    }.toTypedArray()
+
+    grid.forEach {
+        it.forEach { cell ->
+            updateNeighbours(grid, cell.x, cell.y) { neighbour ->
+                when (cell.type) {
+                    CellType.OPEN -> neighbour.nrOfOpenNeighbours++
+                    CellType.LUMBERYARD -> neighbour.nrOfLumberyardNeighbours++
+                    else -> neighbour.nrOfWoodedNeighbours++
                 }
             }
         }
@@ -87,47 +80,37 @@ private fun parse(inputLines: List<String>): Grid {
     return grid
 }
 
-private fun updateNeighbours(grid: Grid, x: Int, y: Int, operation: (Cell) -> Unit) {
-    if (y > 0) {
-        operation(grid[y - 1][x]) // N
-        if (x > 0) {
-            operation(grid[y - 1][x - 1]) // NW
-        }
-        if (x < grid[0].size - 1) {
-            operation(grid[y - 1][x + 1]) // NE
+private fun updateNeighbours(grid: Grid, x: Int, y: Int, updateOperation: (Cell) -> Unit) {
+    fun updateIfPossible(x: Int, y: Int) {
+        if (y >= 0 && x >= 0 && y < grid.size && x < grid[0].size) {
+            updateOperation(grid[y][x])
         }
     }
-    if (x > 0) {
-        operation(grid[y][x - 1]) // W
-    }
-    if (x < grid[0].size - 1) {
-        operation(grid[y][x + 1]) // E
-    }
-    if (y < grid.size - 1) {
-        operation(grid[y + 1][x]) // S
-        if (x > 0) {
-            operation(grid[y + 1][x - 1]) // SW
-        }
-        if (x < grid[0].size - 1) {
-            operation(grid[y + 1][x + 1]) // SE
-        }
-    }
+
+    updateIfPossible(x, y - 1)
+    updateIfPossible(x, y + 1)
+    updateIfPossible(x - 1, y)
+    updateIfPossible(x + 1, y)
+    updateIfPossible(x - 1, y - 1)
+    updateIfPossible(x - 1, y + 1)
+    updateIfPossible(x + 1, y - 1)
+    updateIfPossible(x + 1, y + 1)
 }
 
 private fun iterate(grid: Grid, nrOfIterations: Int): Int {
     var nrOfWooded = grid.sumBy { it.count { cell -> cell.type == CellType.WOODED } }
     var nrOfLumberyards = grid.sumBy { it.count { cell -> cell.type == CellType.LUMBERYARD } }
 
-    val seenScores = mutableMapOf<Int, Int>()
+    val prevScores = mutableMapOf<Int, Int>()
     fun hasRecurrence(iteration: Int): Boolean {
         val score = nrOfWooded * nrOfLumberyards
-        val prevIterations = seenScores[score]
-        if (prevIterations == null) {
-            seenScores[score] = iteration
+        val prevIteration = prevScores[score]
+        if (prevIteration == null) {
+            prevScores[score] = iteration
             return false
         }
-        val interval = iteration - prevIterations
-        return interval != 1 && (nrOfIterations - iteration) % interval == 0
+        val interval = iteration - prevIteration
+        return interval > 1 && (nrOfIterations - iteration) % interval == 0
     }
 
     for (iteration in 0 until nrOfIterations) {
@@ -135,34 +118,32 @@ private fun iterate(grid: Grid, nrOfIterations: Int): Int {
             break
         }
 
-        for (y in 0 until grid.size) {
-            for (x in 0 until grid[y].size) {
-                val cell = grid[y][x]
+        grid.forEach {
+            it.forEach { cell ->
                 if (cell.prevType == CellType.OPEN) {
                     if (cell.prevNrOfWoodedNeighbours >= 3) {
                         cell.type = CellType.WOODED
                         nrOfWooded++
-                        updateNeighbours(grid, x, y) { it.nrOfOpenNeighbours--; it.nrOfWoodedNeighbours++ }
+                        updateNeighbours(grid, cell.x, cell.y) { it.nrOfOpenNeighbours--; it.nrOfWoodedNeighbours++ }
                     }
                 } else if (cell.prevType == CellType.WOODED) {
                     if (cell.prevNrOfLumberyardNeighbours >= 3) {
                         cell.type = CellType.LUMBERYARD
                         nrOfWooded--
                         nrOfLumberyards++
-                        updateNeighbours(grid, x, y) { it.nrOfWoodedNeighbours--; it.nrOfLumberyardNeighbours++ }
+                        updateNeighbours(grid, cell.x, cell.y) { it.nrOfWoodedNeighbours--; it.nrOfLumberyardNeighbours++ }
                     }
                 } else if (cell.prevType == CellType.LUMBERYARD) {
                     if (!(cell.prevNrOfWoodedNeighbours >= 1 && cell.prevNrOfLumberyardNeighbours >= 1)) {
                         cell.type = CellType.OPEN
                         nrOfLumberyards--
-                        updateNeighbours(grid, x, y) { it.nrOfLumberyardNeighbours--; it.nrOfOpenNeighbours++ }
+                        updateNeighbours(grid, cell.x, cell.y) { it.nrOfLumberyardNeighbours--; it.nrOfOpenNeighbours++ }
                     }
                 }
             }
         }
         copyToPrev(grid)
     }
-
     return nrOfWooded * nrOfLumberyards
 }
 
