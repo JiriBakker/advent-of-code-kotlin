@@ -87,7 +87,7 @@ private class Grid(private val grid: Array<Array<Cell>>, val springPos: Pos) {
         }
     }
 
-    private fun isBlocked(x: Int, y: Int): Boolean {
+    private inline fun isBlocked(x: Int, y: Int): Boolean {
         return x < 0 || x >= width ||
             y < 0 || y >= height ||
             grid[y][x].type == CellType.CLAY ||
