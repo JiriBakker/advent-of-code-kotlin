@@ -4,25 +4,6 @@ import Opcode
 import OperationInput
 import opcodeToApplyFuncMapping
 
-private val opnameToOpcodeMapping = mapOf(
-    Pair("addr", Opcode.ADDR),
-    Pair("addi", Opcode.ADDI),
-    Pair("mulr", Opcode.MULR),
-    Pair("muli", Opcode.MULI),
-    Pair("banr", Opcode.BANR),
-    Pair("bani", Opcode.BANI),
-    Pair("borr", Opcode.BORR),
-    Pair("bori", Opcode.BORI),
-    Pair("setr", Opcode.SETR),
-    Pair("seti", Opcode.SETI),
-    Pair("gtir", Opcode.GTIR),
-    Pair("gtri", Opcode.GTRI),
-    Pair("gtrr", Opcode.GTRR),
-    Pair("eqir", Opcode.EQIR),
-    Pair("eqri", Opcode.EQRI),
-    Pair("eqrr", Opcode.EQRR)
-)
-
 private class Operation(val opcode: Opcode, val input: OperationInput)
 
 private class Registers(private val instructionPointerRegisterIndex: Int, nrOfRegisters: Int) {
@@ -32,14 +13,11 @@ private class Registers(private val instructionPointerRegisterIndex: Int, nrOfRe
     var instructionPointer = 0
         private set
 
-    fun apply(op: Operation, shouldPrint: Boolean = false) {
-        val applyFunc = opcodeToApplyFuncMapping[op.opcode]!!
-
+    fun apply(op: Operation) {
         registers[instructionPointerRegisterIndex] = instructionPointer.toLong()
 
-        if (shouldPrint) print("ip=$instructionPointer [${registers.joinToString(", ")}] ")
+        val applyFunc = opcodeToApplyFuncMapping[op.opcode]!!
         registers = applyFunc(registers, op.input)
-        if (shouldPrint) println("${op.opcode} ${op.input.valueA} ${op.input.valueB} ${op.input.valueC} [${registers.joinToString(", ")}]")
 
         instructionPointer = registers[instructionPointerRegisterIndex].toInt() + 1
     }
@@ -51,7 +29,26 @@ private fun parse(inputLines: List<String>): Pair<Int, List<Operation>> {
     val operations = mutableListOf<Operation>()
     for (i in 1 until inputLines.size) {
         val (opname, inputA, inputB, inputC) = inputLines[i].split(" ")
-        val opcode = opnameToOpcodeMapping[opname]!!
+
+        val opcode = when (opname) {
+            "addr" -> Opcode.ADDR
+            "addi" -> Opcode.ADDI
+            "mulr" -> Opcode.MULR
+            "muli" -> Opcode.MULI
+            "banr" -> Opcode.BANR
+            "bani" -> Opcode.BANI
+            "borr" -> Opcode.BORR
+            "bori" -> Opcode.BORI
+            "setr" -> Opcode.SETR
+            "seti" -> Opcode.SETI
+            "gtir" -> Opcode.GTIR
+            "gtri" -> Opcode.GTRI
+            "gtrr" -> Opcode.GTRR
+            "eqir" -> Opcode.EQIR
+            "eqri" -> Opcode.EQRI
+            else -> Opcode.EQRR
+        }
+
         val operation = Operation(opcode, OperationInput(inputA.toInt(), inputB.toInt(), inputC.toInt()))
         operations.add(operation)
     }
@@ -86,25 +83,26 @@ fun day19b(inputLines: List<String>): Long {
     // - Sum all factors of that number
 
     val (instructionPointerRegisterIndex, operations) = parse(inputLines)
+
     val registers = Registers(instructionPointerRegisterIndex, 6)
     registers.registers[0] = 1
+
     var nrOfIterationsSinceLastChangeInRegister2 = 0
     var lastValueInRegister2 = 0L
     var iteration = 0
-    while (nrOfIterationsSinceLastChangeInRegister2 < 1000000) {
-        val op = operations[registers.instructionPointer]
-        registers.apply(op)
+    while (nrOfIterationsSinceLastChangeInRegister2++ < 1000000) {
+        registers.apply(operations[registers.instructionPointer])
+
         if (registers.registers[2] != lastValueInRegister2) {
             lastValueInRegister2 = registers.registers[2]
             nrOfIterationsSinceLastChangeInRegister2 = 0
         }
         iteration++
-        nrOfIterationsSinceLastChangeInRegister2++
     }
 
     var factorSum = 0L
-    for (i in 1..10551386) {
-        if (10551386 % i == 0) factorSum += i
+    for (i in 1..lastValueInRegister2) {
+        if (lastValueInRegister2 % i == 0L) factorSum += i
     }
     return factorSum
 }
