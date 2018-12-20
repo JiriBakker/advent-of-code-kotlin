@@ -26,3 +26,5 @@ fun <T> List<T>.getBounds(xSelector: (T) -> Int, ySelector: (T) -> Int): List<In
     val maxY = ySelector(this.maxBy(ySelector)!!)
     return listOf(minX, maxX, minY, maxY)
 }
+
+class Pos(val x: Int, val y: Int)

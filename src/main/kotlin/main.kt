@@ -36,8 +36,8 @@ import days.day18.day18a
 import days.day18.day18b
 import days.day19.day19a
 import days.day19.day19b
-// import days.day20.day20a
-// import days.day20.day20b
+import days.day20.day20a
+import days.day20.day20b
 // import days.day21.day21a
 // import days.day21.day21b
 // import days.day22.day22a
@@ -98,8 +98,8 @@ fun main(args: Array<String>) {
     time { print("Day18b: " + day18b(readInputLines("day18"))) }
     time { print("Day19a: " + day19a(readInputLines("day19"))) }
     time { print("Day19b: " + day19b(readInputLines("day19"))) }
-//    time { print("Day20a: " + day20a(readInputLines("day20"))) }
-//    time { print("Day20b: " + day20b(readInputLines("day20"))) }
+    time { print("Day20a: " + day20a(readInputLine("day20"))) }
+    time { print("Day20b: " + day20b(readInputLine("day20"))) }
 //    time { print("Day21a: " + day21a(readInputLines("day21"))) }
 //    time { print("Day21b: " + day21b(readInputLines("day21"))) }
 //    time { print("Day22a: " + day22a(readInputLines("day22"))) }
