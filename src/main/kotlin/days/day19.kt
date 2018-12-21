@@ -1,63 +1,10 @@
 package days.day19
 
-import Opcode
-import OperationInput
-import opcodeToApplyFuncMapping
-
-private class Operation(val opcode: Opcode, val input: OperationInput)
-
-private class Registers(private val instructionPointerRegisterIndex: Int, nrOfRegisters: Int) {
-    var registers = Array(nrOfRegisters) { 0L }
-        private set
-
-    var instructionPointer = 0
-        private set
-
-    fun apply(op: Operation) {
-        registers[instructionPointerRegisterIndex] = instructionPointer.toLong()
-
-        val applyFunc = opcodeToApplyFuncMapping[op.opcode]!!
-        registers = applyFunc(registers, op.input)
-
-        instructionPointer = registers[instructionPointerRegisterIndex].toInt() + 1
-    }
-}
-
-private fun parse(inputLines: List<String>): Pair<Int, List<Operation>> {
-    val instructionPointerRegisterIndex = inputLines[0].split(" ")[1].toInt()
-
-    val operations = mutableListOf<Operation>()
-    for (i in 1 until inputLines.size) {
-        val (opname, inputA, inputB, inputC) = inputLines[i].split(" ")
-
-        val opcode = when (opname) {
-            "addr" -> Opcode.ADDR
-            "addi" -> Opcode.ADDI
-            "mulr" -> Opcode.MULR
-            "muli" -> Opcode.MULI
-            "banr" -> Opcode.BANR
-            "bani" -> Opcode.BANI
-            "borr" -> Opcode.BORR
-            "bori" -> Opcode.BORI
-            "setr" -> Opcode.SETR
-            "seti" -> Opcode.SETI
-            "gtir" -> Opcode.GTIR
-            "gtri" -> Opcode.GTRI
-            "gtrr" -> Opcode.GTRR
-            "eqir" -> Opcode.EQIR
-            "eqri" -> Opcode.EQRI
-            else -> Opcode.EQRR
-        }
-
-        val operation = Operation(opcode, OperationInput(inputA.toInt(), inputB.toInt(), inputC.toInt()))
-        operations.add(operation)
-    }
-
-    return Pair(instructionPointerRegisterIndex, operations)
-}
+import Registers
+import parseOperations
 
 fun day19a(inputLines: List<String>): Int {
-    val (instructionPointerRegisterIndex, operations) = parse(inputLines)
+    val (instructionPointerRegisterIndex, operations) = parseOperations(inputLines)
     val registers = Registers(instructionPointerRegisterIndex, 6)
     while (registers.instructionPointer >= 0 && registers.instructionPointer < operations.size) {
         val op = operations[registers.instructionPointer]
@@ -82,7 +29,7 @@ fun day19b(inputLines: List<String>): Long {
     // - Find converging value for register 2
     // - Sum all factors of that number
 
-    val (instructionPointerRegisterIndex, operations) = parse(inputLines)
+    val (instructionPointerRegisterIndex, operations) = parseOperations(inputLines)
 
     val registers = Registers(instructionPointerRegisterIndex, 6)
     registers.registers[0] = 1
@@ -90,6 +37,7 @@ fun day19b(inputLines: List<String>): Long {
     var nrOfIterationsSinceLastChangeInRegister2 = 0
     var lastValueInRegister2 = 0L
     var iteration = 0
+
     while (nrOfIterationsSinceLastChangeInRegister2++ < 1000000) {
         registers.apply(operations[registers.instructionPointer])
 

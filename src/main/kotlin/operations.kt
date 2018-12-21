@@ -38,6 +38,58 @@ val opcodeToApplyFuncMapping = mapOf(
 
 class OperationInput(val valueA: Int, val valueB: Int, val valueC: Int)
 
+class Operation(val opcode: Opcode, val input: OperationInput)
+
+class Registers(private val instructionPointerRegisterIndex: Int, nrOfRegisters: Int) {
+    var registers = Array(nrOfRegisters) { 0L }
+        private set
+
+    var instructionPointer = 0
+        private set
+
+    fun apply(op: Operation) {
+        registers[instructionPointerRegisterIndex] = instructionPointer.toLong()
+
+        val applyFunc = opcodeToApplyFuncMapping[op.opcode]!!
+        registers = applyFunc(registers, op.input)
+
+        instructionPointer = registers[instructionPointerRegisterIndex].toInt() + 1
+    }
+}
+
+fun parseOperations(inputLines: List<String>): Pair<Int, List<Operation>> {
+    val instructionPointerRegisterIndex = inputLines[0].split(" ")[1].toInt()
+
+    val operations = mutableListOf<Operation>()
+    for (i in 1 until inputLines.size) {
+        val (opname, inputA, inputB, inputC) = inputLines[i].split(" ")
+
+        val opcode = when (opname) {
+            "addr" -> Opcode.ADDR
+            "addi" -> Opcode.ADDI
+            "mulr" -> Opcode.MULR
+            "muli" -> Opcode.MULI
+            "banr" -> Opcode.BANR
+            "bani" -> Opcode.BANI
+            "borr" -> Opcode.BORR
+            "bori" -> Opcode.BORI
+            "setr" -> Opcode.SETR
+            "seti" -> Opcode.SETI
+            "gtir" -> Opcode.GTIR
+            "gtri" -> Opcode.GTRI
+            "gtrr" -> Opcode.GTRR
+            "eqir" -> Opcode.EQIR
+            "eqri" -> Opcode.EQRI
+            else -> Opcode.EQRR
+        }
+
+        val operation = Operation(opcode, OperationInput(inputA.toInt(), inputB.toInt(), inputC.toInt()))
+        operations.add(operation)
+    }
+
+    return Pair(instructionPointerRegisterIndex, operations)
+}
+
 private fun applyOperatorR(registers: Array<Long>, input: OperationInput, operator: (Long, Long) -> Long): Array<Long> {
     val registerA = registers[input.valueA]
     val registerB = registers[input.valueB]
