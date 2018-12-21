@@ -33,7 +33,8 @@ private fun parseCoordinateLines(coordinateLines: List<String>): List<Coordinate
 fun day06a(coordinateLines: List<String>): Int? {
     val coordinateAreas = parseCoordinateLines(coordinateLines)
 
-    val (minX, maxX, minY, maxY) = coordinateAreas.getBounds({ it.x }, { it.y })
+    val (minX, maxX) = coordinateAreas.getBounds { it.x }
+    val (minY, maxY) = coordinateAreas.getBounds { it.y }
 
     val isOuterBoundCoordinate = { x: Int, y: Int -> x == minX || x == maxX || y == minY || y == maxY }
 
@@ -78,7 +79,8 @@ private fun <T> List<T>.sumByWhile(selector: (T) -> Int, predicate: (Int) -> Boo
 fun day06b(coordinateLines: List<String>, limit: Int = 10000): Int {
     val coordinateAreas = parseCoordinateLines(coordinateLines)
 
-    val (minX, maxX, minY, maxY) = coordinateAreas.getBounds({ it.x }, { it.y })
+    val (minX, maxX) = coordinateAreas.getBounds { it.x }
+    val (minY, maxY) = coordinateAreas.getBounds { it.y }
 
     var nrOfCellsWithinLimit = 0
 

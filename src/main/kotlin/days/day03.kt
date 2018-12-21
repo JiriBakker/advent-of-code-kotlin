@@ -1,6 +1,7 @@
 package days.day03
 
 import forEachCombinationPair
+import getBounds
 
 private class Fabric(private val minX: Int, maxX: Int, private val minY: Int, maxY: Int) {
     private val inches: Array<Array<Int>> = Array(maxX - minX + 1) { Array(maxY - minY + 1) { 0 } }
@@ -47,18 +48,11 @@ private class Claim private constructor(val id: Int, val x1: Int, val y1: Int, w
     }
 }
 
-private fun getGridBounds(claims: List<Claim>): List<Int> {
-    val minX = claims.map { it.x1 }.min()!!
-    val maxX = claims.map { it.x2 }.max()!!
-    val minY = claims.map { it.y1 }.min()!!
-    val maxY = claims.map { it.y2 }.max()!!
-
-    return listOf(minX, maxX, minY, maxY)
-}
-
 fun day03a(claimLines: List<String>): Int {
     val claims = claimLines.map { Claim.parse(it) }
-    val (minX, maxX, minY, maxY) = getGridBounds(claims)
+
+    val (minX, maxX) = claims.getBounds({ it.x1 }, { it.x2 })
+    val (minY, maxY) = claims.getBounds({ it.y1 }, { it.y2 })
     val fabric = Fabric(minX, maxX, minY, maxY)
 
     claims.forEach { fabric.applyClaim(it) }

@@ -44,14 +44,17 @@ private class Grid(private val grid: Array<Array<Cell>>, val springPos: Pos) {
                 }
             }.toList()
 
-            val (minX, maxX, minY, maxY) = clayPositions.getBounds({ it.x }, { it.y })
-            val normalizedClayPositions = clayPositions.map { Pos(it.x - minX + 1, it.y - minY) }
+            val (minX, maxX) = clayPositions.getBounds { it.x }
+            val (minY, maxY) = clayPositions.getBounds { it.y }
 
             val height = maxY - minY + 1
             val width = maxX - minX + 1 + 2 // '+2' to ensure margins on both sides of the grid for water to spill over
 
             val grid = Array(height) { Array(width) { Cell(CellType.SAND) } }
-            normalizedClayPositions.forEach { grid[it.y][it.x] = Cell(CellType.CLAY) }
+
+            clayPositions
+                .map { Pos(it.x - minX + 1, it.y - minY) }
+                .forEach { grid[it.y][it.x] = Cell(CellType.CLAY) }
 
             markInBucketCells(grid)
 
@@ -87,7 +90,7 @@ private class Grid(private val grid: Array<Array<Cell>>, val springPos: Pos) {
         }
     }
 
-    private inline fun isBlocked(x: Int, y: Int): Boolean {
+    private fun isBlocked(x: Int, y: Int): Boolean {
         return x < 0 || x >= width ||
             y < 0 || y >= height ||
             grid[y][x].type == CellType.CLAY ||

@@ -28,20 +28,6 @@ private fun parse(inputLines: List<String>): List<Light> {
     }
 }
 
-private fun getSize(lights: List<Light>): Pair<Int, Int> {
-    val (minX, maxX, minY, maxY) = lights.getBounds({ it.posX }, { it.posY })
-    val width = maxX - minX + 1
-    val height = maxY - minY + 1
-
-    return Pair(width, height)
-}
-
-private fun getWidth(lights: List<Light>): Int {
-    val minX = lights.minBy { it.posX }!!.posX
-    val maxX = lights.maxBy { it.posX }!!.posX
-    return maxX - minX + 1
-}
-
 private fun waitForAlignedLights(lights: List<Light>): Int {
     var second = 0
     var minWidth = Int.MAX_VALUE
@@ -49,7 +35,8 @@ private fun waitForAlignedLights(lights: List<Light>): Int {
         lights.forEach { it.toSecond(second) }
         second++
 
-        val width = getWidth(lights)
+        val (minX, maxX) = lights.getBounds { it.posX }
+        val width = maxX - minX
         if (width < minWidth) {
             minWidth = width
         }
@@ -62,7 +49,8 @@ private fun waitForAlignedLights(lights: List<Light>): Int {
 }
 
 private fun alignedLightsToString(lights: List<Light>): String {
-    val (minX, maxX, minY, maxY) = lights.getBounds({ it.posX }, { it.posY })
+    val (minX, maxX) = lights.getBounds { it.posX }
+    val (minY, maxY) = lights.getBounds { it.posY }
     val width = maxX - minX + 1
     val height = maxY - minY + 1
 

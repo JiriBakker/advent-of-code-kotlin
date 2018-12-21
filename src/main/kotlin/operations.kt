@@ -90,32 +90,32 @@ fun parseOperations(inputLines: List<String>): Pair<Int, List<Operation>> {
     return Pair(instructionPointerRegisterIndex, operations)
 }
 
-private fun applyOperatorR(registers: Array<Long>, input: OperationInput, operator: (Long, Long) -> Long): Array<Long> {
+private inline fun applyOperatorR(registers: Array<Long>, input: OperationInput, operator: (Long, Long) -> Long): Array<Long> {
     val registerA = registers[input.valueA]
     val registerB = registers[input.valueB]
     registers[input.valueC] = operator(registerA, registerB)
     return registers
 }
 
-private fun applyOperatorI(registers: Array<Long>, input: OperationInput, operator: (Long, Long) -> Long): Array<Long> {
+private inline fun applyOperatorI(registers: Array<Long>, input: OperationInput, operator: (Long, Long) -> Long): Array<Long> {
     val registerA = registers[input.valueA]
     registers[input.valueC] = operator(registerA, input.valueB.toLong())
     return registers
 }
 
-private fun applyCompareIR(registers: Array<Long>, input: OperationInput, comparator: (Long, Long) -> Boolean): Array<Long> {
+private inline fun applyCompareIR(registers: Array<Long>, input: OperationInput, comparator: (Long, Long) -> Boolean): Array<Long> {
     val registerB = registers[input.valueB]
     registers[input.valueC] = if (comparator(input.valueA.toLong(), registerB)) 1 else 0
     return registers
 }
 
-private fun applyCompareRI(registers: Array<Long>, input: OperationInput, comparator: (Long, Long) -> Boolean): Array<Long> {
+private inline fun applyCompareRI(registers: Array<Long>, input: OperationInput, comparator: (Long, Long) -> Boolean): Array<Long> {
     val registerA = registers[input.valueA]
     registers[input.valueC] = if (comparator(registerA, input.valueB.toLong())) 1 else 0
     return registers
 }
 
-private fun applyCompareRR(registers: Array<Long>, input: OperationInput, comparator: (Long, Long) -> Boolean): Array<Long> {
+private inline fun applyCompareRR(registers: Array<Long>, input: OperationInput, comparator: (Long, Long) -> Boolean): Array<Long> {
     val registerA = registers[input.valueA]
     val registerB = registers[input.valueB]
     registers[input.valueC] = if (comparator(registerA, registerB)) 1 else 0
