@@ -3,7 +3,7 @@ package days.day22
 import Pos
 import java.util.PriorityQueue
 
-private enum class CellType {
+private enum class RegionType {
     Rocky,
     Wet,
     Narrow
@@ -15,53 +15,56 @@ private enum class EquippedTool {
     Neither
 }
 
-private class Cell(val x: Int, val y: Int, val erosionLevel: Long, val type: CellType, var equippedTool: EquippedTool) {
-    var costToReach = Int.MAX_VALUE
+private class Region(val x: Int, val y: Int, val erosionLevel: Long, val type: RegionType)
 
+private class RouteNode(val region: Region, var equippedTool: EquippedTool, var costToReach: Int = Int.MAX_VALUE) {
     override fun hashCode(): Int {
-        return this.y * 10000 + this.x * 10 + equippedTool.ordinal
+        return this.region.y * 10000 + this.region.x * 10 + equippedTool.ordinal
     }
 }
 
-private class Grid(val depth: Int, val targetPos: Pos) {
-    private val grid: MutableMap<Int, MutableMap<Int, MutableMap<EquippedTool, Cell>>> = mutableMapOf()
+private class Cave(val depth: Int, val targetPos: Pos) {
+    private val regions: MutableMap<Int, MutableMap<Int, Region>> = mutableMapOf()
+    private val routeNodes: MutableMap<Int, MutableMap<Int, MutableMap<EquippedTool, RouteNode>>> = mutableMapOf()
 
     init {
-        val startCell = createCell(0, 0, EquippedTool.Torch)
-        startCell.costToReach = 0
-        grid[0] = mutableMapOf(Pair(0, mutableMapOf(Pair(EquippedTool.Torch, startCell))))
+        val startRegion = createRegion(0, 0)
+        regions[0] = mutableMapOf(Pair(0, startRegion))
+        val startRouteNode = getRouteNode(startRegion, EquippedTool.Torch)
+        startRouteNode.costToReach = 0
     }
 
-    private fun createCell(x: Int, y: Int, equippedTool: EquippedTool): Cell {
+    private fun createRegion(x: Int, y: Int): Region {
         val geologicIndex = when {
             y == targetPos.y && x == targetPos.x -> 0
             y == 0 -> x * 16807L
             x == 0 -> y * 48271L
             else -> {
-                val cellLeft = getCell(x - 1, y, equippedTool)
-                val cellAbove = getCell(x, y - 1, equippedTool)
-                cellLeft.erosionLevel * cellAbove.erosionLevel
+                val regionLeft = getRegion(x - 1, y)
+                val regionAbove = getRegion(x, y - 1)
+                regionLeft.erosionLevel * regionAbove.erosionLevel
             }
         }
 
         val erosionLevel = (geologicIndex + depth) % 20183
-        val cellType = when (erosionLevel % 3) {
-            0L -> CellType.Rocky
-            1L -> CellType.Wet
-            else -> CellType.Narrow
+        val regionType = when (erosionLevel % 3) {
+            0L -> RegionType.Rocky
+            1L -> RegionType.Wet
+            else -> RegionType.Narrow
         }
-        return Cell(x, y, erosionLevel, cellType, equippedTool)
+        return Region(x, y, erosionLevel, regionType)
     }
 
-    fun getCell(x: Int, y: Int, equippedTool: EquippedTool): Cell {
-        val row = grid.getOrPut(y, ::mutableMapOf)
-        if (!row.containsKey(x)) {
-            row[x] = mutableMapOf()
-        }
-        if (!row[x]!!.containsKey(equippedTool)) {
-            row[x]!![equippedTool] = createCell(x, y, equippedTool)
-        }
-        return row[x]!![equippedTool]!!
+    fun getRegion(x: Int, y: Int): Region {
+        val row = regions.getOrPut(y, ::mutableMapOf)
+        return row.getOrPut(x) { createRegion(x, y) }
+    }
+
+    fun getRouteNode(region: Region, equippedTool: EquippedTool): RouteNode {
+        val row = routeNodes.getOrPut(region.y) { mutableMapOf() }
+        val costs = row.getOrPut(region.x) { mutableMapOf() }
+        costs[equippedTool] = costs.getOrElse(equippedTool) { RouteNode(region, equippedTool) }
+        return costs[equippedTool]!!
     }
 }
 
@@ -71,99 +74,99 @@ private fun parse(inputLines: List<String>): Triple<Int, Int, Int> {
     return Triple(depth, targetX, targetY)
 }
 
-private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
-    val reachableNeighbours: MutableSet<Cell> = mutableSetOf()
+private fun getReachableNeighbours(routeNode: RouteNode, cave: Cave): List<RouteNode> {
+    val reachableNeighbours: MutableSet<RouteNode> = mutableSetOf()
 
-    fun addNeighbour(nextCell: Cell, addedCost: Int) {
-        nextCell.costToReach = Math.min(nextCell.costToReach, cell.costToReach + addedCost)
-        reachableNeighbours.add(nextCell)
+    fun addNeighbour(neighbour: Region, equippedTool: EquippedTool, addedCost: Int) {
+        val neighbourRouteNode = cave.getRouteNode(neighbour, equippedTool)
+        neighbourRouteNode.costToReach =
+            Math.min(
+                neighbourRouteNode.costToReach,
+                routeNode.costToReach + addedCost
+            )
+        reachableNeighbours.add(neighbourRouteNode)
     }
 
     fun addReachable(x: Int, y: Int) {
-        when (cell.type) {
-            CellType.Rocky -> {
-                val neighbourWithTorch = grid.getCell(x, y, EquippedTool.Torch)
-                val neighbourWithClimbingGear = grid.getCell(x, y, EquippedTool.ClimbingGear)
-                when (neighbourWithTorch.type) {
-                    CellType.Rocky -> {
-                        if (cell.equippedTool == EquippedTool.Torch) {
-                            addNeighbour(neighbourWithTorch, 1)
-                            addNeighbour(neighbourWithClimbingGear, 8)
-                        } else if (cell.equippedTool == EquippedTool.ClimbingGear) {
-                            addNeighbour(neighbourWithTorch, 8)
-                            addNeighbour(neighbourWithClimbingGear, 1)
+        val neighbour = cave.getRegion(x, y)
+        when (routeNode.region.type) {
+            RegionType.Rocky -> {
+                when (neighbour.type) {
+                    RegionType.Rocky -> {
+                        if (routeNode.equippedTool == EquippedTool.Torch) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 1)
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 8)
+                        } else if (routeNode.equippedTool == EquippedTool.ClimbingGear) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 8)
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 1)
                         }
                     }
-                    CellType.Wet -> {
-                        if (cell.equippedTool == EquippedTool.Torch) {
-                            addNeighbour(neighbourWithClimbingGear, 8)
-                        } else if (cell.equippedTool == EquippedTool.ClimbingGear) {
-                            addNeighbour(neighbourWithClimbingGear, 1)
+                    RegionType.Wet -> {
+                        if (routeNode.equippedTool == EquippedTool.Torch) {
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 8)
+                        } else if (routeNode.equippedTool == EquippedTool.ClimbingGear) {
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 1)
                         }
                     }
-                    CellType.Narrow -> {
-                        if (cell.equippedTool == EquippedTool.Torch) {
-                            addNeighbour(neighbourWithTorch, 1)
-                        } else if (cell.equippedTool == EquippedTool.ClimbingGear) {
-                            addNeighbour(neighbourWithTorch, 8)
-                        }
-                    }
-                }
-            }
-            CellType.Wet -> {
-                val neighbourWithClimbingGear = grid.getCell(x, y, EquippedTool.ClimbingGear)
-                val neighbourWithNeither = grid.getCell(x, y, EquippedTool.Neither)
-                when (neighbourWithClimbingGear.type) {
-                    CellType.Rocky -> {
-                        if (cell.equippedTool == EquippedTool.ClimbingGear) {
-                            addNeighbour(neighbourWithClimbingGear, 1)
-                        } else if (cell.equippedTool == EquippedTool.Neither) {
-                            addNeighbour(neighbourWithClimbingGear, 8)
-                        }
-                    }
-                    CellType.Wet -> {
-                        if (cell.equippedTool == EquippedTool.ClimbingGear) {
-                            addNeighbour(neighbourWithClimbingGear, 1)
-                            addNeighbour(neighbourWithNeither, 8)
-                        } else if (cell.equippedTool == EquippedTool.Neither) {
-                            addNeighbour(neighbourWithClimbingGear, 8)
-                            addNeighbour(neighbourWithNeither, 1)
-                        }
-                    }
-                    CellType.Narrow -> {
-                        if (cell.equippedTool == EquippedTool.ClimbingGear) {
-                            addNeighbour(neighbourWithNeither, 8)
-                        } else if (cell.equippedTool == EquippedTool.Neither) {
-                            addNeighbour(neighbourWithNeither, 1)
+                    RegionType.Narrow -> {
+                        if (routeNode.equippedTool == EquippedTool.Torch) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 1)
+                        } else if (routeNode.equippedTool == EquippedTool.ClimbingGear) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 8)
                         }
                     }
                 }
             }
-            CellType.Narrow -> {
-                val neighbourWithTorch = grid.getCell(x, y, EquippedTool.Torch)
-                val neighbourWithNeither = grid.getCell(x, y, EquippedTool.Neither)
-                when (neighbourWithTorch.type) {
-                    CellType.Rocky -> {
-                        if (cell.equippedTool == EquippedTool.Torch) {
-                            addNeighbour(neighbourWithTorch, 1)
-                        } else if (cell.equippedTool == EquippedTool.Neither) {
-                            addNeighbour(neighbourWithTorch, 8)
+            RegionType.Wet -> {
+                when (neighbour.type) {
+                    RegionType.Rocky -> {
+                        if (routeNode.equippedTool == EquippedTool.ClimbingGear) {
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 1)
+                        } else if (routeNode.equippedTool == EquippedTool.Neither) {
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 8)
                         }
                     }
-                    CellType.Wet -> {
-                        if (cell.equippedTool == EquippedTool.Torch) {
-                            addNeighbour(neighbourWithNeither, 8)
-                        } else if (cell.equippedTool == EquippedTool.Neither) {
-                            addNeighbour(neighbourWithNeither, 1)
+                    RegionType.Wet -> {
+                        if (routeNode.equippedTool == EquippedTool.ClimbingGear) {
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 1)
+                            addNeighbour(neighbour, EquippedTool.Neither, 8)
+                        } else if (routeNode.equippedTool == EquippedTool.Neither) {
+                            addNeighbour(neighbour, EquippedTool.ClimbingGear, 8)
+                            addNeighbour(neighbour, EquippedTool.Neither, 1)
                         }
                     }
-                    CellType.Narrow -> {
-                        if (cell.equippedTool == EquippedTool.Torch) {
-                            addNeighbour(neighbourWithTorch, 1)
-                            addNeighbour(neighbourWithNeither, 8)
-                        } else if (cell.equippedTool == EquippedTool.Neither) {
-                            addNeighbour(neighbourWithTorch, 8)
-                            addNeighbour(neighbourWithNeither, 1)
+                    RegionType.Narrow -> {
+                        if (routeNode.equippedTool == EquippedTool.ClimbingGear) {
+                            addNeighbour(neighbour, EquippedTool.Neither, 8)
+                        } else if (routeNode.equippedTool == EquippedTool.Neither) {
+                            addNeighbour(neighbour, EquippedTool.Neither, 1)
+                        }
+                    }
+                }
+            }
+            RegionType.Narrow -> {
+                when (neighbour.type) {
+                    RegionType.Rocky -> {
+                        if (routeNode.equippedTool == EquippedTool.Torch) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 1)
+                        } else if (routeNode.equippedTool == EquippedTool.Neither) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 8)
+                        }
+                    }
+                    RegionType.Wet -> {
+                        if (routeNode.equippedTool == EquippedTool.Torch) {
+                            addNeighbour(neighbour, EquippedTool.Neither, 8)
+                        } else if (routeNode.equippedTool == EquippedTool.Neither) {
+                            addNeighbour(neighbour, EquippedTool.Neither, 1)
+                        }
+                    }
+                    RegionType.Narrow -> {
+                        if (routeNode.equippedTool == EquippedTool.Torch) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 1)
+                            addNeighbour(neighbour, EquippedTool.Neither, 8)
+                        } else if (routeNode.equippedTool == EquippedTool.Neither) {
+                            addNeighbour(neighbour, EquippedTool.Torch, 8)
+                            addNeighbour(neighbour, EquippedTool.Neither, 1)
                         }
                     }
                 }
@@ -171,14 +174,14 @@ private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
         }
     }
 
-    if (cell.y > 0) {
-        addReachable(cell.x, cell.y - 1)
+    if (routeNode.region.y > 0) {
+        addReachable(routeNode.region.x, routeNode.region.y - 1)
     }
-    if (cell.x > 0) {
-        addReachable(cell.x - 1, cell.y)
+    if (routeNode.region.x > 0) {
+        addReachable(routeNode.region.x - 1, routeNode.region.y)
     }
-    addReachable(cell.x, cell.y + 1)
-    addReachable(cell.x + 1, cell.y)
+    addReachable(routeNode.region.x, routeNode.region.y + 1)
+    addReachable(routeNode.region.x + 1, routeNode.region.y)
 
     return reachableNeighbours.toList()
 }
@@ -188,14 +191,14 @@ fun day22a(inputLines: List<String>): Int {
 
     var riskFactor = 0
 
-    val grid = Grid(depth, Pos(targetX, targetY))
+    val grid = Cave(depth, Pos(targetX, targetY))
     for (y in 0..targetY) {
         for (x in 0..targetX) {
-            val cell = grid.getCell(x, y, EquippedTool.Neither)
-            riskFactor += when (cell.type) {
-                CellType.Rocky -> 0
-                CellType.Wet -> 1
-                CellType.Narrow -> 2
+            val region = grid.getRegion(x, y)
+            riskFactor += when (region.type) {
+                RegionType.Rocky -> 0
+                RegionType.Wet -> 1
+                RegionType.Narrow -> 2
             }
         }
     }
@@ -205,25 +208,26 @@ fun day22a(inputLines: List<String>): Int {
 fun day22b(inputLines: List<String>): Int? {
     val (depth, targetX, targetY) = parse(inputLines)
 
-    val grid = Grid(depth, Pos(targetX, targetY))
-    val topLeft = grid.getCell(0, 0, EquippedTool.Torch)
+    val cave = Cave(depth, Pos(targetX, targetY))
+    val startRegion = cave.getRegion(0, 0)
+    val startRouteNode = cave.getRouteNode(startRegion, EquippedTool.Torch)
 
-    val toVisit: PriorityQueue<Cell> = PriorityQueue { p0, p1 -> p0.costToReach - p1.costToReach }
-    toVisit.offer(topLeft)
+    val toVisit: PriorityQueue<RouteNode> = PriorityQueue { p0, p1 -> p0.costToReach - p1.costToReach }
+    toVisit.offer(startRouteNode)
 
-    val seenCells: MutableSet<Cell> = mutableSetOf()
-    seenCells.add(topLeft)
+    val seenRouteNodes: MutableSet<RouteNode> = mutableSetOf()
+    seenRouteNodes.add(startRouteNode)
 
     while (toVisit.size > 0) {
-        val currentCell = toVisit.poll()
-        if (currentCell.x == targetX && currentCell.y == targetY) {
-            return currentCell.costToReach + if (currentCell.equippedTool != EquippedTool.Torch) 7 else 0
+        val currentRouteNode = toVisit.poll()
+        if (currentRouteNode.region.x == targetX && currentRouteNode.region.y == targetY) {
+            return currentRouteNode.costToReach + if (currentRouteNode.equippedTool != EquippedTool.Torch) 7 else 0
         }
 
-        getReachableNeighbours(currentCell, grid).forEach {
-            if (!seenCells.contains(it)) {
+        getReachableNeighbours(currentRouteNode, cave).forEach {
+            if (!seenRouteNodes.contains(it)) {
                 toVisit.add(it)
-                seenCells.add(it)
+                seenRouteNodes.add(it)
             }
         }
     }
