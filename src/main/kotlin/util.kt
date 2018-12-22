@@ -1,5 +1,7 @@
 import java.io.File
 
+class Pos(val x: Int, val y: Int)
+
 inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
     val list = this
     return sequence {
