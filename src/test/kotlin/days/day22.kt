@@ -25,7 +25,7 @@ class Day22aTests {
 
 class Day22bTests {
     @Test fun testExampleInput1() {
-        assertEquals(45L,
+        assertEquals(45,
             day22b(
                 listOf(
                     "depth: 510",
@@ -36,7 +36,7 @@ class Day22bTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(null,
+        assertEquals(1025,
             day22b(readInputLines("day22"))
         )
     }

@@ -16,21 +16,25 @@ private enum class EquippedTool {
 }
 
 private class Cell(val x: Int, val y: Int, val erosionLevel: Long, val type: CellType, var equippedTool: EquippedTool) {
-    var costToReach = 10000000000L
+    var costToReach = Int.MAX_VALUE
+
+    override fun hashCode(): Int {
+        return this.y * 10000 + this.x * 10 + equippedTool.ordinal
+    }
 }
 
 private class Grid(val depth: Int, val targetPos: Pos) {
     private val grid: MutableMap<Int, MutableMap<Int, MutableMap<EquippedTool, Cell>>> = mutableMapOf()
 
     init {
-        val startCell = createCell(0, 0, EquippedTool.Torch, 0L)
-        startCell.costToReach = 0L
+        val startCell = createCell(0, 0, EquippedTool.Torch)
+        startCell.costToReach = 0
         grid[0] = mutableMapOf(Pair(0, mutableMapOf(Pair(EquippedTool.Torch, startCell))))
     }
 
-    private fun createCell(x: Int, y: Int, equippedTool: EquippedTool, maybeGeologicIndex: Long? = null): Cell {
-        val geologicIndex = maybeGeologicIndex ?: when {
-            y == targetPos.y && x == targetPos.x -> 0L
+    private fun createCell(x: Int, y: Int, equippedTool: EquippedTool): Cell {
+        val geologicIndex = when {
+            y == targetPos.y && x == targetPos.x -> 0
             y == 0 -> x * 16807L
             x == 0 -> y * 48271L
             else -> {
@@ -59,39 +63,12 @@ private class Grid(val depth: Int, val targetPos: Pos) {
         }
         return row[x]!![equippedTool]!!
     }
-
-    fun computeRiskFactor(): Int {
-        return grid.values.sumBy { row ->
-            row.values.sumBy { perTool ->
-                perTool.values.sumBy { cell ->
-                    when (cell.type) {
-                        CellType.Rocky -> 0
-                        CellType.Wet -> 1
-                        CellType.Narrow -> 2
-                    }
-                }
-            }
-        }
-    }
 }
 
 private fun parse(inputLines: List<String>): Triple<Int, Int, Int> {
     val depth = inputLines[0].substring(7).toInt()
     val (targetX, targetY) = inputLines[1].substring(8).split(',').map(String::toInt)
     return Triple(depth, targetX, targetY)
-}
-
-fun day22a(inputLines: List<String>): Int {
-    val (depth, targetX, targetY) = parse(inputLines)
-
-    val grid = Grid(depth, Pos(targetX, targetY))
-    for (y in 0..targetY) {
-        for (x in 0..targetX) {
-            grid.getCell(x, y, EquippedTool.Neither)
-        }
-    }
-
-    return grid.computeRiskFactor()
 }
 
 private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
@@ -102,7 +79,7 @@ private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
         reachableNeighbours.add(nextCell)
     }
 
-    fun findReachable(x: Int, y: Int) {
+    fun addReachable(x: Int, y: Int) {
         when (cell.type) {
             CellType.Rocky -> {
                 val neighbourWithTorch = grid.getCell(x, y, EquippedTool.Torch)
@@ -112,8 +89,7 @@ private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
                         if (cell.equippedTool == EquippedTool.Torch) {
                             addNeighbour(neighbourWithTorch, 1)
                             addNeighbour(neighbourWithClimbingGear, 8)
-                        }
-                        if (cell.equippedTool == EquippedTool.ClimbingGear) {
+                        } else if (cell.equippedTool == EquippedTool.ClimbingGear) {
                             addNeighbour(neighbourWithTorch, 8)
                             addNeighbour(neighbourWithClimbingGear, 1)
                         }
@@ -149,8 +125,7 @@ private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
                         if (cell.equippedTool == EquippedTool.ClimbingGear) {
                             addNeighbour(neighbourWithClimbingGear, 1)
                             addNeighbour(neighbourWithNeither, 8)
-                        }
-                        if (cell.equippedTool == EquippedTool.Neither) {
+                        } else if (cell.equippedTool == EquippedTool.Neither) {
                             addNeighbour(neighbourWithClimbingGear, 8)
                             addNeighbour(neighbourWithNeither, 1)
                         }
@@ -197,42 +172,60 @@ private fun getReachableNeighbours(cell: Cell, grid: Grid): List<Cell> {
     }
 
     if (cell.y > 0) {
-        findReachable(cell.x, cell.y - 1)
+        addReachable(cell.x, cell.y - 1)
     }
     if (cell.x > 0) {
-        findReachable(cell.x - 1, cell.y)
+        addReachable(cell.x - 1, cell.y)
     }
-    findReachable(cell.x, cell.y + 1)
-    findReachable(cell.x + 1, cell.y)
+    addReachable(cell.x, cell.y + 1)
+    addReachable(cell.x + 1, cell.y)
 
     return reachableNeighbours.toList()
 }
 
-fun day22b(inputLines: List<String>): Long? {
+fun day22a(inputLines: List<String>): Int {
+    val (depth, targetX, targetY) = parse(inputLines)
+
+    var riskFactor = 0
+
+    val grid = Grid(depth, Pos(targetX, targetY))
+    for (y in 0..targetY) {
+        for (x in 0..targetX) {
+            val cell = grid.getCell(x, y, EquippedTool.Neither)
+            riskFactor += when (cell.type) {
+                CellType.Rocky -> 0
+                CellType.Wet -> 1
+                CellType.Narrow -> 2
+            }
+        }
+    }
+    return riskFactor
+}
+
+fun day22b(inputLines: List<String>): Int? {
     val (depth, targetX, targetY) = parse(inputLines)
 
     val grid = Grid(depth, Pos(targetX, targetY))
-
-    val toVisit: PriorityQueue<Cell> = PriorityQueue { p0, p1 -> (p0.costToReach - p1.costToReach).toInt() }
     val topLeft = grid.getCell(0, 0, EquippedTool.Torch)
+
+    val toVisit: PriorityQueue<Cell> = PriorityQueue { p0, p1 -> p0.costToReach - p1.costToReach }
     toVisit.offer(topLeft)
 
-    val seenCells: MutableSet<String> = mutableSetOf("0_0_${topLeft.equippedTool}")
+    val seenCells: MutableSet<Cell> = mutableSetOf()
+    seenCells.add(topLeft)
 
     while (toVisit.size > 0) {
         val currentCell = toVisit.poll()
         if (currentCell.x == targetX && currentCell.y == targetY) {
-            return currentCell.costToReach
+            return currentCell.costToReach + if (currentCell.equippedTool != EquippedTool.Torch) 7 else 0
         }
 
         getReachableNeighbours(currentCell, grid).forEach {
-            val hash = "${it.x}_${it.y}_${it.equippedTool}"
-            if (!seenCells.contains(hash)) {
+            if (!seenCells.contains(it)) {
                 toVisit.add(it)
-                seenCells.add(hash)
+                seenCells.add(it)
             }
         }
     }
-
     return null
 }
