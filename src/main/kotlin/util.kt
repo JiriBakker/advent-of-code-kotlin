@@ -13,6 +13,13 @@ inline fun <T> List<T>.forEachCombinationPair(action: (Pair<T, T>) -> Unit) {
     }.forEach(action)
 }
 
+inline fun <T, U : Comparable<U>> List<T>.sortMappedByDescending(selector: (T) -> U): List<T> {
+    return this
+        .map { it -> Pair(it, selector(it)) }
+        .sortedByDescending { it.second }
+        .map { it.first }
+}
+
 inline fun <T> List<T>.getBounds(selector: (T) -> Int): Pair<Int, Int> {
     return Pair(selector(this.minBy(selector)!!), selector(this.maxBy(selector)!!))
 }
