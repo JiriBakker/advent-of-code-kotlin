@@ -1,5 +1,7 @@
 package days.day25
 
+import forEachCombinationPair
+
 private class Point(val x: Int, val y: Int, val z: Int, val t: Int) {
     val neighbours = mutableListOf<Point>()
     var constellationNr: Int? = null
@@ -28,22 +30,18 @@ private fun addToConstellation(point: Point, constellationNr: Int) {
 fun day25a(inputLines: List<String>): Int {
     val points = parse(inputLines)
 
-    for (point1 in points) {
-        for (point2 in points) {
-            if (point1.distanceTo(point2) <= 3) {
-                point1.neighbours.add(point2)
-                point2.neighbours.add(point1)
-            }
+    points.forEachCombinationPair { (point1, point2) ->
+        if (point1.distanceTo(point2) <= 3) {
+            point1.neighbours.add(point2)
+            point2.neighbours.add(point1)
         }
     }
 
     var curConstellationNr = 0
-    for (point in points) {
-        if (point.constellationNr != null) {
-            continue
+    points.forEach {
+        if (it.constellationNr == null) {
+            addToConstellation(it, curConstellationNr++)
         }
-        addToConstellation(point, curConstellationNr++)
     }
-
     return curConstellationNr
 }
