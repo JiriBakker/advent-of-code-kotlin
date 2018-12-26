@@ -1,7 +1,5 @@
 package days.day24
 
-import java.util.PriorityQueue
-
 private enum class UnitGroupType {
     Infection,
     ImmuneSystem
@@ -18,28 +16,29 @@ private class UnitGroup(
     val weaknesses: List<String>,
     val immunities: List<String>
 ) {
-    val id
-        get() = "${if (type == UnitGroupType.Infection) "inf" else "imm"}-$groupNr"
-
     var nrOfUnits = initialNrOfUnits
         private set
 
     val effectivePower
         get() = nrOfUnits * attackDamage
 
-    fun receiveAttack(attacker: UnitGroup) {
+    fun receiveAttack(attacker: UnitGroup): Int {
         val damage = computeDamageForAttack(attacker)
         val unitsKilled = damage / hitPointsPerUnit
         nrOfUnits = Math.max(0, nrOfUnits - unitsKilled)
+        return unitsKilled
     }
 
     fun computeDamageForAttack(attacker: UnitGroup): Int {
-        return when {
-            immunities.contains(attacker.attackType) -> 0
-            weaknesses.contains(attacker.attackType) -> 2 * attacker.effectivePower
+        return when (attacker.attackType) {
+            in immunities -> 0
+            in weaknesses -> 2 * attacker.effectivePower
             else -> attacker.effectivePower
         }
     }
+
+    val id
+        get() = "${if (type == UnitGroupType.Infection) "inf" else "imm"}-$groupNr"
 
     override fun toString(): String {
         return "[$id, units: $nrOfUnits, hp: $hitPointsPerUnit, dmg: $attackDamage $attackType, power: $effectivePower, init: $initiative${if (weaknesses.isNotEmpty()) ", weak: ${weaknesses.joinToString(",")}" else ""}${if (immunities.isNotEmpty()) ", immune: ${immunities.joinToString(",")}" else ""}]"
@@ -99,17 +98,21 @@ private fun parse(inputLines: List<String>, immuneSystemBoost: Int = 0): List<Un
 }
 
 private fun selectTargets(unitGroups: List<UnitGroup>): List<Pair<UnitGroup, UnitGroup>> {
-    val potentialAttackers = PriorityQueue<UnitGroup>(
-        compareByDescending<UnitGroup> { it.effectivePower }
-            .thenByDescending { it.initiative }
-    )
-    unitGroups.forEach { potentialAttackers.offer(it) }
-
+    val potentialAttackers = unitGroups.toMutableList()
     val potentialDefenders = unitGroups.toMutableList()
+
+    fun getNextAttacker(): UnitGroup? {
+        return potentialAttackers
+            .maxWith(
+                compareBy<UnitGroup> { it.effectivePower }
+                    .thenBy { it.initiative }
+            )
+    }
 
     fun findOptimalTarget(attacker: UnitGroup): UnitGroup? {
         return potentialDefenders
             .filter { it.type != attacker.type }
+            .filter { it.computeDamageForAttack(attacker) > 0 }
             .maxWith(
                 compareBy<UnitGroup> { it.computeDamageForAttack(attacker) }
                 .thenBy { it.effectivePower }
@@ -117,18 +120,17 @@ private fun selectTargets(unitGroups: List<UnitGroup>): List<Pair<UnitGroup, Uni
             )
     }
 
-    val combatPairs = mutableListOf<Pair<UnitGroup, UnitGroup>>()
-    while (potentialAttackers.isNotEmpty() && potentialDefenders.isNotEmpty()) {
-        val attacker = potentialAttackers.poll()
+    return sequence {
+        while (potentialAttackers.isNotEmpty() && potentialDefenders.isNotEmpty()) {
+            val attacker = getNextAttacker()!!
+            potentialAttackers.remove(attacker)
 
-        val defender = findOptimalTarget(attacker) ?: continue
-
-        if (defender.computeDamageForAttack(attacker) > 0L) {
+            val defender = findOptimalTarget(attacker) ?: continue
             potentialDefenders.remove(defender)
-            combatPairs.add(Pair(attacker, defender))
+
+            yield(Pair(attacker, defender))
         }
-    }
-    return combatPairs
+    }.toList()
 }
 
 private fun runBattle(unitGroups: MutableList<UnitGroup>) {
@@ -145,15 +147,12 @@ private fun runBattle(unitGroups: MutableList<UnitGroup>) {
                 continue
             }
 
-            val nrOfUnitsBeforeAttack = defender.nrOfUnits
-
-            defender.receiveAttack(attacker)
-
-            anyKilled = anyKilled || (nrOfUnitsBeforeAttack - defender.nrOfUnits) > 0
-
+            val unitsKilled = defender.receiveAttack(attacker)
             if (defender.nrOfUnits == 0) {
                 unitGroups.remove(defender)
             }
+
+            anyKilled = anyKilled || unitsKilled > 0
         }
     } while (!isFightOver() && anyKilled)
 }
