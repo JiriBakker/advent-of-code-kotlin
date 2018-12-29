@@ -32,7 +32,7 @@ private class BoundingBox(val min: Pos, val max: Pos) {
         min.z + (depth / 2)
     )
 
-    fun split(divisor: Int): List<BoundingBox> {
+    fun split(divisor: Int): Sequence<BoundingBox> {
         return sequence {
             val deltaX = Math.max(width / divisor, 1)
             val deltaY = Math.max(height / divisor, 1)
@@ -53,7 +53,7 @@ private class BoundingBox(val min: Pos, val max: Pos) {
                     }
                 }
             }
-        }.toList()
+        }
     }
 
     override fun toString(): String {
@@ -91,7 +91,7 @@ fun day23b(inputLines: List<String>): Int? {
     do {
         curBoundingBoxes =
             curBoundingBoxes
-                .flatMap { it.split(4) }
+                .flatMap { it.split(4).toList() }
                 .sortMappedByDescending(::countInRadius)
                 .take(4)
     } while (curBoundingBoxes.none { it.width == 1 })

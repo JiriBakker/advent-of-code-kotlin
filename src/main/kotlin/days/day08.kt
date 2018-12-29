@@ -13,17 +13,14 @@ private fun parse(input: Queue<Int>): Node {
     val nrOfChildren = input.poll()
     val nrOfMetadataItems = input.poll()
 
-    val children = sequence { repeat(nrOfChildren) { yield(parse(input)) } }
-    val metadata = sequence { repeat(nrOfMetadataItems) { yield(input.poll()) } }
+    val children = Array(nrOfChildren) { parse(input) }.asList()
+    val metadata = Array(nrOfMetadataItems) { input.poll() }.asList()
 
-    return Node(children.toList(), metadata.toList())
+    return Node(children, metadata)
 }
 
-private fun collectSimple(node: Node): Sequence<Int> {
-    return sequence {
-        yieldAll(node.metadata)
-        yieldAll(node.children.flatMap { collectSimple(it).toList() })
-    }
+private fun collectSimple(node: Node): List<Int> {
+    return node.metadata + node.children.flatMap { collectSimple(it) }
 }
 
 private fun collectComplex(node: Node): Sequence<Int> {
@@ -32,8 +29,7 @@ private fun collectComplex(node: Node): Sequence<Int> {
             return@sequence
         }
 
-        val hasChildren = node.children.isNotEmpty()
-        if (hasChildren) {
+        if (node.children.isNotEmpty()) {
             yieldAll(node.metadata.flatMap {
                 if (it > 0 && it <= node.children.size) {
                     collectComplex(node.children[it - 1]).toList()

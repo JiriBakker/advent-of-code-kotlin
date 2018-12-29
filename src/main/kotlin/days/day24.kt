@@ -97,7 +97,7 @@ private fun parse(inputLines: List<String>, immuneSystemBoost: Int = 0): List<Un
     }.toList()
 }
 
-private fun selectTargets(unitGroups: List<UnitGroup>): List<Pair<UnitGroup, UnitGroup>> {
+private fun selectTargets(unitGroups: List<UnitGroup>): Sequence<Pair<UnitGroup, UnitGroup>> {
     val potentialAttackers = unitGroups.toMutableList()
     val potentialDefenders = unitGroups.toMutableList()
 
@@ -130,7 +130,7 @@ private fun selectTargets(unitGroups: List<UnitGroup>): List<Pair<UnitGroup, Uni
 
             yield(Pair(attacker, defender))
         }
-    }.toList()
+    }
 }
 
 private fun runBattle(unitGroups: MutableList<UnitGroup>) {

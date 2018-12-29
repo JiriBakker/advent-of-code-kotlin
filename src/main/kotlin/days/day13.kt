@@ -146,15 +146,15 @@ private class Tracks private constructor(private val grid: Array<Array<TrackCell
                 val cell = grid[x][y]
                 when {
                     cell == null -> print(" ")
-                    cell!!.cart != null ->
-                        print(when (cell!!.cart!!.direction) {
+                    cell.cart != null ->
+                        print(when (cell.cart!!.direction) {
                             CartDirection.LEFT -> '<'
                             CartDirection.UP -> '^'
                             CartDirection.RIGHT -> '>'
                             CartDirection.DOWN -> 'v'
                         })
                     else ->
-                        print(when (cell!!.type) {
+                        print(when (cell.type) {
                             TrackCellType.HORIZONTAL -> '-'
                             TrackCellType.VERTICAL -> '|'
                             TrackCellType.INTERSECTION -> '+'
@@ -181,7 +181,7 @@ private class Tracks private constructor(private val grid: Array<Array<TrackCell
                     CartDirection.UP -> Pos(cart.x, cart.y - 1)
                     CartDirection.RIGHT -> Pos(cart.x + 1, cart.y)
                     CartDirection.DOWN -> Pos(cart.x, cart.y + 1)
-                }!!
+                }
 
                 val nextCell = grid[nextX][nextY]!!
                 if (nextCell.cart != null) {

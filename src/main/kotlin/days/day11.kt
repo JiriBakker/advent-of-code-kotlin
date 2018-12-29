@@ -37,7 +37,7 @@ fun day11a(serialNumberString: String): Pair<Int, Int> {
         }
     }
 
-    return Pair(maxPowerSquare!!.x, maxPowerSquare!!.y)
+    return Pair(maxPowerSquare!!.x, maxPowerSquare.y)
 }
 
 fun day11b(serialNumberString: String): Triple<Int, Int, Int> {
