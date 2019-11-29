@@ -17,9 +17,9 @@ repositories {
     jcenter()
 }
 
-mainClassName = 'MainKt'
-
-defaultTasks 'run'
+run {
+    main = project.hasProperty("year") ? "v" + getProperty("year") + "/MainKt" : "INPUT-YEAR"
+}
 
 dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
@@ -29,7 +29,12 @@ dependencies {
 }
 
 test {
+    filter {
+        includeTestsMatching project.hasProperty("year") ? "v" + getProperty("year") + ".*" : "*"
+    }
+
     testLogging {
         showStandardStreams = true
     }
 }
+
