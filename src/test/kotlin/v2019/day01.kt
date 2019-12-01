@@ -10,7 +10,6 @@ private fun parseCsv(exampleInput: String): List<String> {
 }
 
 class Day01aTests {
-
     @Test fun testExampleInput1() {
         assertEquals(2, day01a(parseCsv("12")))
     }
@@ -37,7 +36,6 @@ class Day01aTests {
 }
 
 class Day01bTests {
-
     @Test fun testExampleInput1() {
         assertEquals(2, day01b(parseCsv("12")))
     }

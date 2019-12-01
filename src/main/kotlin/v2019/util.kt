@@ -37,3 +37,11 @@ fun readInputLines(fileName: String): List<String> {
 fun readInputLine(fileName: String): String {
     return readInputLines(fileName).single()
 }
+
+inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
+    var sum = 0L
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
+}
