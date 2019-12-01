@@ -9,14 +9,16 @@ private fun computeRequiredFuel(mass: Long): Long {
 
 fun day01a(input: List<String>): Long {
     return input
-        .sumByLong { mass -> computeRequiredFuel(mass.toLong()) }
+        .map { it.toLong() }
+        .sumByLong { mass -> computeRequiredFuel(mass) }
 }
 
 fun day01b(input: List<String>): Long {
-   return input
+    return input
+        .map { it.toLong() }
         .sumByLong { mass ->
             generateSequence(
-                computeRequiredFuel(mass.toLong()),
+                computeRequiredFuel(mass),
                 { fuelMass -> if (fuelMass == 0L) null else computeRequiredFuel(fuelMass) }
             ).sum()
         }
