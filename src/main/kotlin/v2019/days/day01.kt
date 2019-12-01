@@ -1,9 +1,27 @@
-package v2019.days.day01
+package v2019.days
 
-fun day01a(changes: List<String>): Int {
-    return 0
+import kotlin.math.max
+
+private fun computeRequiredFuel(mass: Long): Long {
+    return max(mass / 3 - 2, 0)
 }
 
-fun day01b(changes: List<String>): Int {
-    return 0
+fun day01a(input: List<String>): Long {
+    return input
+        .map { computeRequiredFuel(it.toLong()) }
+        .sum()
+}
+
+fun day01b(input: List<String>): Long {
+   return input
+        .map {
+            var requiredFuel = computeRequiredFuel(it.toLong())
+            var totalFuel = requiredFuel
+            while (computeRequiredFuel(requiredFuel) > 0) {
+                totalFuel += computeRequiredFuel(requiredFuel)
+                requiredFuel = computeRequiredFuel(requiredFuel)
+            }
+            totalFuel
+        }
+        .sum()
 }
