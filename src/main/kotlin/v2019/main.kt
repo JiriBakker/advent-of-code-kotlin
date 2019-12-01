@@ -1,6 +1,7 @@
 package v2019
 
-import v2019.days.*
+import v2019.days.day01.day01a
+import v2019.days.day01.day01b
 import kotlin.system.measureTimeMillis
 
 private fun time(func: () -> Unit) {

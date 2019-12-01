@@ -1,4 +1,4 @@
-package v2019.days
+package v2019.days.day01
 
 import v2019.sumByLong
 import kotlin.math.max

@@ -2,8 +2,8 @@ package v2019
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2019.days.day01a
-import v2019.days.day01b
+import v2019.days.day01.day01a
+import v2019.days.day01.day01b
 
 private fun parseCsv(exampleInput: String): List<String> {
     return exampleInput.split(", ")
