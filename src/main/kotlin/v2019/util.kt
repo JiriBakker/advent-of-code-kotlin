@@ -6,6 +6,10 @@ fun readInputLines(fileName: String): List<String> {
     return File("input/2019/$fileName").readLines()
 }
 
+fun readInputLine(fileName: String): String {
+    return readInputLines(fileName).single()
+}
+
 inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     var sum = 0L
     for (element in this) {
