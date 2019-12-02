@@ -34,10 +34,10 @@ private class SearchRange(var min: Int, var max: Int) {
     fun median(): Int {
         return ((max - min) / 2) + min
     }
-    fun raiseMin() {
+    fun consolidateMin() {
         min = median() + 1
     }
-    fun lowerMax() {
+    fun consolidateMax() {
         max = median() - 1
     }
 }
@@ -48,39 +48,36 @@ fun day02b_binarySearch(input: String): Int {
     val intCodes = parseIntCodes(input)
 
     val range1 = SearchRange(0, 99)
+    val range2 = SearchRange(0, 99)
 
-    while (range1.max >= range1.min) {
-        val range2 = SearchRange(0, 99)
+    fun findOptimal(range: SearchRange) {
+        while (range.max >= range.min) {
+            val result = runProgram(intCodes.toList(), listOf(Pair(1, range1.median()), Pair(2, range2.median())))
 
-        var result = 0
-
-        while (range2.max >= range2.min) {
-            result = runProgram(intCodes.toList(), listOf(Pair(1, range1.median()), Pair(2, range2.median())))
             when {
-                result == target -> return 100 * range1.median() + range2.median()
-                result > target -> range2.lowerMax()
-                else -> range2.raiseMin()
+                result == target -> return
+                result > target  -> range.consolidateMax()
+                else             -> range.consolidateMin()
             }
-        }
-
-        when {
-            result > target -> range1.lowerMax()
-            else -> range1.raiseMin()
         }
     }
 
-    throw Exception("No answer found")
+    findOptimal(range1)
+    findOptimal(range2)
+
+    return 100 * range1.median() + range2.median()
 }
 
 fun day02b_bruteForce(input: String): Int {
     val intCodes = parseIntCodes(input)
 
-    for (i1 in 0..99)
+    for (i1 in 0..99) {
         for (i2 in 0..99) {
             if (runProgram(intCodes.toList(), listOf(Pair(1, i1), Pair(2, i2))) == 19690720) {
                 return 100 * i1 + i2
             }
         }
+    }
 
     throw Exception("No answer found")
 }
