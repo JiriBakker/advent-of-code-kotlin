@@ -8,7 +8,9 @@ private fun runProgram(initialIntCodes: List<Int>, overrides: List<Pair<Int, Int
     val intCodes = initialIntCodes.toMutableList()
     overrides.forEach { intCodes[it.first] = it.second }
 
-    val updateIntCodes = { operation: (Int, Int) -> Int, pointer: Int -> intCodes[intCodes[pointer + 3]] = operation(intCodes[intCodes[pointer + 1]], intCodes[intCodes[pointer + 2]]) }
+    val updateIntCodes = { operation: (Int, Int) -> Int, pointer: Int ->
+        intCodes[intCodes[pointer + 3]] = operation(intCodes[intCodes[pointer + 1]], intCodes[intCodes[pointer + 2]])
+    }
 
     var pointer = 0
 
@@ -28,7 +30,49 @@ fun day02a(input: String, overrides: List<Pair<Int, Int>> = listOf()): Int {
     return runProgram(intCodes, overrides)
 }
 
-fun day02b(input: String): Int {
+private class SearchRange(var min: Int, var max: Int) {
+    fun median(): Int {
+        return ((max - min) / 2) + min
+    }
+    fun raiseMin() {
+        min = median() + 1
+    }
+    fun lowerMax() {
+        max = median() - 1
+    }
+}
+
+fun day02b_binarySearch(input: String): Int {
+    val target = 19690720
+
+    val intCodes = parseIntCodes(input)
+
+    val range1 = SearchRange(0, 99)
+
+    while (range1.max >= range1.min) {
+        val range2 = SearchRange(0, 99)
+
+        var result = 0
+
+        while (range2.max >= range2.min) {
+            result = runProgram(intCodes.toList(), listOf(Pair(1, range1.median()), Pair(2, range2.median())))
+            when {
+                result == target -> return 100 * range1.median() + range2.median()
+                result > target -> range2.lowerMax()
+                else -> range2.raiseMin()
+            }
+        }
+
+        when {
+            result > target -> range1.lowerMax()
+            else -> range1.raiseMin()
+        }
+    }
+
+    throw Exception("No answer found")
+}
+
+fun day02b_bruteForce(input: String): Int {
     val intCodes = parseIntCodes(input)
 
     for (i1 in 0..99)
