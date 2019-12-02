@@ -12,17 +12,15 @@ private fun runProgram(initialIntCodes: List<Int>, overrides: List<Pair<Int, Int
 
     var pointer = 0
 
-    loop@ while (true) {
+    while (true) {
         when (intCodes[pointer]) {
             1 -> updateIntCodes(Int::plus, pointer)
             2 -> updateIntCodes(Int::times, pointer)
-            99 -> break@loop
+            99 -> return intCodes.first()
             else -> throw Exception("Unknown opCode")
         }
         pointer += 4
     }
-
-    return intCodes.first()
 }
 
 fun day02a(input: String, overrides: List<Pair<Int, Int>> = listOf()): Int {
