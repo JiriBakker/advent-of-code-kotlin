@@ -51,7 +51,7 @@ fun day02b_binarySearch(input: String): Int {
     val range2 = SearchRange(0, 99)
 
     fun findOptimal(range: SearchRange) {
-        while (range.max >= range.min) {
+        while (range.max > range.min) {
             val result = runProgram(intCodes.toList(), listOf(Pair(1, range1.median()), Pair(2, range2.median())))
 
             when {
