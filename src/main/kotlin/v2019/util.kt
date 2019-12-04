@@ -30,3 +30,8 @@ inline fun Iterable<Int>.toOrderedGroups(): List<List<Int>> {
         acc
     })
 }
+
+inline fun Iterable<Int>.countDigits(): List<Pair<Int, Int>> {
+    val groups = this.groupBy { it }
+    return this.map { Pair(it, groups[it]!!.size) }
+}

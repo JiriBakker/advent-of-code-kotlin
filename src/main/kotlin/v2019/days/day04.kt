@@ -1,29 +1,29 @@
 package v2019.days.day04
 
-import v2019.toOrderedGroups
+private fun isValidNr(number: Long, condition: (Int) -> Boolean): Boolean {
+    val digits = number.toString().map(Character::getNumericValue)
 
-private fun isValidNr(value: Long, condition: (List<Int>) -> Boolean): Boolean {
-    var hasDecreased = false
+    val hasDouble =
+        digits
+            .zipWithNext()
+            .filter { (a, b) -> a == b }
+            .groupBy { it.first }
+            .any { condition(it.value.size) }
 
-    val digits = value.toString().map(Char::toInt).toOrderedGroups()
+    val isIncreasing = digits.sorted() == digits
 
-    digits.reduce { prev, cur ->
-        if (prev.first() > cur.first()) hasDecreased = true
-        cur
-    }
-
-    return digits.any(condition) && !hasDecreased
+    return hasDouble && isIncreasing
 }
 
 fun day04a(input: String): Int {
     val (min, max) = input.split("-").map(String::toLong)
 
-    return LongRange(min, max).filter { nr -> isValidNr(nr) { it.size >= 2 } }.size
+    return LongRange(min, max).filter { nr -> isValidNr(nr) { it == it } }.size
 }
 
 fun day04b(input: String): Int {
     val (min, max) = input.split("-").map(String::toLong)
 
-    return LongRange(min, max).filter { nr -> isValidNr(nr) { it.size == 2 } }.size
+    return LongRange(min, max).filter { nr -> isValidNr(nr) { it == 1 } }.size
 }
 
