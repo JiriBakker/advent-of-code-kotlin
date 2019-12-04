@@ -18,20 +18,14 @@ inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     return sum
 }
 
-inline fun Iterable<Int>.toOrderedGroups(): List<List<Int>> {
-    val initial: MutableList<MutableList<Int>> = mutableListOf(mutableListOf())
-    return this.fold(initial, { acc, cur ->
-        if (acc.last().isEmpty() || acc.last().first() == cur) {
-            acc.last().add(cur)
-        }
-        else {
-            acc.add(mutableListOf(cur))
-        }
-        acc
-    })
+fun Long.toDigits(): List<Int> {
+    return this.toString().map(Character::getNumericValue)
 }
 
-inline fun Iterable<Int>.countDigits(): List<Pair<Int, Int>> {
-    val groups = this.groupBy { it }
-    return this.map { Pair(it, groups[it]!!.size) }
+fun List<Int>.joinToLong(): Long {
+    return this.joinToString("").toLong()
+}
+
+fun Long.firstDigit(): Int {
+    return Character.getNumericValue(this.toString().first())
 }

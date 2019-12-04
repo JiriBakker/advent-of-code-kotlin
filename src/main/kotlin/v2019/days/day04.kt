@@ -1,19 +1,16 @@
 package v2019.days.day04
 
-private fun hasDouble(digits: List<Int>, condition: (Int) -> Boolean): Boolean {
-    return digits
-        .zipWithNext()
-        .filter { (a, b) -> a == b }
-        .groupBy { it.first }
-        .any { condition(it.value.size) }
-}
+import v2019.firstDigit
+import v2019.joinToLong
+import v2019.toDigits
 
-private fun Long.toDigits(): List<Int> {
-    return this.toString().map(Character::getNumericValue)
-}
+private fun findAscendingNumbersInRange(min: Long, max: Long): List<Long> {
+    val maxLength = max.toString().length
+    val lowestDigit = if (maxLength > min.toString().length) 0 else min.firstDigit()
 
-private fun List<Int>.joinToLong(): Long {
-    return this.joinToString("").toLong()
+    return IntRange(lowestDigit, max.firstDigit())
+        .flatMap { digit -> generateAscendingNumbers(listOf(digit), maxLength) }
+        .filter { nr -> nr in min..max }
 }
 
 private fun generateAscendingNumbers(digits: List<Int>, maxLength: Int): List<Long> {
@@ -25,16 +22,12 @@ private fun generateAscendingNumbers(digits: List<Int>, maxLength: Int): List<Lo
         .flatMap { digit -> generateAscendingNumbers(digits.toMutableList().plus(digit), maxLength) }
 }
 
-private fun firstDigit(number: Long): Int {
-    return Character.getNumericValue(number.toString().first())
-}
-
-private fun findAscendingNumbersInRange(min: Long, max: Long): List<Long> {
-    val maxLength = max.toString().length
-    val lowestDigit = if (maxLength > min.toString().length) 0 else firstDigit(min)
-    return IntRange(lowestDigit, firstDigit(max))
-        .flatMap { digit -> generateAscendingNumbers(listOf(digit), maxLength) }
-        .filter { nr -> nr in min..max }
+private fun hasDouble(digits: List<Int>, condition: (Int) -> Boolean): Boolean {
+    return digits
+        .zipWithNext()
+        .filter { (a, b) -> a == b }
+        .groupBy { it.first }
+        .any { condition(it.value.size) }
 }
 
 fun day04a(input: String): Int {
@@ -52,4 +45,3 @@ fun day04b(input: String): Int {
 
     return ascendingNumbers.filter { nr -> hasDouble(nr.toDigits()) { it == 1 } }.size
 }
-
