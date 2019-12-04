@@ -1,18 +1,15 @@
 package v2019.days.day04
 
-private fun isValidNr(number: Long, condition: (Int) -> Boolean): Boolean {
-    val digits = number.toString().map(Character::getNumericValue)
+private fun hasDouble(digits: List<Int>, condition: (Int) -> Boolean): Boolean {
+    return digits
+        .zipWithNext()
+        .filter { (a, b) -> a == b }
+        .groupBy { it.first }
+        .any { condition(it.value.size) }
+}
 
-    val hasDouble =
-        digits
-            .zipWithNext()
-            .filter { (a, b) -> a == b }
-            .groupBy { it.first }
-            .any { condition(it.value.size) }
-
-    val isIncreasing = digits.sorted() == digits
-
-    return hasDouble && isIncreasing
+private fun Long.toDigits(): List<Int> {
+    return this.toString().map(Character::getNumericValue)
 }
 
 private fun List<Int>.joinToLong(): Long {
@@ -45,14 +42,14 @@ fun day04a(input: String): Int {
 
     val ascendingNumbers = findAscendingNumbersInRange(min, max)
 
-    return ascendingNumbers.filter { nr -> isValidNr(nr) { it == it } }.size
+    return ascendingNumbers.filter { nr -> hasDouble(nr.toDigits()) { it == it } }.size
 }
 
 fun day04b(input: String): Int {
-     val (min, max) = input.split("-").map(String::toLong)
+    val (min, max) = input.split("-").map(String::toLong)
 
     val ascendingNumbers = findAscendingNumbersInRange(min, max)
 
-    return ascendingNumbers.filter { nr -> isValidNr(nr) { it == 1 } }.size
+    return ascendingNumbers.filter { nr -> hasDouble(nr.toDigits()) { it == 1 } }.size
 }
 
