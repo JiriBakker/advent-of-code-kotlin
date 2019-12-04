@@ -18,3 +18,15 @@ inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     return sum
 }
 
+inline fun Iterable<Int>.toOrderedGroups(): List<List<Int>> {
+    val initial: MutableList<MutableList<Int>> = mutableListOf(mutableListOf())
+    return this.fold(initial, { acc, cur ->
+        if (acc.last().isEmpty() || acc.last().first() == cur) {
+            acc.last().add(cur)
+        }
+        else {
+            acc.add(mutableListOf(cur))
+        }
+        acc
+    })
+}

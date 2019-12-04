@@ -6,6 +6,8 @@ import v2019.days.day02.day02a
 import v2019.days.day02.day02b_binarySearch
 import v2019.days.day03.day03a
 import v2019.days.day03.day03b
+import v2019.days.day04.day04a
+import v2019.days.day04.day04b
 import v2019.extra.infiA
 import v2019.extra.infiB
 import kotlin.system.measureTimeMillis
@@ -24,4 +26,6 @@ fun main() {
     time { print("Day02b: " + day02b_binarySearch(readInputLine("day02"))) }
     time { print("Day03a: " + day03a(readInputLines("day03"))) }
     time { print("Day03b: " + day03b(readInputLines("day03"))) }
+    time { print("Day04a: " + day04a(readInputLine("day04"))) }
+    time { print("Day04b: " + day04b(readInputLine("day04"))) }
 }
