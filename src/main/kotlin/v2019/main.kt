@@ -4,6 +4,8 @@ import v2019.days.day01.day01a
 import v2019.days.day01.day01b
 import v2019.days.day02.day02a
 import v2019.days.day02.day02b_binarySearch
+import v2019.days.day02.day05a
+import v2019.days.day02.day05b
 import v2019.days.day03.day03a
 import v2019.days.day03.day03b
 import v2019.days.day04.day04a
@@ -28,4 +30,6 @@ fun main() {
     time { print("Day03b: " + day03b(readInputLines("day03"))) }
     time { print("Day04a: " + day04a(readInputLine("day04"))) }
     time { print("Day04b: " + day04b(readInputLine("day04"))) }
+    time { print("Day05a: " + day05a(readInputLine("day05"))) }
+    time { print("Day05b: " + day05b(readInputLine("day05"))) }
 }
