@@ -1,7 +1,7 @@
 package v2019.days.day02
 
-import v2019.parseIntCodes
-import v2019.runProgram
+import v2019.intCoder.parseIntCodes
+import v2019.intCoder.runProgram
 
 fun day05a(input: String): Int {
     val intCodes = parseIntCodes(input)

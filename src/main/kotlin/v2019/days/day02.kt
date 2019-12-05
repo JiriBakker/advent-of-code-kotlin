@@ -1,7 +1,7 @@
 package v2019.days.day02
 
-import v2019.parseIntCodes
-import v2019.runProgram
+import v2019.intCoder.parseIntCodes
+import v2019.intCoder.runProgram
 
 fun day02a(input: String, overrides: List<Pair<Int, Int>> = listOf()): Int {
     val intCodes = parseIntCodes(input).toMutableList()
@@ -22,7 +22,7 @@ private class SearchRange(var min: Int, var max: Int) {
     fun consolidateMax() {
         max = median() - 1
     }
-}
+} ""
 
 fun day02b_binarySearch(input: String): Int {
     val target = 19690720

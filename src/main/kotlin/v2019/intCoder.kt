@@ -1,6 +1,6 @@
-package v2019
+package v2019.intCoder
 
-enum class ParamMode {
+private enum class ParamMode {
     Position,
     Immediate;
 
@@ -14,7 +14,7 @@ enum class ParamMode {
     }
 }
 
-class Instruction(val opcode: Int, val paramModes: Pair<ParamMode, ParamMode>)
+private class Instruction(val opcode: Int, val paramModes: Pair<ParamMode, ParamMode>)
 
 fun parseIntCodes(input: String): List<Int> {
     return input.split(",").map(String::toInt)
@@ -87,7 +87,6 @@ fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>,
 
     var pointer = 0
     val output = mutableListOf<Int>()
-    var loopNr = 0
 
     while (true) {
         val instruction = parseInstruction(intCodes[pointer])
@@ -123,8 +122,7 @@ fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>,
                 pointer += 4
             }
             99 -> return Pair(intCodes, output)
-            else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer (loop $loopNr)")
+            else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer")
         }
-        loopNr++
     }
 }
