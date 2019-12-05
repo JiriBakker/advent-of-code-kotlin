@@ -22,7 +22,7 @@ private class SearchRange(var min: Int, var max: Int) {
     fun consolidateMax() {
         max = median() - 1
     }
-} ""
+}
 
 fun day02b_binarySearch(input: String): Int {
     val target = 19690720
