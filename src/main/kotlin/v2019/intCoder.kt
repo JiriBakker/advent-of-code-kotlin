@@ -2,46 +2,33 @@ package v2019.intCoder
 
 private enum class ParamMode {
     Position,
-    Immediate;
-
-    companion object {
-        fun from(int: Int): ParamMode {
-            return when (int) {
-                0 -> Position
-                else -> Immediate
-            }
-        }
-    }
+    Immediate
 }
 
-private class Instruction(val opcode: Int, val paramModes: Pair<ParamMode, ParamMode>)
+private class Instruction(val opcode: Int, val modes: List<ParamMode>)
 
 fun parseIntCodes(input: String): List<Int> {
     return input.split(",").map(String::toInt)
 }
 
 private fun parseInstruction(value: Int): Instruction {
-    val ints = value.toString().map(Character::getNumericValue).reversed()
+    val opcode = value % 100
 
-    val opcode = when (ints.size) {
-        1 -> ints[0]
-        else -> ints[1] * 10 + ints[0]
-    }
+    val modes =
+        value.toString()
+            .dropLast(2)
+            .padStart(2, '0')
+            .map { if (it == '0') ParamMode.Position else ParamMode.Immediate }
+            .reversed()
 
-    val paramModes = when (ints.size) {
-        4 -> Pair(ParamMode.from(ints[2]), ParamMode.from(ints[3]))
-        3 -> Pair(ParamMode.from(ints[2]), ParamMode.Position)
-        else -> Pair(ParamMode.Position, ParamMode.Position)
-    }
-
-    return Instruction(opcode, paramModes)
+    return Instruction(opcode, modes)
 }
 
 fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>, List<Int>> {
     val intCodes = initialIntCodes.toMutableList()
 
-    fun get(pointer: Int, paramMode: ParamMode): Int {
-        return when (paramMode) {
+    fun get(pointer: Int, mode: ParamMode): Int {
+        return when (mode) {
             ParamMode.Position -> intCodes[intCodes[pointer]]
             ParamMode.Immediate -> intCodes[pointer]
         }
@@ -51,35 +38,25 @@ fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>,
         intCodes[intCodes[pointer]] = value
     }
 
-    fun apply4Operation(
-        operation: (Int, Int) -> Int,
-        pointer: Int,
-        paramModes: Pair<ParamMode, ParamMode>
-    ) {
+    fun applyModification(operation: (Int, Int) -> Int, pointer: Int, modes: List<ParamMode>) {
         set(pointer + 3,
             operation(
-                get(pointer + 1, paramModes.first),
-                get(pointer + 2, paramModes.second)
+                get(pointer + 1, modes[0]),
+                get(pointer + 2, modes[1])
             )
         )
     }
 
-    fun applyCompareOperation(compare: (Int, Int) -> Boolean, pointer: Int, paramModes: Pair<ParamMode, ParamMode>) {
-        val firstParam = get(pointer + 1, paramModes.first)
-        val secondParam = get(pointer + 2, paramModes.second)
+    fun applyCompare(compare: (Int, Int) -> Boolean, pointer: Int, modes: List<ParamMode>) {
+        val firstParam = get(pointer + 1, modes[0])
+        val secondParam = get(pointer + 2, modes[1])
 
-        set(pointer + 3,
-            if (compare(firstParam, secondParam)) {
-                1
-            } else {
-                0
-            }
-        )
+        set(pointer + 3, if (compare(firstParam, secondParam)) 1 else 0)
     }
 
-    fun applyJump(condition: (Int) -> Boolean, pointer: Int, paramModes: Pair<ParamMode, ParamMode>): Int {
-        return if (condition(get(pointer + 1, paramModes.first))) {
-            get(pointer + 2, paramModes.second)
+    fun applyJump(condition: (Int) -> Boolean, pointer: Int, modes: List<ParamMode>): Int {
+        return if (condition(get(pointer + 1, modes[0]))) {
+            get(pointer + 2, modes[1])
         } else {
             pointer + 3
         }
@@ -92,11 +69,11 @@ fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>,
         val instruction = parseInstruction(intCodes[pointer])
         when (instruction.opcode) {
             1 -> {
-                apply4Operation(Int::plus, pointer, instruction.paramModes)
+                applyModification(Int::plus, pointer, instruction.modes)
                 pointer += 4
             }
             2 -> {
-                apply4Operation(Int::times, pointer, instruction.paramModes)
+                applyModification(Int::times, pointer, instruction.modes)
                 pointer += 4
             }
             3 -> {
@@ -104,21 +81,21 @@ fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>,
                 pointer += 2
             }
             4 -> {
-                output.add(get(pointer + 1, instruction.paramModes.first))
+                output.add(get(pointer + 1, instruction.modes[0]))
                 pointer += 2
             }
             5 -> {
-                pointer = applyJump({ it != 0 }, pointer, instruction.paramModes)
+                pointer = applyJump({ it != 0 }, pointer, instruction.modes)
             }
             6 -> {
-                pointer = applyJump({ it == 0 }, pointer, instruction.paramModes)
+                pointer = applyJump({ it == 0 }, pointer, instruction.modes)
             }
             7 -> {
-                applyCompareOperation({ a, b -> a < b }, pointer, instruction.paramModes)
+                applyCompare({ a, b -> a < b }, pointer, instruction.modes)
                 pointer += 4
             }
             8 -> {
-                applyCompareOperation({ a, b -> a == b }, pointer, instruction.paramModes)
+                applyCompare({ a, b -> a == b }, pointer, instruction.modes)
                 pointer += 4
             }
             99 -> return Pair(intCodes, output)
