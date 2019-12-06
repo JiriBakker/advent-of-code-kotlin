@@ -1,7 +1,5 @@
 package v2019.days.day06
 
-import java.util.PriorityQueue
-
 private class SpaceObject(
     val name: String,
     var orbits: SpaceObject? = null,
@@ -37,27 +35,20 @@ private fun countOrbitDescendancies(spaceObject: SpaceObject, nrOfAncestors: Int
     } + nrOfAncestors
 }
 
-private fun findShortestPath(origin: SpaceObject, destination: SpaceObject): Int {
-    val visited = mutableSetOf<String>()
-
-    val toVisit = PriorityQueue<Pair<SpaceObject, Int>> { a, b -> a.second - b.second }
-    toVisit.add(Pair(origin, 0))
-
-    while (toVisit.isNotEmpty()) {
-        val (current, distance) = toVisit.poll()
-
-        if (current == destination) { return distance }
-        if (visited.contains(current.name)) { continue }
-
-        visited.add(current.name)
-
-        if (current.orbits != null) {
-            toVisit.add(Pair(current.orbits!!, distance + 1))
-        }
-        toVisit.addAll(current.orbiters.map { Pair(it, distance + 1) })
+private fun findCombinedDistanceToFirstCommonAncestor(a: SpaceObject, b: SpaceObject): Int {
+    fun distancesTo(spaceObject: SpaceObject): List<Pair<String, Int>> {
+        return generateSequence(spaceObject) { it.orbits }
+            .mapIndexed { distance, obj -> obj.name to distance }
+            .toList()
+            .reversed()
     }
 
-    error("No path found from ${origin.name} to ${destination.name}")
+    val firstDiff =
+        distancesTo(a)
+            .zip(distancesTo(b))
+            .first { it.first.first != it.second.first }
+
+    return firstDiff.first.second + firstDiff.second.second + 2
 }
 
 fun day06a(input: List<String>): Int {
@@ -75,5 +66,5 @@ fun day06b(input: List<String>): Int {
     val santa = spaceObjects[SAN] ?: error("No SAN found")
 
     // '- 2' because we're only count orbital transfers, so we don't have to count the orbit 'steps' for YOU and SAN themselves
-    return findShortestPath(you, santa) - 2
+    return findCombinedDistanceToFirstCommonAncestor(you, santa) - 2
 }
