@@ -1,4 +1,4 @@
-package v2019.days.day02
+package v2019.days.day05
 
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
