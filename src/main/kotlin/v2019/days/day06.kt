@@ -2,57 +2,52 @@ package v2019.days.day06
 
 import java.util.PriorityQueue
 
-private class SpaceObject(val name: String, var orbits: SpaceObject?, val orbiters: MutableList<SpaceObject> = mutableListOf())
+private class SpaceObject(
+    val name: String,
+    var orbits: SpaceObject? = null,
+    val orbiters: MutableList<SpaceObject> = mutableListOf()
+)
 
 private const val COM = "COM"
 private const val YOU = "YOU"
 private const val SAN = "SAN"
 
 private fun parseSpaceObjects(input: List<String>): Map<String, SpaceObject> {
-    return input.fold(mutableMapOf(), { spaceObjects, line ->
-        val (centerName, orbiterName) = line.split(")")
+    val spaceObjects = mutableMapOf<String, SpaceObject>()
 
-        if (!spaceObjects.containsKey(orbiterName)) {
-            spaceObjects[orbiterName] = SpaceObject(orbiterName, null)
+    fun getOrCreate(name: String): SpaceObject {
+        return spaceObjects.getOrPut(name) { SpaceObject(name) }
+    }
+
+    input
+        .map { it.split(")") }
+        .forEach { (centerName, orbiterName) ->
+            val center = getOrCreate(centerName)
+            val orbiter = getOrCreate(orbiterName)
+            center.orbiters.add(orbiter)
+            orbiter.orbits = center
         }
 
-        if (!spaceObjects.containsKey(centerName)) {
-            spaceObjects[centerName] = SpaceObject(centerName, null)
-        }
-
-        val orbiter = spaceObjects[orbiterName]!!
-        val center = spaceObjects[centerName]!!
-
-        orbiter.orbits = center
-        center.orbiters.add(orbiter)
-
-        spaceObjects
-    })
+    return spaceObjects
 }
 
 private fun countOrbitDescendancies(spaceObject: SpaceObject, nrOfAncestors: Int): Int {
     return spaceObject.orbiters.sumBy {
         countOrbitDescendancies(it, nrOfAncestors + 1)
     } + nrOfAncestors
-
 }
 
 private fun findShortestPath(origin: SpaceObject, destination: SpaceObject): Int {
-    val toVisit = PriorityQueue<Pair<SpaceObject, Int>> { a, b -> a.second - b.second }
     val visited = mutableSetOf<String>()
 
+    val toVisit = PriorityQueue<Pair<SpaceObject, Int>> { a, b -> a.second - b.second }
     toVisit.add(Pair(origin, 0))
 
     while (toVisit.isNotEmpty()) {
         val (current, distance) = toVisit.poll()
 
-        if (current == destination) {
-            return distance
-        }
-
-        if (visited.contains(current.name)) {
-            continue
-        }
+        if (current == destination) { return distance }
+        if (visited.contains(current.name)) { continue }
 
         visited.add(current.name)
 
