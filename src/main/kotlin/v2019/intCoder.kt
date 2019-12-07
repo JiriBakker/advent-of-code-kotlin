@@ -72,7 +72,6 @@ fun runProgram(initialProgramState: ProgramState): ProgramState {
     }
 
     var pointer = initialProgramState.pointer
-    val output = mutableListOf<Int>()
 
     while (true) {
         val instruction = parseInstruction(intCodes[pointer])
