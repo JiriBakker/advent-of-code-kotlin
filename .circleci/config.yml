@@ -1,0 +1,16 @@
+version: 2
+jobs:
+  test:
+    docker:
+      - image: debian:stretch
+
+    steps:
+      - checkout
+
+      - run:
+          name: Tests 2018
+          command: ./gradlew test -Pyear=2018
+
+      - run:
+          name: Tests 2019
+          command: ./gradlew test -Pyear=2019

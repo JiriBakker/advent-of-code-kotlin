@@ -12,6 +12,8 @@ import v2019.days.day05.day05a
 import v2019.days.day05.day05b
 import v2019.days.day06.day06a
 import v2019.days.day06.day06b
+import v2019.days.day07.day07a
+import v2019.days.day07.day07b
 import v2019.extra.infiA
 import v2019.extra.infiB
 import kotlin.system.measureTimeMillis
@@ -36,4 +38,6 @@ fun main() {
     time { print("Day05b: " + day05b(readInputLine("day05"))) }
     time { print("Day06a: " + day06a(readInputLines("day06"))) }
     time { print("Day06b: " + day06b(readInputLines("day06"))) }
+    time { print("Day07a: " + day07a(readInputLine("day07"))) }
+    time { print("Day07b: " + day07b(readInputLine("day07"))) }
 }
