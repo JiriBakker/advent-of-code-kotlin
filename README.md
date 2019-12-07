@@ -1,6 +1,6 @@
 # Advent of Code - Kotlin
 
-Tests: [![CircleCI](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master.svg?style=svg)](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master)
+[![CircleCI](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master.svg?style=shield)](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master)
 
 Kotlin implementations for:
  * [Advent of Code 2018](https://adventofcode.com/2018) 
