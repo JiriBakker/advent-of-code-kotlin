@@ -9,8 +9,7 @@ import java.util.ArrayDeque
 fun day07a(input: String): Int {
     val intCodes = parseIntCodes(input)
 
-    val phases = listOf(0, 1, 2, 3, 4)
-    val phasePermutations = permute(phases)
+    val phasePermutations = listOf(0, 1, 2, 3, 4).permute()
 
     return phasePermutations.map {
         it.fold(0) { input2, phase ->
@@ -24,8 +23,7 @@ fun day07a(input: String): Int {
 fun day07b(input: String): Int {
     val intCodes = parseIntCodes(input)
 
-    val phases = listOf(5, 6, 7, 8, 9)
-    val phasePermutations = permute(phases)
+    val phasePermutations = listOf(5, 6, 7, 8, 9).permute()
 
     return phasePermutations.map {
         var amplifierIndex = 0
