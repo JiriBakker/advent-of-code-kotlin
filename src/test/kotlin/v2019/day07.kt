@@ -3,6 +3,7 @@ package v2019
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.days.day07.day07a
+import v2019.days.day07.day07b
 
 class Day07aTests {
     @Test fun testExampleInput1() {
@@ -18,29 +19,20 @@ class Day07aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(7988899, day07a(readInputLine("day07")))
+        assertEquals(67023, day07a(readInputLine("day07")))
     }
 }
-//
-// class Day05bTests {
-//     @Test fun testExampleInput1() {
-//         assertEquals(999, day05b(
-//             "3,15,3,16,1002,16,10,16,1,16,15,15,4,15,99,0,0"))
-//     }
-//     @Test fun testExampleInput2() {
-//         assertEquals(1000, day05b(
-//             "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
-//             "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
-//             "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99", 8))
-//     }
-//     @Test fun testExampleInput3() {
-//         assertEquals(1001, day05b(
-//             "3,21,1008,21,8,20,1005,20,22,107,8,21,20,1006,20,31," +
-//             "1106,0,36,98,0,0,1002,21,125,20,4,20,1105,1,46,104," +
-//             "999,1105,1,46,1101,1000,1,20,4,20,1105,1,46,98,99", 9))
-//     }
-//
-//     @Test fun testActualInput() {
-//         assertEquals(13758663, day05b(readInputLine("day05"), 5))
-//     }
-// }
+
+class Day07bTests {
+    @Test fun testExampleInput1() {
+        assertEquals(139629729, day07b("3,26,1001,26,-4,26,3,27,1002,27,2,27,1,27,26,27,4,27,1001,28,-1,28,1005,28,6,99,0,0,5"))
+    }
+
+    @Test fun testExampleInput2() {
+        assertEquals(18216, day07b("3,52,1001,52,-5,52,3,53,1,52,56,54,1007,54,5,55,1005,55,26,1001,54,-5,54,1105,1,12,1,53,54,53,1008,54,0,55,1001,55,1,55,2,53,55,53,4,53,1001,56,-1,56,1005,56,6,99,0,0,0,0,10"))
+    }
+
+    @Test fun testActualInput() {
+        assertEquals(7818398, day07b(readInputLine("day07")))
+    }
+}

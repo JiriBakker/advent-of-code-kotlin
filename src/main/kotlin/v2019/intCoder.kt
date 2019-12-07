@@ -26,9 +26,18 @@ private fun parseInstruction(value: Int): Instruction {
     return Instruction(opcode, modes)
 }
 
-fun runProgram(initialIntCodes: List<Int>, inputValues: List<Int> = listOf(0)): Pair<List<Int>, List<Int>> {
+class ProgramState(
+    val intCodes: List<Int>,
+    val pointer: Int = 0,
+    val output: List<Int> = listOf()
+)
+
+fun runProgram(
+    initialIntCodes: List<Int>,
+    initialPointer: Int = 0,
+    pollInput: () -> Int = { 0 }
+): ProgramState {
     val intCodes = initialIntCodes.toMutableList()
-    val inputs = ArrayDeque<Int>(inputValues)
 
     fun get(pointer: Int, mode: ParamMode): Int {
         return when (mode) {
@@ -65,7 +74,7 @@ fun runProgram(initialIntCodes: List<Int>, inputValues: List<Int> = listOf(0)): 
         }
     }
 
-    var pointer = 0
+    var pointer = initialPointer
     val output = mutableListOf<Int>()
 
     while (true) {
@@ -80,12 +89,14 @@ fun runProgram(initialIntCodes: List<Int>, inputValues: List<Int> = listOf(0)): 
                 pointer += 4
             }
             3 -> {
-                set(pointer + 1, inputs.poll())
+                set(pointer + 1, pollInput())
                 pointer += 2
             }
             4 -> {
-                output.add(get(pointer + 1, instruction.modes[0]))
+                val result = get(pointer + 1, instruction.modes[0])
+                output.add(result)
                 pointer += 2
+                return ProgramState(intCodes, pointer, output)
             }
             5 -> {
                 pointer = applyJump({ it != 0 }, pointer, instruction.modes)
@@ -101,7 +112,7 @@ fun runProgram(initialIntCodes: List<Int>, inputValues: List<Int> = listOf(0)): 
                 applyCompare({ a, b -> a == b }, pointer, instruction.modes)
                 pointer += 4
             }
-            99 -> return Pair(intCodes, output)
+            99 -> return ProgramState(intCodes, pointer, output)
             else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer")
         }
     }
