@@ -1,4 +1,7 @@
 # Advent of Code - Kotlin
+
+Tests: [![CircleCI](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master.svg?style=svg)](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master)
+
 Kotlin implementations for:
  * [Advent of Code 2018](https://adventofcode.com/2018) 
  * [Advent of Code 2019](https://adventofcode.com/2019)
@@ -12,3 +15,4 @@ To run tests:
 To compute outputs:
 * 2018: `./gradlew run -Pyear=2018`
 * 2019: `./gradlew run -Pyear=2019`
+
