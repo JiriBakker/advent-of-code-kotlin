@@ -30,12 +30,12 @@ fun Long.firstDigit(): Int {
     return Character.getNumericValue(this.toString().first())
 }
 
-fun <T> permute(available: List<T>, prefix: List<T> = listOf()): List<List<T>> {
-    if (available.size == 1) {
-        return listOf(prefix + available)
+fun <T> permute(available: List<T>, used: List<T> = listOf()): List<List<T>> {
+    if (available.isEmpty()) {
+        return listOf(used)
     }
 
-    return available.flatMap {
-        permute(available.minus(it), prefix + it)
+    return available.flatMap { current ->
+        permute(available.minus(current), used + current)
     }
 }
