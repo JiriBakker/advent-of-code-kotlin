@@ -29,15 +29,12 @@ private fun parseInstruction(value: Int): Instruction {
 class ProgramState(
     val intCodes: List<Int>,
     val pointer: Int = 0,
-    val output: List<Int> = listOf()
+    val inputQueue: ArrayDeque<Int> = ArrayDeque(),
+    val output: Int? = null
 )
 
-fun runProgram(
-    initialIntCodes: List<Int>,
-    initialPointer: Int = 0,
-    pollInput: () -> Int = { 0 }
-): ProgramState {
-    val intCodes = initialIntCodes.toMutableList()
+fun runProgram(initialProgramState: ProgramState): ProgramState {
+    val intCodes = initialProgramState.intCodes.toMutableList()
 
     fun get(pointer: Int, mode: ParamMode): Int {
         return when (mode) {
@@ -74,7 +71,7 @@ fun runProgram(
         }
     }
 
-    var pointer = initialPointer
+    var pointer = initialProgramState.pointer
     val output = mutableListOf<Int>()
 
     while (true) {
@@ -89,14 +86,12 @@ fun runProgram(
                 pointer += 4
             }
             3 -> {
-                set(pointer + 1, pollInput())
+                set(pointer + 1, initialProgramState.inputQueue.poll())
                 pointer += 2
             }
             4 -> {
                 val result = get(pointer + 1, instruction.modes[0])
-                output.add(result)
-                pointer += 2
-                return ProgramState(intCodes, pointer, output)
+                return ProgramState(intCodes, pointer + 2, initialProgramState.inputQueue, result)
             }
             5 -> {
                 pointer = applyJump({ it != 0 }, pointer, instruction.modes)
@@ -112,7 +107,7 @@ fun runProgram(
                 applyCompare({ a, b -> a == b }, pointer, instruction.modes)
                 pointer += 4
             }
-            99 -> return ProgramState(intCodes, pointer, output)
+            99 -> return ProgramState(intCodes, pointer, initialProgramState.inputQueue)
             else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer")
         }
     }

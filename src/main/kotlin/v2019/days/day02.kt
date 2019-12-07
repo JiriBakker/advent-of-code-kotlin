@@ -1,5 +1,6 @@
 package v2019.days.day02
 
+import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
 
@@ -7,8 +8,7 @@ fun day02a(input: String, overrides: List<Pair<Int, Int>> = listOf()): Int {
     val intCodes = parseIntCodes(input).toMutableList()
     overrides.forEach { intCodes[it.first] = it.second }
 
-    //val (result, _) = runProgram(intCodes)
-    val state = runProgram(intCodes)
+    val state = runProgram(ProgramState(intCodes))
 
     return state.intCodes.first()
 }
@@ -40,7 +40,7 @@ fun day02b_binarySearch(input: String): Int {
             intCodes[2] = range2.median()
 
             //val (result, _) = runProgram(intCodes.toList())
-            val state = runProgram(intCodes.toList())
+            val state = runProgram(ProgramState(intCodes.toList()))
             val result = state.intCodes
 
             when {
@@ -66,8 +66,7 @@ fun day02b_bruteForce(input: String): Int {
             intCodes[1] = i1
             intCodes[2] = i2
 
-            //val (result, _) = runProgram(intCodes.toList())
-            val state = runProgram(intCodes.toList())
+            val state = runProgram(ProgramState(intCodes.toList()))
             val result = state.intCodes
 
             if (result.first() == 19690720) {

@@ -15,8 +15,8 @@ fun day07a(input: String): Int {
     return phasePermutations.map {
         it.fold(0) { input2, phase ->
             val inputs = ArrayDeque(listOf(phase, input2))
-            val state = runProgram(intCodes.toList(), 0) { inputs.poll() }
-            state.output.last()
+            val state = runProgram(ProgramState(intCodes, 0, inputs))
+            state.output!!
         }
     }.max()!!
 }
@@ -27,30 +27,31 @@ fun day07b(input: String): Int {
     val phases = listOf(5, 6, 7, 8, 9)
     val phasePermutations = permute(phases)
 
-    return phasePermutations.map map@ {
+    return phasePermutations.map {
         var amplifierIndex = 0
         var lastOutput = 0
 
-        val programStates = generateSequence { ProgramState(intCodes) }.take(5).toMutableList()
-        val signals = generateSequence { ArrayDeque<Int>() }.take(5).toList()
+        val programStates =
+            generateSequence {
+                ProgramState(intCodes)
+            }
+                .take(5)
+                .toMutableList()
 
-        it.forEachIndexed { index, phase -> signals[index].add(phase) }
-        signals[0].add(0)
+        it.forEachIndexed { index, phase -> programStates[index].inputQueue.add(phase) }
+        programStates[0].inputQueue.add(0)
 
         while (true) {
-            val resultState = runProgram(
-                programStates[amplifierIndex].intCodes.toList(),
-                programStates[amplifierIndex].pointer
-            ) { signals[amplifierIndex].poll() }
+            val resultState = runProgram(programStates[amplifierIndex])
 
-            if (resultState.output.isEmpty()) {
+            if (resultState.output == null) {
                 break
             }
 
             programStates[amplifierIndex] = resultState
             amplifierIndex = (amplifierIndex + 1) % 5
-            signals[amplifierIndex].add(resultState.output.last())
-            lastOutput = resultState.output.last()
+            programStates[amplifierIndex].inputQueue.add(resultState.output)
+            lastOutput = resultState.output
         }
 
         lastOutput
