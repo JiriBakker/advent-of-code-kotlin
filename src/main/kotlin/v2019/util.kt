@@ -30,17 +30,12 @@ fun Long.firstDigit(): Int {
     return Character.getNumericValue(this.toString().first())
 }
 
-fun <String> permute(list: List<String>): List<List<String>> {
-    if (list.size == 1) {
-        return listOf(list)
+fun <T> permute(available: List<T>, prefix: List<T> = listOf()): List<List<T>> {
+    if (available.size == 1) {
+        return listOf(prefix + available)
     }
-    val perms = mutableListOf<List<String>>()
-    val sub = list[0]
-    for (perm in permute(list.drop(1)))
-        for (i in 0..perm.size) {
-            val newPerm = perm.toMutableList()
-            newPerm.add(i, sub)
-            perms.add(newPerm)
-        }
-    return perms
+
+    return available.flatMap {
+        permute(available.minus(it), prefix + it)
+    }
 }
