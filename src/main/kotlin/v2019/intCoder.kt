@@ -1,5 +1,7 @@
 package v2019.intCoder
 
+import java.util.ArrayDeque
+
 private enum class ParamMode {
     Position,
     Immediate
@@ -24,8 +26,9 @@ private fun parseInstruction(value: Int): Instruction {
     return Instruction(opcode, modes)
 }
 
-fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>, List<Int>> {
+fun runProgram(initialIntCodes: List<Int>, inputValues: List<Int> = listOf(0)): Pair<List<Int>, List<Int>> {
     val intCodes = initialIntCodes.toMutableList()
+    val inputs = ArrayDeque<Int>(inputValues)
 
     fun get(pointer: Int, mode: ParamMode): Int {
         return when (mode) {
@@ -77,7 +80,7 @@ fun runProgram(initialIntCodes: List<Int>, inputValue: Int = 0): Pair<List<Int>,
                 pointer += 4
             }
             3 -> {
-                set(pointer + 1, inputValue)
+                set(pointer + 1, inputs.poll())
                 pointer += 2
             }
             4 -> {
