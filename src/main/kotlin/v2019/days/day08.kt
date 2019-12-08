@@ -20,8 +20,8 @@ fun day08a(input: String, width: Int = 25, height: Int = 6): Int {
 
     return layers
         .map { layer -> layer.groupingBy { digit -> digit }.eachCount() }
-        .minBy { counts -> counts[BLACK] ?: Int.MAX_VALUE }
-        .let { layer -> (layer!![WHITE] ?: 0) * (layer[TRANSPARENT] ?: 0) }
+        .minBy { counts -> counts[BLACK] ?: Int.MAX_VALUE }!!
+        .let { counts -> (counts[WHITE] ?: 0) * (counts[TRANSPARENT] ?: 0) }
 
 }
 
