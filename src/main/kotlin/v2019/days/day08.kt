@@ -16,7 +16,7 @@ fun day08a(input: String, width: Int = 25, height: Int = 6): Int {
 
     val layerWithLeastZeroes =
         layers
-            .map { it.groupingBy { digit -> digit }.eachCount() }
+            .map { layer -> layer.groupingBy { digit -> digit }.eachCount() }
             .minBy { counts -> counts[0] ?: Int.MAX_VALUE }!!
 
     return (layerWithLeastZeroes[1] ?: 0) * (layerWithLeastZeroes[2] ?: 0)
