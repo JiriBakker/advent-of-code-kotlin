@@ -1,6 +1,6 @@
 package v2019.days.day08
 
-private fun parseLayers(input: String, width: Int = 25, height: Int = 6): List<List<Int>> {
+private fun parseLayers(input: String, width: Int, height: Int): List<List<Int>> {
     return input.map(Character::getNumericValue).chunked(width * height)
 }
 
