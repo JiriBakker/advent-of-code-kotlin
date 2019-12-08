@@ -25,7 +25,7 @@ private class SearchRange(var min: Int, var max: Int) {
     }
 }
 
-fun day02b_binarySearch(input: String): Int {
+fun day02b(input: String): Int {
     val target = 19690720
 
     val initialIntCodes = parseIntCodes(input)
@@ -39,7 +39,6 @@ fun day02b_binarySearch(input: String): Int {
             intCodes[1] = range1.median()
             intCodes[2] = range2.median()
 
-            //val (result, _) = runProgram(intCodes.toList())
             val state = runProgram(ProgramState(intCodes.toList()))
             val result = state.intCodes
 
@@ -55,25 +54,4 @@ fun day02b_binarySearch(input: String): Int {
     findOptimal(range2)
 
     return 100 * range1.median() + range2.median()
-}
-
-fun day02b_bruteForce(input: String): Int {
-    val initialIntCodes = parseIntCodes(input)
-
-    for (i1 in 0..99) {
-        for (i2 in 0..99) {
-            val intCodes = initialIntCodes.toMutableList()
-            intCodes[1] = i1
-            intCodes[2] = i2
-
-            val state = runProgram(ProgramState(intCodes.toList()))
-            val result = state.intCodes
-
-            if (result.first() == 19690720) {
-                return 100 * i1 + i2
-            }
-        }
-    }
-
-    throw Exception("No answer found")
 }

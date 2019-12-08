@@ -3,7 +3,7 @@ package v2019
 import v2019.days.day01.day01a
 import v2019.days.day01.day01b
 import v2019.days.day02.day02a
-import v2019.days.day02.day02b_binarySearch
+import v2019.days.day02.day02b
 import v2019.days.day03.day03a
 import v2019.days.day03.day03b
 import v2019.days.day04.day04a
@@ -31,7 +31,7 @@ fun main() {
     time { print("Day01a: " + day01a(readInputLines("day01"))) }
     time { print("Day01b: " + day01b(readInputLines("day01"))) }
     time { print("Day02a: " + day02a(readInputLine("day02"))) }
-    time { print("Day02b: " + day02b_binarySearch(readInputLine("day02"))) }
+    time { print("Day02b: " + day02b(readInputLine("day02"))) }
     time { print("Day03a: " + day03a(readInputLines("day03"))) }
     time { print("Day03b: " + day03b(readInputLines("day03"))) }
     time { print("Day04a: " + day04a(readInputLine("day04"))) }
