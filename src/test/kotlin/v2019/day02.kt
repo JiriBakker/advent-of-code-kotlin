@@ -4,7 +4,6 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.days.day02.day02a
 import v2019.days.day02.day02b
-import v2019.days.day02.day02b_bruteForce
 
 class Day02aTests {
     @Test fun testExampleInput1() {
@@ -34,7 +33,7 @@ class Day02aTests {
 
 class Day02bTests {
     @Test fun testActualInput_bruteForce() {
-        assertEquals(7621, day02b_bruteForce(readInputLine("day02")))
+        assertEquals(7621, day02b(readInputLine("day02")))
     }
 
     @Test fun testActualInput_binarySearch() {
