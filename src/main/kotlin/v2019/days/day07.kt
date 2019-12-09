@@ -4,30 +4,29 @@ import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
 import v2019.permute
-import java.util.ArrayDeque
 
-fun day07a(input: String): Int {
+fun day07a(input: String): Long {
     val intCodes = parseIntCodes(input)
 
-    val phasePermutations = listOf(0, 1, 2, 3, 4).permute()
+    val phasePermutations = listOf(0L, 1, 2, 3, 4).permute()
 
     return phasePermutations.map {
-        it.fold(0) { input2, phase ->
-            val inputs = ArrayDeque(listOf(phase, input2))
-            val state = runProgram(ProgramState(intCodes, 0, inputs))
+        it.fold(0L) { input2, phase ->
+            val inputs = listOf(phase, input2)
+            val state = runProgram(ProgramState(intCodes).withInputs(inputs))
             state.output!!
         }
     }.max()!!
 }
 
-fun day07b(input: String): Int {
+fun day07b(input: String): Long {
     val intCodes = parseIntCodes(input)
 
-    val phasePermutations = listOf(5, 6, 7, 8, 9).permute()
+    val phasePermutations = listOf(5L, 6, 7, 8, 9).permute()
 
     return phasePermutations.map {
         var amplifierIndex = 0
-        var lastOutput = 0
+        var lastOutput = 0L
 
         val programStates =
             generateSequence {
@@ -36,8 +35,8 @@ fun day07b(input: String): Int {
                 .take(5)
                 .toMutableList()
 
-        it.forEachIndexed { index, phase -> programStates[index].inputQueue.add(phase) }
-        programStates[0].inputQueue.add(0)
+        it.forEachIndexed { index, phase -> programStates[index].inputs.add(phase) }
+        programStates[0].inputs.add(0)
 
         while (true) {
             val resultState = runProgram(programStates[amplifierIndex])
@@ -48,7 +47,7 @@ fun day07b(input: String): Int {
 
             programStates[amplifierIndex] = resultState
             amplifierIndex = (amplifierIndex + 1) % 5
-            programStates[amplifierIndex].inputQueue.add(resultState.output)
+            programStates[amplifierIndex].inputs.add(resultState.output)
             lastOutput = resultState.output
         }
 

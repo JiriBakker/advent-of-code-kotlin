@@ -4,66 +4,96 @@ import java.util.ArrayDeque
 
 private enum class ParamMode {
     Position,
-    Immediate
+    Immediate,
+    Relative
+}
+
+
+class ProgramState(
+    val intCodes: Map<Long, Long>,
+    val pointer: Long = 0,
+    val relativeBase: Long = 0,
+    val inputs: ArrayDeque<Long> = ArrayDeque(),
+    val output: Long? = null
+) {
+    val withInputs = { inputs: List<Long> -> ProgramState(intCodes, pointer, relativeBase, ArrayDeque(inputs), output) }
 }
 
 private class Instruction(val opcode: Int, val modes: List<ParamMode>)
 
-fun parseIntCodes(input: String): List<Int> {
-    return input.split(",").map(String::toInt)
+fun parseIntCodes(input: String): Map<Long, Long> {
+    return input.split(",").mapIndexed { index, nr -> index.toLong() to nr.toLong() }.toMap()
 }
 
-private fun parseInstruction(value: Int): Instruction {
-    val opcode = value % 100
+private fun parseInstruction(value: Long): Instruction {
+    val opcode = value % 100L
 
     val modes =
         value.toString()
             .dropLast(2)
-            .padStart(2, '0')
-            .map { if (it == '0') ParamMode.Position else ParamMode.Immediate }
+            .padStart(3, '0')
+            .map { when (it) {
+                '0' -> ParamMode.Position
+                '1' -> ParamMode.Immediate
+                else -> ParamMode.Relative
+            } }
             .reversed()
 
-    return Instruction(opcode, modes)
+    return Instruction(opcode.toInt(), modes)
 }
 
-class ProgramState(
-    val intCodes: List<Int>,
-    val pointer: Int = 0,
-    val inputQueue: ArrayDeque<Int> = ArrayDeque(),
-    val output: Int? = null
-)
+fun runProgramUntilNonZeroOutput(initialProgramState: ProgramState): Long {
+    var state = initialProgramState
+    while (true) {
+        state = runProgram(state)
+        if (state.output != null && state.output != 0L) {
+            return state.output!!
+        }
+    }
+}
 
 fun runProgram(initialProgramState: ProgramState): ProgramState {
-    val intCodes = initialProgramState.intCodes.toMutableList()
+    val intCodes = initialProgramState.intCodes.toMutableMap()
+    var relativeBase = initialProgramState.relativeBase
 
-    fun get(pointer: Int, mode: ParamMode): Int {
+    fun readOrSet(pointer: Long): Long {
+        return intCodes.getOrPut(pointer, { 0L })
+    }
+
+    fun get(pointer: Long, mode: ParamMode): Long {
         return when (mode) {
-            ParamMode.Position -> intCodes[intCodes[pointer]]
-            ParamMode.Immediate -> intCodes[pointer]
+            ParamMode.Position -> readOrSet(readOrSet(pointer))
+            ParamMode.Immediate -> readOrSet(pointer)
+            ParamMode.Relative -> readOrSet(relativeBase + readOrSet(pointer))
         }
     }
 
-    fun set(pointer: Int, value: Int) {
-        intCodes[intCodes[pointer]] = value
+    fun set(pointer: Long, value: Long, mode: ParamMode) {
+        when (mode) {
+            ParamMode.Position -> intCodes[readOrSet(pointer)] = value
+            ParamMode.Immediate -> error("Set in Immediate mode not allowed")
+            ParamMode.Relative -> intCodes[relativeBase + readOrSet(pointer)] = value
+        }
     }
 
-    fun applyModification(operation: (Int, Int) -> Int, pointer: Int, modes: List<ParamMode>) {
+    fun applyModification(operation: (Long, Long) -> Long, pointer: Long, modes: List<ParamMode>) {
         set(pointer + 3,
             operation(
                 get(pointer + 1, modes[0]),
                 get(pointer + 2, modes[1])
-            )
+            ),
+            modes[2]
         )
     }
 
-    fun applyCompare(compare: (Int, Int) -> Boolean, pointer: Int, modes: List<ParamMode>) {
+    fun applyCompare(compare: (Long, Long) -> Boolean, pointer: Long, modes: List<ParamMode>) {
         val firstParam = get(pointer + 1, modes[0])
         val secondParam = get(pointer + 2, modes[1])
 
-        set(pointer + 3, if (compare(firstParam, secondParam)) 1 else 0)
+        set(pointer + 3, if (compare(firstParam, secondParam)) 1 else 0, modes[2])
     }
 
-    fun applyJump(condition: (Int) -> Boolean, pointer: Int, modes: List<ParamMode>): Int {
+    fun applyJump(condition: (Long) -> Boolean, pointer: Long, modes: List<ParamMode>): Long {
         return if (condition(get(pointer + 1, modes[0]))) {
             get(pointer + 2, modes[1])
         } else {
@@ -74,29 +104,29 @@ fun runProgram(initialProgramState: ProgramState): ProgramState {
     var pointer = initialProgramState.pointer
 
     while (true) {
-        val instruction = parseInstruction(intCodes[pointer])
+        val instruction = parseInstruction(readOrSet(pointer))
         when (instruction.opcode) {
             1 -> {
-                applyModification(Int::plus, pointer, instruction.modes)
+                applyModification(Long::plus, pointer, instruction.modes)
                 pointer += 4
             }
             2 -> {
-                applyModification(Int::times, pointer, instruction.modes)
+                applyModification(Long::times, pointer, instruction.modes)
                 pointer += 4
             }
             3 -> {
-                set(pointer + 1, initialProgramState.inputQueue.poll())
+                set(pointer + 1, initialProgramState.inputs.poll(), instruction.modes[0])
                 pointer += 2
             }
             4 -> {
                 val result = get(pointer + 1, instruction.modes[0])
-                return ProgramState(intCodes, pointer + 2, initialProgramState.inputQueue, result)
+                return ProgramState(intCodes, pointer + 2, relativeBase, initialProgramState.inputs, result)
             }
             5 -> {
-                pointer = applyJump({ it != 0 }, pointer, instruction.modes)
+                pointer = applyJump({ it != 0L }, pointer, instruction.modes)
             }
             6 -> {
-                pointer = applyJump({ it == 0 }, pointer, instruction.modes)
+                pointer = applyJump({ it == 0L }, pointer, instruction.modes)
             }
             7 -> {
                 applyCompare({ a, b -> a < b }, pointer, instruction.modes)
@@ -106,7 +136,11 @@ fun runProgram(initialProgramState: ProgramState): ProgramState {
                 applyCompare({ a, b -> a == b }, pointer, instruction.modes)
                 pointer += 4
             }
-            99 -> return ProgramState(intCodes, pointer, initialProgramState.inputQueue)
+            9 -> {
+                relativeBase += get(pointer + 1, instruction.modes[0])
+                pointer += 2
+            }
+            99 -> return ProgramState(intCodes, pointer, relativeBase, initialProgramState.inputs)
             else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer")
         }
     }

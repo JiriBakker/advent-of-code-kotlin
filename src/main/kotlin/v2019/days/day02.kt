@@ -4,17 +4,17 @@ import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
 
-fun day02a(input: String, overrides: List<Pair<Int, Int>> = listOf()): Int {
-    val intCodes = parseIntCodes(input).toMutableList()
+fun day02a(input: String, overrides: List<Pair<Long, Long>> = listOf()): Long {
+    val intCodes = parseIntCodes(input).toMutableMap()
     overrides.forEach { intCodes[it.first] = it.second }
 
     val state = runProgram(ProgramState(intCodes))
 
-    return state.intCodes.first()
+    return state.intCodes[0] ?: error("No value found at first memory address")
 }
 
-private class SearchRange(var min: Int, var max: Int) {
-    fun median(): Int {
+private class SearchRange(var min: Long, var max: Long) {
+    fun median(): Long {
         return ((max - min) / 2) + min
     }
     fun consolidateMin() {
@@ -25,8 +25,8 @@ private class SearchRange(var min: Int, var max: Int) {
     }
 }
 
-fun day02b(input: String): Int {
-    val target = 19690720
+fun day02b(input: String): Long {
+    val target = 19690720L
 
     val initialIntCodes = parseIntCodes(input)
 
@@ -35,17 +35,17 @@ fun day02b(input: String): Int {
 
     fun findOptimal(range: SearchRange) {
         while (range.max > range.min) {
-            val intCodes = initialIntCodes.toMutableList()
+            val intCodes = initialIntCodes.toMutableMap()
             intCodes[1] = range1.median()
             intCodes[2] = range2.median()
 
-            val state = runProgram(ProgramState(intCodes.toList()))
+            val state = runProgram(ProgramState(intCodes.toMap()))
             val result = state.intCodes
 
             when {
-                result.first() == target -> return
-                result.first() > target  -> range.consolidateMax()
-                else                     -> range.consolidateMin()
+                result[0]!! == target -> return
+                result[0]!! > target  -> range.consolidateMax()
+                else                  -> range.consolidateMin()
             }
         }
     }
@@ -53,5 +53,5 @@ fun day02b(input: String): Int {
     findOptimal(range1)
     findOptimal(range2)
 
-    return 100 * range1.median() + range2.median()
+    return 100L * range1.median() + range2.median()
 }
