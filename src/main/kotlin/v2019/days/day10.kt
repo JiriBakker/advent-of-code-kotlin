@@ -1,29 +1,29 @@
 package v2019.days.day10
 
-import java.text.DecimalFormat
+import v2019.pythDistance
 import java.util.ArrayDeque
+import kotlin.math.PI
 import kotlin.math.atan2
-import kotlin.math.pow
-import kotlin.math.sqrt
 
 private class LineOfSight(val other: Asteroid, val distance: Double)
 
 private class Asteroid(val x: Int, val y: Int) {
     private val linesOfSight: MutableMap<String, MutableList<LineOfSight>> = mutableMapOf()
 
-    // Floating point safe hash (TODO is this needed?)
     private fun generateAngleHash(x: Double, y: Double): String {
-        return DecimalFormat("#.####").format((atan2(x, y) + (kotlin.math.PI * 2) + 0.00001) % (kotlin.math.PI * 2))
+        val angleWithNegativeYAxis = (atan2(x, -y) + (PI * 2)) % (PI * 2)
+        return angleWithNegativeYAxis.toString()
     }
 
     fun addLineOfSight(other: Asteroid) {
-        val distance: Double = sqrt((x.toDouble() - other.x).pow(2.0) + (y.toDouble() - other.y).pow(2.0))
+        val distance = pythDistance(x, y, other.x, other.y)
         val vectorX = (other.x - x) / distance
-        val vectorY = (y - other.y) / distance
+        val vectorY = (other.y - y) / distance
 
         val hash = generateAngleHash(vectorX, vectorY)
-        val linesOfSightForAngle = this.linesOfSight.getOrPut(hash, { mutableListOf() })
-        linesOfSightForAngle.add(LineOfSight(other, distance))
+        this.linesOfSight
+            .getOrPut(hash, { mutableListOf() })
+            .add(LineOfSight(other, distance))
     }
 
     fun getLinesOfSight(): Map<String, List<LineOfSight>> {
@@ -32,20 +32,16 @@ private class Asteroid(val x: Int, val y: Int) {
 }
 
 private fun parseInput(input: List<String>): List<Asteroid> {
-    val asteroids = mutableListOf<Asteroid>()
-    for (y in input.indices) {
-        for (x in input[y].indices) {
-            if (input[y][x] == '#') {
-                asteroids.add(Asteroid(x, y))
-            }
-        }
+    return input.withIndex().flatMap {
+        val y = it.index
+        it.value.mapIndexed { x, char ->
+            if (char == '#') Asteroid(x, y) else null
+        }.filterNotNull()
     }
-    return asteroids
 }
 
 private fun collectLinesOfSight(asteroids: List<Asteroid>) {
-     for (i1 in asteroids.indices) {
-        val asteroid1 = asteroids[i1]
+    asteroids.forEachIndexed { i1, asteroid1 ->
         for (i2 in i1 + 1 until asteroids.size) {
             val asteroid2 = asteroids[i2]
             asteroid1.addLineOfSight(asteroid2)
@@ -70,8 +66,7 @@ fun day10b(input: List<String>): Int {
     val optimalAsteroid = asteroids.maxBy { it.getLinesOfSight().size }!!
 
     val linesOfSight = optimalAsteroid.getLinesOfSight()
-        .map { it.key to ArrayDeque<LineOfSight>(it.value.sortedBy { los -> los.distance }) }
-        .toMap()
+        .mapValues { ArrayDeque<LineOfSight>(it.value.sortedBy { los -> los.distance }) }
         .toSortedMap()
 
     val laserHits = sequence {

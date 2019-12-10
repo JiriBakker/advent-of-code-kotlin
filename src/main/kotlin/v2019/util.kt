@@ -1,6 +1,8 @@
 package v2019
 
 import java.io.File
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 fun readInputLines(fileName: String): List<String> {
     return File("input/2019/$fileName").readLines()
@@ -42,4 +44,12 @@ fun <T> List<T>.permute(): List<List<T>> {
     }
 
     return permute(this, listOf())
+}
+
+fun pythDistance(x1: Int, y1: Int, x2: Int, y2: Int): Double {
+    return pythDistance(x1.toDouble(), y1.toDouble(), x2.toDouble(), y2.toDouble())
+}
+
+fun pythDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
+    return sqrt((x1 - x2).pow(2.0) + (y1.toDouble() - y2).pow(2.0))
 }
