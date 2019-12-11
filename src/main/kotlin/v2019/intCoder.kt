@@ -43,13 +43,9 @@ private fun parseInstruction(value: Long): Instruction {
 }
 
 fun runProgramUntilNonZeroOutput(initialProgramState: ProgramState): Long {
-    var state = initialProgramState
-    while (true) {
-        state = runProgram(state)
-        if (state.output != null && state.output != 0L) {
-            return state.output!!
-        }
-    }
+    return generateSequence(initialProgramState) { runProgram(it) }
+        .first { it.output != null && it.output != 0L }
+        .output!!
 }
 
 fun runProgram(initialProgramState: ProgramState): ProgramState {

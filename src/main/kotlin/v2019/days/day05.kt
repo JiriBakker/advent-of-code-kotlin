@@ -2,9 +2,7 @@ package v2019.days.day05
 
 import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
-import v2019.intCoder.runProgram
 import v2019.intCoder.runProgramUntilNonZeroOutput
-import java.util.ArrayDeque
 
 fun day05a(input: String): Long {
     val intCodes = parseIntCodes(input)
