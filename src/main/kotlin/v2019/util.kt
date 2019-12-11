@@ -53,3 +53,7 @@ fun pythDistance(x1: Int, y1: Int, x2: Int, y2: Int): Double {
 fun pythDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
     return sqrt((x1 - x2).pow(2.0) + (y1.toDouble() - y2).pow(2.0))
 }
+
+inline fun <T, TOut : Comparable<TOut>> List<T>.getBounds(selector: (T) -> TOut): Pair<TOut, TOut> {
+    return Pair(selector(this.minBy(selector)!!), selector(this.maxBy(selector)!!))
+}

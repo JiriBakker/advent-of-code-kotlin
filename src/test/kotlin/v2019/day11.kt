@@ -10,21 +10,20 @@ private fun parseCsv(exampleInput: String): List<String> {
 }
 
 class Day11aTests {
-    @Test fun testExampleInput1() {
-        assertEquals(0, day11a(parseCsv("")))
-    }
-
     @Test fun testActualInput() {
-        assertEquals(0, day11a(readInputLines("day11")))
+        assertEquals(2883, day11a(readInputLine("day11")))
     }
 }
 
 class Day11bTests {
-    @Test fun testExampleInput1() {
-        assertEquals(0, day11b(parseCsv("")))
-    }
-
     @Test fun testActualInput() {
-        assertEquals(0, day11b(readInputLines("day11")))
+        assertEquals("" +
+            "█    ████ ███   ██  ███  █     ██  ████\n" +
+            "█    █    █  █ █  █ █  █ █    █  █    █\n" +
+            "█    ███  █  █ █    █  █ █    █      █ \n" +
+            "█    █    ███  █    ███  █    █ ██  █  \n" +
+            "█    █    █    █  █ █    █    █  █ █   \n" +
+            "████ ████ █     ██  █    ████  ███ ████\n",
+            day11b(readInputLine("day11")))
     }
 }
