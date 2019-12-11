@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.days.day04.day04a
 import v2019.days.day04.day04b
+import v2019.util.readInputLine
 
 class Day04aTests {
     @Test fun testActualInput() {

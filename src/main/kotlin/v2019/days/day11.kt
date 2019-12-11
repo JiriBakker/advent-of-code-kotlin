@@ -1,6 +1,6 @@
 package v2019.days.day11
 
-import v2019.getBounds
+import v2019.util.getBounds
 import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
@@ -11,6 +11,9 @@ private enum class Direction {
     DOWN,
     LEFT
 }
+
+private const val BLACK = 0L
+private const val WHITE = 1L
 
 private fun turn(curDirection: Direction, instruction: Long): Direction {
     return when (instruction) {
@@ -34,27 +37,28 @@ private fun paint(intCodes: Map<Long, Long>, startColor: Long): Map<Pair<Long, L
     var curX = 0L
     var curY = 0L
     val painting = mutableMapOf<Pair<Long, Long>, Long>()
-    painting[Pair(0L, 0L)] = startColor
+    painting[0L to 0L] = startColor
 
     var state = ProgramState(intCodes)
     while (true) {
-        state = runProgram(state.withInputs(listOf(painting.getOrDefault(Pair(curX, curY), 0L))))
+        state = runProgram(state.withInputs(listOf(painting.getOrDefault(curX to curY, BLACK))))
         if (state.output == null) {
             break
         }
 
-        painting[Pair(curX, curY)] = state.output!!
+        val color = state.output!!
+        painting[curX to curY] = color
 
-        state = runProgram(state.withInputs(listOf(painting.getOrDefault(Pair(curX, curY), 0L))))
-        val turnInstruction = state.output
+        state = runProgram(state.withInputs(listOf(color)))
 
-        curDirection = turn(curDirection, turnInstruction!!)
+        val turnInstruction = state.output!!
 
+        curDirection = turn(curDirection, turnInstruction)
         when (curDirection) {
-            Direction.UP -> curY--
+            Direction.UP    -> curY--
             Direction.RIGHT -> curX++
-            Direction.DOWN -> curY++
-            Direction.LEFT -> curX--
+            Direction.DOWN  -> curY++
+            Direction.LEFT  -> curX--
         }
     }
 
@@ -64,7 +68,7 @@ private fun paint(intCodes: Map<Long, Long>, startColor: Long): Map<Pair<Long, L
 fun day11a(input: String): Int {
     val intCodes = parseIntCodes(input)
 
-    val painting = paint(intCodes, 0)
+    val painting = paint(intCodes, BLACK)
 
     return painting.size
 }
@@ -72,18 +76,15 @@ fun day11a(input: String): Int {
 fun day11b(input: String): String {
     val intCodes = parseIntCodes(input)
 
-    val painting = paint(intCodes, 1)
+    val painting = paint(intCodes, WHITE)
 
-    val whitePixels = painting.filter { it.value == 1L }.keys
+    val whitePixels = painting.filter { it.value == WHITE }.keys
     val (minX, maxX) = whitePixels.map { it.first }.getBounds { it }
     val (minY, maxY) = whitePixels.map { it.second }.getBounds { it }
 
-    val output = StringBuilder()
-    for (y in minY .. maxY) {
-        for (x in minX .. maxX) {
-            output.append(if (whitePixels.contains(Pair(x, y))) '█' else ' ')
-        }
-        output.append('\n')
-    }
-    return output.toString()
+    return LongRange(minY, maxY).map { y ->
+        LongRange(minX, maxX).map { x ->
+            if (whitePixels.contains(x to y)) '█' else ' '
+        }.joinToString("")
+    }.joinToString("\n")
 }

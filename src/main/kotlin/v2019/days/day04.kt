@@ -1,8 +1,8 @@
 package v2019.days.day04
 
-import v2019.firstDigit
-import v2019.joinToLong
-import v2019.toDigits
+import v2019.util.firstDigit
+import v2019.util.joinToLong
+import v2019.util.toDigits
 
 private fun findAscendingNumbersInRange(min: Long, max: Long): List<Long> {
     val maxLength = max.toString().length

@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.extra.infiA
 import v2019.extra.infiB
+import v2019.util.readInputLines
 
 class InfiATests {
     @Test fun testExampleInput1() {

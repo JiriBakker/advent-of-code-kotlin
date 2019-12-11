@@ -3,7 +3,7 @@ package v2019.days.day07
 import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
-import v2019.permute
+import v2019.util.permute
 
 fun day07a(input: String): Long {
     val intCodes = parseIntCodes(input)

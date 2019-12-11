@@ -24,6 +24,8 @@ import v2019.days.day11.day11a
 import v2019.days.day11.day11b
 import v2019.extra.infiA
 import v2019.extra.infiB
+import v2019.util.readInputLine
+import v2019.util.readInputLines
 import kotlin.system.measureTimeMillis
 
 private fun time(func: () -> Unit) {

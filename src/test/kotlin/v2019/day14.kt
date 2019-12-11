@@ -4,6 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.days.day14.day14a
 import v2019.days.day14.day14b
+import v2019.util.readInputLines
 
 private fun parseCsv(exampleInput: String): List<String> {
     return exampleInput.split(",")

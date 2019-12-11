@@ -1,6 +1,6 @@
 package v2019.days.day10
 
-import v2019.pythDistance
+import v2019.util.pythDistance
 import java.util.ArrayDeque
 import kotlin.math.PI
 import kotlin.math.atan2
