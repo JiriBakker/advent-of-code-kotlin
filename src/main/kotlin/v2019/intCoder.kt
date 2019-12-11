@@ -26,20 +26,20 @@ fun parseIntCodes(input: String): Map<Long, Long> {
 }
 
 private fun parseInstruction(value: Long): Instruction {
-    val opcode = value % 100L
+    val opcode = (value % 100).toInt()
 
     val modes =
         value.toString()
             .dropLast(2)
             .padStart(3, '0')
             .map { when (it) {
-                '0' -> ParamMode.Position
-                '1' -> ParamMode.Immediate
+                '0'  -> ParamMode.Position
+                '1'  -> ParamMode.Immediate
                 else -> ParamMode.Relative
             } }
             .reversed()
 
-    return Instruction(opcode.toInt(), modes)
+    return Instruction(opcode, modes)
 }
 
 fun runProgramUntilNonZeroOutput(initialProgramState: ProgramState): Long {
