@@ -22,6 +22,8 @@ import v2019.days.day10.day10a
 import v2019.days.day10.day10b
 import v2019.days.day11.day11a
 import v2019.days.day11.day11b
+import v2019.days.day12.day12a
+import v2019.days.day12.day12b
 import v2019.extra.infiA
 import v2019.extra.infiB
 import v2019.util.readInputLine
@@ -58,4 +60,6 @@ fun main() {
     time { print("Day10b: " + day10b(readInputLines("day10"))) }
     time { print("Day11a: " + day11a(readInputLine("day11"))) }
     time { print("Day11b:\n" + day11b(readInputLine("day11"))) }
+    time { print("Day12a: " + day12a(readInputLines("day12"))) }
+    time { print("Day12b: " + day12b(readInputLines("day12"))) }
 }

@@ -1,5 +1,8 @@
 package v2019.util
 
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
+import kotlinx.coroutines.coroutineScope
 import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -51,9 +54,25 @@ fun pythDistance(x1: Int, y1: Int, x2: Int, y2: Int): Double {
 }
 
 fun pythDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
-    return sqrt((x1 - x2).pow(2.0) + (y1.toDouble() - y2).pow(2.0))
+    return sqrt((x1 - x2).pow(2.0) + (y1 - y2).pow(2.0))
 }
 
 inline fun <T, TOut : Comparable<TOut>> List<T>.getBounds(selector: (T) -> TOut): Pair<TOut, TOut> {
     return Pair(selector(this.minBy(selector)!!), selector(this.maxBy(selector)!!))
 }
+
+inline fun <T> List<T>.forEachCombinationPair(action: (T, T) -> Unit) {
+    for (i1 in this.indices) {
+        for (i2 in (i1 + 1) until this.size) {
+            action(this[i1], this[i2])
+        }
+    }
+}
+
+suspend fun <A> Iterable<A>.forEachParallel(f: suspend (A) -> Unit) = coroutineScope {
+    map { async { f(it) } }.awaitAll()
+}
+
+fun greatestCommonDenominator(a: Long, b: Long): Long = if (b == 0L) a else greatestCommonDenominator(b, a % b)
+fun leastCommonMultiple(a: Long, b: Long): Long = a / greatestCommonDenominator(a, b) * b
+fun leastCommonMultiple(nrs: List<Long>): Long = nrs.reduce(::leastCommonMultiple)
