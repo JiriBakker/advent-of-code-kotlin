@@ -7,9 +7,9 @@ import kotlin.math.abs
 
 private enum class Axis { X, Y, Z }
 
-private class State(var pos: Long, var velocity: Long)
+private data class State(var pos: Long, var velocity: Long)
 
-private class Moon(val axisStates: Map<Axis, State>) {
+private class Moon(private val axisStates: Map<Axis, State>) {
     fun applyGravityPull(other: Moon) {
         Axis.values().forEach { axis ->
             addToAxisVelocity(axis, other.getAxisPos(axis).compareTo(getAxisPos(axis)).toLong())
@@ -22,23 +22,17 @@ private class Moon(val axisStates: Map<Axis, State>) {
         }
     }
 
-    fun getAxisPos(axis: Axis): Long = axisStates[axis]!!.pos
-    fun getAxisVelocity(axis: Axis): Long = axisStates[axis]!!.velocity
+    private fun getAxisState(axis: Axis): State = axisStates[axis] ?: error("No state for axis $axis found")
+    fun getAxisPos(axis: Axis): Long = getAxisState(axis).pos
+    fun getAxisVelocity(axis: Axis): Long = getAxisState(axis).velocity
 
-    fun addToAxisPos(axis: Axis, pos: Long) {
-        axisStates[axis]!!.pos += pos
-    }
+    fun addToAxisPos(axis: Axis, pos: Long) { getAxisState(axis).pos += pos }
+    fun addToAxisVelocity(axis: Axis, velocity: Long) { getAxisState(axis).velocity += velocity }
 
-    fun addToAxisVelocity(axis: Axis, velocity: Long) {
-        axisStates[axis]!!.velocity += velocity
-    }
+    fun computeKineticEnergy(): Long = axisStates.values.sumByLong { abs(it.velocity) }
+    fun computePotentialEnergy(): Long = axisStates.values.sumByLong { abs(it.pos) }
 
-    fun getKineticEnergy(): Long = axisStates.values.sumByLong { abs(it.velocity) }
-    fun getPotentialEnergy(): Long = axisStates.values.sumByLong { abs(it.pos) }
-
-    fun equalsOnAxis(other: Moon, axis: Axis): Boolean {
-        return getAxisPos(axis) == other.getAxisPos(axis) && getAxisVelocity(axis) == other.getAxisVelocity(axis)
-    }
+    fun equalsOnAxis(other: Moon, axis: Axis): Boolean = getAxisState(axis) == other.getAxisState(axis)
 }
 
 private fun parseMoons(input: List<String>): List<Moon> {
@@ -77,7 +71,7 @@ fun day12a(input: List<String>, nrOfSteps: Long = 1000): Long {
         moons.forEach { it.stepPos() }
     }
 
-    return moons.sumByLong { it.getKineticEnergy() * it.getPotentialEnergy() }
+    return moons.sumByLong { it.computeKineticEnergy() * it.computePotentialEnergy() }
 }
 
 fun day12b(input: List<String>): Long {
