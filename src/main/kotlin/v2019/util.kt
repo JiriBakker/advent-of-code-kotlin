@@ -75,4 +75,4 @@ suspend fun <A> Iterable<A>.forEachParallel(f: suspend (A) -> Unit) = coroutineS
 
 fun greatestCommonDenominator(a: Long, b: Long): Long = if (b == 0L) a else greatestCommonDenominator(b, a % b)
 fun leastCommonMultiple(a: Long, b: Long): Long = a / greatestCommonDenominator(a, b) * b
-fun leastCommonMultiple(nrs: List<Long>): Long = nrs.reduce(::leastCommonMultiple)
+fun leastCommonMultiple(nrs: Collection<Long>): Long = nrs.reduce(::leastCommonMultiple)

@@ -12,32 +12,22 @@ private data class State(var pos: Long, var velocity: Long)
 private class Moon(private val axisStates: Map<Axis, State>) {
     fun applyGravityPull(other: Moon) {
         Axis.values().forEach { axis ->
-            addToAxisVelocity(axis, other.getAxisPos(axis).compareTo(getAxisPos(axis)).toLong())
+            getState(axis).velocity += other.getState(axis).pos.compareTo(getState(axis).pos)
         }
     }
 
-    fun stepPos() {
+    fun applyVelocity() {
         Axis.values().forEach { axis ->
-            addToAxisPos(axis, getAxisVelocity(axis))
+            getState(axis).pos += getState(axis).velocity
         }
-    }
-
-    private fun getAxisState(axis: Axis): State = axisStates[axis] ?: error("No state for axis $axis found")
-    fun getAxisPos(axis: Axis): Long = getAxisState(axis).pos
-    fun getAxisVelocity(axis: Axis): Long = getAxisState(axis).velocity
-
-    fun addToAxisPos(axis: Axis, pos: Long) {
-        getAxisState(axis).pos += pos
-    }
-
-    fun addToAxisVelocity(axis: Axis, velocity: Long) {
-        getAxisState(axis).velocity += velocity
     }
 
     fun computeKineticEnergy(): Long = axisStates.values.sumByLong { abs(it.velocity) }
     fun computePotentialEnergy(): Long = axisStates.values.sumByLong { abs(it.pos) }
 
-    fun equalsOnAxis(other: Moon, axis: Axis): Boolean = getAxisState(axis) == other.getAxisState(axis)
+    fun equalsOnAxis(other: Moon, axis: Axis): Boolean = getState(axis) == other.getState(axis)
+
+    private fun getState(axis: Axis): State = axisStates[axis] ?: error("No state for axis $axis found")
 }
 
 private fun parseMoons(input: List<String>): List<Moon> {
@@ -71,7 +61,7 @@ private fun simulateStep(moons: List<Moon>) {
         moon2.applyGravityPull(moon1)
     }
 
-    moons.forEach { it.stepPos() }
+    moons.forEach { it.applyVelocity() }
 }
 
 fun day12a(input: List<String>, nrOfSteps: Int = 1000): Long {
@@ -86,21 +76,22 @@ fun day12b(input: List<String>): Long {
     val initialMoons = parseMoons(input)
     val moons = parseMoons(input)
 
-    val periodPerAxis = mutableMapOf(Axis.X to 0L, Axis.Y to 0L, Axis.Z to 0L)
+    val cyclePeriodPerAxis = mutableMapOf(Axis.X to 0L, Axis.Y to 0L, Axis.Z to 0L)
     var step = 0L
 
-    while (periodPerAxis.any { it.value == 0L }) {
+    while (cyclePeriodPerAxis.any { it.value == 0L }) {
         step++
 
         simulateStep(moons)
 
+        val moonPairs = initialMoons.zip(moons)
         Axis.values().forEach { axis ->
-            if (periodPerAxis[axis] == 0L) {
-                val isEqualOnAxis = initialMoons.zip(moons).all { (moon1, moon2) -> moon1.equalsOnAxis(moon2, axis) }
-                periodPerAxis[axis] = if (isEqualOnAxis) step else 0L
+            if (cyclePeriodPerAxis[axis] == 0L) {
+                val isEqualOnAxis = moonPairs.all { (moon1, moon2) -> moon1.equalsOnAxis(moon2, axis) }
+                cyclePeriodPerAxis[axis] = if (isEqualOnAxis) step else 0L
             }
         }
     }
 
-    return leastCommonMultiple(periodPerAxis.values.toList())
+    return leastCommonMultiple(cyclePeriodPerAxis.values)
 }
