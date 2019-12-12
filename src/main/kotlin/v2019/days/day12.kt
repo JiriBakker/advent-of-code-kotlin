@@ -26,8 +26,13 @@ private class Moon(private val axisStates: Map<Axis, State>) {
     fun getAxisPos(axis: Axis): Long = getAxisState(axis).pos
     fun getAxisVelocity(axis: Axis): Long = getAxisState(axis).velocity
 
-    fun addToAxisPos(axis: Axis, pos: Long) { getAxisState(axis).pos += pos }
-    fun addToAxisVelocity(axis: Axis, velocity: Long) { getAxisState(axis).velocity += velocity }
+    fun addToAxisPos(axis: Axis, pos: Long) {
+        getAxisState(axis).pos += pos
+    }
+
+    fun addToAxisVelocity(axis: Axis, velocity: Long) {
+        getAxisState(axis).velocity += velocity
+    }
 
     fun computeKineticEnergy(): Long = axisStates.values.sumByLong { abs(it.velocity) }
     fun computePotentialEnergy(): Long = axisStates.values.sumByLong { abs(it.pos) }
@@ -60,16 +65,19 @@ private fun parseMoons(input: List<String>): List<Moon> {
     }
 }
 
-fun day12a(input: List<String>, nrOfSteps: Long = 1000): Long {
+private fun simulateStep(moons: List<Moon>) {
+    moons.forEachCombinationPair { moon1, moon2 ->
+        moon1.applyGravityPull(moon2)
+        moon2.applyGravityPull(moon1)
+    }
+
+    moons.forEach { it.stepPos() }
+}
+
+fun day12a(input: List<String>, nrOfSteps: Int = 1000): Long {
     val moons = parseMoons(input)
 
-    for (step in 0 until nrOfSteps) {
-        moons.forEachCombinationPair { moon1, moon2 ->
-            moon1.applyGravityPull(moon2)
-            moon2.applyGravityPull(moon1)
-        }
-        moons.forEach { it.stepPos() }
-    }
+    repeat(nrOfSteps) { simulateStep(moons) }
 
     return moons.sumByLong { it.computeKineticEnergy() * it.computePotentialEnergy() }
 }
@@ -84,19 +92,14 @@ fun day12b(input: List<String>): Long {
     while (periodPerAxis.any { it.value == 0L }) {
         step++
 
-        moons.forEachCombinationPair { moon1, moon2 ->
-            moon1.applyGravityPull(moon2)
-            moon2.applyGravityPull(moon1)
-        }
+        simulateStep(moons)
 
-        moons.forEach { it.stepPos() }
-
-        periodPerAxis
-            .filter { it.value == 0L }
-            .forEach { (axis, steps) ->
+        Axis.values().forEach { axis ->
+            if (periodPerAxis[axis] == 0L) {
                 val isEqualOnAxis = initialMoons.zip(moons).all { (moon1, moon2) -> moon1.equalsOnAxis(moon2, axis) }
                 periodPerAxis[axis] = if (isEqualOnAxis) step else 0L
             }
+        }
     }
 
     return leastCommonMultiple(periodPerAxis.values.toList())
