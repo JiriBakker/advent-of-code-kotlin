@@ -1,9 +1,8 @@
 package v2019.days.day11
 
 import v2019.util.getBounds
-import v2019.intCoder.ProgramState
+import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
-import v2019.intCoder.runProgram
 
 private enum class Direction {
     UP,
@@ -32,35 +31,26 @@ private fun turn(curDirection: Direction, instruction: Long): Direction {
     }
 }
 
-private fun paint(intCodes: Map<Long, Long>, startColor: Long): Map<Pair<Long, Long>, Long> {
+private fun paint(intCodes: MutableMap<Long, Long>, startColor: Long): Map<Pair<Long, Long>, Long> {
     var curDirection = Direction.UP
     var curX = 0L
     var curY = 0L
     val painting = mutableMapOf<Pair<Long, Long>, Long>()
     painting[0L to 0L] = startColor
 
-    var state = ProgramState(intCodes)
-    while (true) {
-        state = runProgram(state.withInputs(listOf(painting.getOrDefault(curX to curY, BLACK))))
-        if (state.output == null) {
-            break
+    generateProgramOutput(intCodes) { painting.getOrDefault(curX to curY, BLACK) }
+        .chunked(2)
+        .forEach { (color, turnInstruction) ->
+            painting[curX to curY] = color
+
+            curDirection = turn(curDirection, turnInstruction)
+            when (curDirection) {
+                Direction.UP    -> curY--
+                Direction.RIGHT -> curX++
+                Direction.DOWN  -> curY++
+                Direction.LEFT  -> curX--
+            }
         }
-
-        val color = state.output!!
-        painting[curX to curY] = color
-
-        state = runProgram(state.withInputs(listOf(color)))
-
-        val turnInstruction = state.output!!
-
-        curDirection = turn(curDirection, turnInstruction)
-        when (curDirection) {
-            Direction.UP    -> curY--
-            Direction.RIGHT -> curX++
-            Direction.DOWN  -> curY++
-            Direction.LEFT  -> curX--
-        }
-    }
 
     return painting
 }

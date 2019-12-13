@@ -1,16 +1,15 @@
 package v2019.days.day02
 
-import v2019.intCoder.ProgramState
+import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
-import v2019.intCoder.runProgram
 
 fun day02a(input: String, overrides: List<Pair<Long, Long>> = listOf()): Long {
     val intCodes = parseIntCodes(input).toMutableMap()
     overrides.forEach { intCodes[it.first] = it.second }
 
-    val state = runProgram(ProgramState(intCodes))
+    generateProgramOutput(intCodes).toList()
 
-    return state.intCodes[0] ?: error("No value found at first memory address")
+    return intCodes[0] ?: error("No value found at first memory address")
 }
 
 private class SearchRange(var min: Long, var max: Long) {
@@ -39,13 +38,12 @@ fun day02b(input: String): Long {
             intCodes[1] = range1.median()
             intCodes[2] = range2.median()
 
-            val state = runProgram(ProgramState(intCodes.toMap()))
-            val result = state.intCodes
+            generateProgramOutput(intCodes).toList()
 
             when {
-                result[0]!! == target -> return
-                result[0]!! > target  -> range.consolidateMax()
-                else                  -> range.consolidateMin()
+                intCodes[0]!! == target -> return
+                intCodes[0]!! > target  -> range.consolidateMax()
+                else                    -> range.consolidateMin()
             }
         }
     }

@@ -1,17 +1,18 @@
 package v2019.days.day05
 
-import v2019.intCoder.ProgramState
+import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
-import v2019.intCoder.runProgramUntilNonZeroOutput
 
 fun day05a(input: String): Long {
     val intCodes = parseIntCodes(input)
 
-    return runProgramUntilNonZeroOutput(ProgramState(intCodes).withInputs(listOf(1L)))
+    return generateProgramOutput(intCodes) { 1L }
+        .first { it != 0L }
 }
 
 fun day05b(input: String, inputValue: Long = 5): Long {
     val intCodes = parseIntCodes(input)
 
-    return runProgramUntilNonZeroOutput(ProgramState(intCodes).withInputs(listOf(inputValue)))
+    return generateProgramOutput(intCodes) { inputValue }
+        .first { it != 0L }
 }
