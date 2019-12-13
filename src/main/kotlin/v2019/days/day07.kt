@@ -4,6 +4,7 @@ import v2019.intCoder.ProgramState
 import v2019.intCoder.parseIntCodes
 import v2019.intCoder.runProgram
 import v2019.util.permute
+import java.util.ArrayDeque
 
 fun day07a(input: String): Long {
     val intCodes = parseIntCodes(input)
@@ -28,15 +29,19 @@ fun day07b(input: String): Long {
         var amplifierIndex = 0
         var lastOutput = 0L
 
+        val inputQueues = mutableListOf<ArrayDeque<Long>>()
+
         val programStates =
             generateSequence {
-                ProgramState(intCodes)
+                val inputQueue = ArrayDeque<Long>()
+                inputQueues.add(inputQueue)
+                ProgramState(intCodes, 0, 0, { inputQueue.poll() })
             }
                 .take(5)
                 .toMutableList()
 
-        it.forEachIndexed { index, phase -> programStates[index].inputs.add(phase) }
-        programStates[0].inputs.add(0)
+        it.forEachIndexed { index, phase -> inputQueues[index].add(phase) }
+        inputQueues[0].add(0)
 
         while (true) {
             val resultState = runProgram(programStates[amplifierIndex])
@@ -47,7 +52,7 @@ fun day07b(input: String): Long {
 
             programStates[amplifierIndex] = resultState
             amplifierIndex = (amplifierIndex + 1) % 5
-            programStates[amplifierIndex].inputs.add(resultState.output)
+            inputQueues[amplifierIndex].add(resultState.output)
             lastOutput = resultState.output
         }
 

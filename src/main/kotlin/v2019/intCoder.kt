@@ -8,15 +8,18 @@ private enum class ParamMode {
     Relative
 }
 
-
 class ProgramState(
     val intCodes: Map<Long, Long>,
     val pointer: Long = 0,
     val relativeBase: Long = 0,
-    val inputs: ArrayDeque<Long> = ArrayDeque(),
-    val output: Long? = null
+    val inputProvider: () -> Long = { 0L },
+    val output: Long? = null,
+    val isFinished: Boolean = false
 ) {
-    val withInputs = { inputs: List<Long> -> ProgramState(intCodes, pointer, relativeBase, ArrayDeque(inputs), output) }
+    fun withInputs(inputs: List<Long>): ProgramState {
+        val inputQueue = ArrayDeque(inputs)
+        return ProgramState(intCodes, pointer, relativeBase, { inputQueue.poll() }, output, isFinished)
+    }
 }
 
 private class Instruction(val opcode: Int, val modes: List<ParamMode>)
@@ -111,12 +114,12 @@ fun runProgram(initialProgramState: ProgramState): ProgramState {
                 pointer += 4
             }
             3 -> {
-                set(pointer + 1, initialProgramState.inputs.poll(), instruction.modes[0])
+                set(pointer + 1, initialProgramState.inputProvider(), instruction.modes[0])
                 pointer += 2
             }
             4 -> {
-                val result = get(pointer + 1, instruction.modes[0])
-                return ProgramState(intCodes, pointer + 2, relativeBase, initialProgramState.inputs, result)
+                val output = get(pointer + 1, instruction.modes[0])
+                return ProgramState(intCodes, pointer + 2, relativeBase, initialProgramState.inputProvider, output, false)
             }
             5 -> {
                 pointer = applyJump({ it != 0L }, pointer, instruction.modes)
@@ -136,7 +139,7 @@ fun runProgram(initialProgramState: ProgramState): ProgramState {
                 relativeBase += get(pointer + 1, instruction.modes[0])
                 pointer += 2
             }
-            99 -> return ProgramState(intCodes, pointer, relativeBase, initialProgramState.inputs)
+            99 -> return ProgramState(intCodes, pointer, relativeBase, initialProgramState.inputProvider, null, true)
             else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer")
         }
     }
