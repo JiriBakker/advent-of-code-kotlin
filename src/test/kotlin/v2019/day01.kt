@@ -25,7 +25,7 @@ class Day01aTests {
     }
 
     @Test fun testExampleCombinedInput() {
-        assertEquals(34241, day01a(parseCsv("12, 14, 1969, 100756")))
+        assertEquals(34241, day01a(parseCsv("12,14,1969,100756")))
     }
 
     @Test fun testActualInput() {
@@ -47,7 +47,7 @@ class Day01bTests {
     }
 
     @Test fun testExampleCombinedInput() {
-        assertEquals(51314, day01b(parseCsv("12, 1969, 100756")))
+        assertEquals(51314, day01b(parseCsv("12,1969,100756")))
     }
 
     @Test fun testActualInput() {
