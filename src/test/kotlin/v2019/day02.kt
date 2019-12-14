@@ -33,11 +33,7 @@ class Day02aTests {
 }
 
 class Day02bTests {
-    @Test fun testActualInput_bruteForce() {
-        assertEquals(7621, day02b(readInputLine("day02")))
-    }
-
-    @Test fun testActualInput_binarySearch() {
+    @Test fun testActualInput() {
         assertEquals(7621, day02b(readInputLine("day02")))
     }
 }

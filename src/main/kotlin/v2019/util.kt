@@ -69,10 +69,30 @@ inline fun <T> List<T>.forEachCombinationPair(action: (T, T) -> Unit) {
     }
 }
 
-suspend fun <A> Iterable<A>.forEachParallel(f: suspend (A) -> Unit) = coroutineScope {
-    map { async { f(it) } }.awaitAll()
-}
-
 fun greatestCommonDenominator(a: Long, b: Long): Long = if (b == 0L) a else greatestCommonDenominator(b, a % b)
 fun leastCommonMultiple(a: Long, b: Long): Long = a / greatestCommonDenominator(a, b) * b
 fun leastCommonMultiple(nrs: Collection<Long>): Long = nrs.reduce(::leastCommonMultiple)
+
+class BinarySearchRange(var min: Long, var max: Long) {
+    fun median(): Long {
+        return ((max - min) / 2) + min
+    }
+    fun consolidateMin() {
+        min = median() + 1
+    }
+    fun consolidateMax() {
+        max = median() - 1
+    }
+}
+
+fun doBinarySearch(range: BinarySearchRange, target: Long, compute: (Long) -> Long): Long {
+    while (range.max >= range.min) {
+        val value = compute(range.median())
+        when {
+            value == target -> return range.median()
+            value > target  -> range.consolidateMax()
+            else            -> range.consolidateMin()
+        }
+    }
+    return range.median()
+}
