@@ -6,10 +6,6 @@ import v2019.days.day11.day11a
 import v2019.days.day11.day11b
 import v2019.util.readInputLine
 
-private fun parseCsv(exampleInput: String): List<String> {
-    return exampleInput.split(",")
-}
-
 class Day11aTests {
     @Test fun testActualInput() {
         assertEquals(2883, day11a(readInputLine("day11")))

@@ -6,13 +6,9 @@ import v2019.days.day24.day24a
 import v2019.days.day24.day24b
 import v2019.util.readInputLines
 
-private fun parseCsv(exampleInput: String): List<String> {
-    return exampleInput.split(",")
-}
-
 class Day24aTests {
     @Test fun testExampleInput1() {
-        assertEquals(0, day24a(parseCsv("")))
+        assertEquals(0, day24a(listOf("")))
     }
 
     @Test fun testActualInput() {
@@ -22,7 +18,7 @@ class Day24aTests {
 
 class Day24bTests {
     @Test fun testExampleInput1() {
-        assertEquals(0, day24b(parseCsv("")))
+        assertEquals(0, day24b(listOf("")))
     }
 
     @Test fun testActualInput() {

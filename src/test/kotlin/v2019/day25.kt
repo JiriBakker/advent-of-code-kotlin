@@ -5,13 +5,9 @@ import org.junit.Test
 import v2019.days.day25.day25a
 import v2019.util.readInputLines
 
-private fun parseCsv(exampleInput: String): List<String> {
-    return exampleInput.split(",")
-}
-
 class Day25aTests {
     @Test fun testExampleInput1() {
-        assertEquals(0, day25a(parseCsv("")))
+        assertEquals(0, day25a(listOf("")))
     }
 
     @Test fun testActualInput() {

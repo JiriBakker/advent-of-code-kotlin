@@ -1,8 +1,5 @@
 package v2019.util
 
-import kotlinx.coroutines.async
-import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.coroutineScope
 import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -13,6 +10,10 @@ fun readInputLines(fileName: String): List<String> {
 
 fun readInputLine(fileName: String): String {
     return readInputLines(fileName).single()
+}
+
+fun parseCsv(exampleInput: String): List<String> {
+    return exampleInput.split(",")
 }
 
 inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {

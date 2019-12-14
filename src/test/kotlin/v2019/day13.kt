@@ -6,7 +6,6 @@ import v2019.days.day13.day13a
 import v2019.days.day13.day13b
 import v2019.util.readInputLine
 
-
 class Day13aTests {
     @Test fun testActualInput() {
         assertEquals(306, day13a(readInputLine("day13")))
