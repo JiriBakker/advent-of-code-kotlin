@@ -36,7 +36,7 @@ private val ORIGIN = Pos(0, 0)
 
 private data class Step(val pos: Pos, val distanceToTarget: Long, val stepsToReach: Long)
 
-private fun exploreGrid(intCodes: MutableMap<Long, Long>): MutableMap<Long, MutableMap<Long, Long>> {
+private fun exploreGrid(intCodes: MutableMap<Long, Long>): Map<Long, Map<Long, Long>> {
     var curPos = ORIGIN
     var curDirection = Direction.NORTH
 
@@ -120,9 +120,9 @@ fun day15a(input: String): Long {
 
     val grid = exploreGrid(intCodes)
 
-    val target = grid.cellsOfType(OXYGEN).first()
+    val oxygenSystem = grid.cellsOfType(OXYGEN).first()
 
-    fun distanceToTarget(pos: Pos) = manhattanDistance(pos.x, pos.y, target.x, target.y)
+    fun distanceToTarget(pos: Pos) = manhattanDistance(pos.x, pos.y, oxygenSystem.x, oxygenSystem.y)
 
     val checked = mutableMapOf<Pos, Long>()
     val toCheck = PriorityQueue<Step> { a, b -> 10 * a.distanceToTarget.compareTo(b.distanceToTarget) + a.stepsToReach.compareTo(b.stepsToReach) }
@@ -139,7 +139,7 @@ fun day15a(input: String): Long {
 
     while (true) {
         val (pos, _, stepsToReach) = toCheck.poll()
-        if (pos == target) {
+        if (pos == oxygenSystem) {
             return stepsToReach
         }
 
@@ -154,13 +154,13 @@ fun day15b(input: String): Long {
 
     val grid = exploreGrid(intCodes)
 
-    val target = grid.cellsOfType(OXYGEN).first()
+    val oxygenSystem = grid.cellsOfType(OXYGEN).first()
 
     val distances = mutableMapOf<Pos, Long>()
     fun getDistance(pos: Pos) = distances[pos] ?: Long.MAX_VALUE
 
     val toVisit = PriorityQueue<Pair<Pos, Long>> { a, b -> a.second.compareTo(b.second) }
-    toVisit.add(target to 0L)
+    toVisit.add(oxygenSystem to 0L)
 
     while (toVisit.isNotEmpty()) {
         val (pos, distance) = toVisit.poll()
