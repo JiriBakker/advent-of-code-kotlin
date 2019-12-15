@@ -125,14 +125,14 @@ fun day15a(input: String): Long {
     fun distanceToTarget(pos: Pos) = manhattanDistance(pos.x, pos.y, oxygenSystem.x, oxygenSystem.y)
 
     val checked = mutableMapOf<Pos, Long>()
-    fun nrOfStepsFound(pos: Pos) = checked[pos] ?: Long.MAX_VALUE
+    fun stepsToReachFound(pos: Pos) = checked[pos] ?: Long.MAX_VALUE
 
     val toCheck = PriorityQueue<Step> { a, b -> 10 * a.distanceToTarget.compareTo(b.distanceToTarget) + a.stepsToReach.compareTo(b.stepsToReach) }
     toCheck.add(Step(ORIGIN, distanceToTarget(ORIGIN), 0))
 
     fun addIfViable(pos: Pos, stepsToReach: Long) {
         if (grid.get(pos) != WALL
-            && nrOfStepsFound(pos) > stepsToReach
+            && stepsToReachFound(pos) > stepsToReach
             && toCheck.none { it.pos == pos && it.stepsToReach <= stepsToReach }
         ) {
             toCheck.add(Step(pos, distanceToTarget(pos), stepsToReach))
@@ -159,19 +159,19 @@ fun day15b(input: String): Long {
     val oxygenSystem = grid.cellsOfType(OXYGEN).first()
 
     val distances = mutableMapOf<Pos, Long>()
-    fun getDistance(pos: Pos) = distances[pos] ?: Long.MAX_VALUE
+    fun distanceFound(pos: Pos) = distances[pos] ?: Long.MAX_VALUE
 
     val toVisit = PriorityQueue<Pair<Pos, Long>> { a, b -> a.second.compareTo(b.second) }
     toVisit.add(oxygenSystem to 0L)
 
     while (toVisit.isNotEmpty()) {
         val (pos, distance) = toVisit.poll()
-        distances[pos] = min(getDistance(pos), distance)
+        distances[pos] = min(distanceFound(pos), distance)
 
         toVisit.addAll(
             pos.neighbours()
-                .filter { grid.get(it) == HALL && getDistance(it) > distance }
-                .map { it to distance + 1}
+                .filter { neighbour -> grid.get(neighbour) == HALL && distanceFound(neighbour) > distance }
+                .map { neighbour -> neighbour to distance + 1}
         )
     }
 
