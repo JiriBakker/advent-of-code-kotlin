@@ -16,7 +16,7 @@ private class Asteroid(val x: Int, val y: Int) {
     }
 
     fun addLineOfSight(other: Asteroid) {
-        val distance = pythDistance(x, y, other.x, other.y)
+        val distance = pythDistance(x, y, other.x, other.y).toDouble()
         val vectorX = (other.x - x) / distance
         val vectorY = (other.y - y) / distance
 

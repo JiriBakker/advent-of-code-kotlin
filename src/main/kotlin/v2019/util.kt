@@ -1,6 +1,7 @@
 package v2019.util
 
 import java.io.File
+import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
@@ -56,6 +57,10 @@ fun pythDistance(x1: Int, y1: Int, x2: Int, y2: Int): Double {
 
 fun pythDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
     return sqrt((x1 - x2).pow(2.0) + (y1 - y2).pow(2.0))
+}
+
+fun manhattanDistance(x1: Long, y1: Long, x2: Long, y2: Long): Long {
+    return abs(x2 - x1) + abs(y2 - y1)
 }
 
 inline fun <T, TOut : Comparable<TOut>> List<T>.getBounds(selector: (T) -> TOut): Pair<TOut, TOut> {
