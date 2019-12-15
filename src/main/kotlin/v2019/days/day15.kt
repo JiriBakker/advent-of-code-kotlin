@@ -34,7 +34,7 @@ private data class Pos(val x: Long, val y: Long) {
 
 private val ORIGIN = Pos(0, 0)
 
-private data class Step(val pos: Pos, val distanceToTarget: Long, val stepsToReach: Long)
+private data class Step(val pos: Pos, val stepsToReach: Long, val distanceToTarget: Long)
 
 private fun exploreGrid(intCodes: MutableMap<Long, Long>): Map<Long, Map<Long, Long>> {
     var curPos = ORIGIN
@@ -128,19 +128,19 @@ fun day15a(input: String): Long {
     fun stepsToReachFound(pos: Pos) = checked[pos] ?: Long.MAX_VALUE
 
     val toCheck = PriorityQueue<Step> { a, b -> 10 * a.distanceToTarget.compareTo(b.distanceToTarget) + a.stepsToReach.compareTo(b.stepsToReach) }
-    toCheck.add(Step(ORIGIN, distanceToTarget(ORIGIN), 0))
+    toCheck.add(Step(ORIGIN, 0, distanceToTarget(ORIGIN)))
 
     fun addIfViable(pos: Pos, stepsToReach: Long) {
         if (grid.get(pos) != WALL
             && stepsToReachFound(pos) > stepsToReach
             && toCheck.none { it.pos == pos && it.stepsToReach <= stepsToReach }
         ) {
-            toCheck.add(Step(pos, distanceToTarget(pos), stepsToReach))
+            toCheck.add(Step(pos, stepsToReach, distanceToTarget(pos)))
         }
     }
 
     while (true) {
-        val (pos, _, stepsToReach) = toCheck.poll()
+        val (pos, stepsToReach) = toCheck.poll()
         if (pos == oxygenSystem) {
             return stepsToReach
         }
@@ -168,11 +168,9 @@ fun day15b(input: String): Long {
         val (pos, distance) = toVisit.poll()
         distances[pos] = min(distanceFound(pos), distance)
 
-        toVisit.addAll(
-            pos.neighbours()
-                .filter { neighbour -> grid.get(neighbour) == HALL && distanceFound(neighbour) > distance }
-                .map { neighbour -> neighbour to distance + 1}
-        )
+        pos.neighbours()
+            .filter { neighbour -> grid.get(neighbour) == HALL && distanceFound(neighbour) > distance }
+            .forEach { neighbour -> toVisit.add(neighbour to distance + 1) }
     }
 
     return distances.values.max()!!
