@@ -125,12 +125,14 @@ fun day15a(input: String): Long {
     fun distanceToTarget(pos: Pos) = manhattanDistance(pos.x, pos.y, oxygenSystem.x, oxygenSystem.y)
 
     val checked = mutableMapOf<Pos, Long>()
+    fun nrOfStepsFound(pos: Pos) = checked[pos] ?: Long.MAX_VALUE
+
     val toCheck = PriorityQueue<Step> { a, b -> 10 * a.distanceToTarget.compareTo(b.distanceToTarget) + a.stepsToReach.compareTo(b.stepsToReach) }
     toCheck.add(Step(ORIGIN, distanceToTarget(ORIGIN), 0))
 
-    fun addIfAccessibleAndLessSteps(pos: Pos, stepsToReach: Long) {
+    fun addIfViable(pos: Pos, stepsToReach: Long) {
         if (grid.get(pos) != WALL
-            && (checked[pos] ?: Long.MAX_VALUE) > stepsToReach
+            && nrOfStepsFound(pos) > stepsToReach
             && toCheck.none { it.pos == pos && it.stepsToReach <= stepsToReach }
         ) {
             toCheck.add(Step(pos, distanceToTarget(pos), stepsToReach))
@@ -145,7 +147,7 @@ fun day15a(input: String): Long {
 
         checked[pos] = stepsToReach
 
-        pos.neighbours().forEach { addIfAccessibleAndLessSteps(it, stepsToReach + 1) }
+        pos.neighbours().forEach { neighbour -> addIfViable(neighbour, stepsToReach + 1) }
     }
 }
 
