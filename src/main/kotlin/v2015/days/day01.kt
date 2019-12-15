@@ -1,18 +1,18 @@
 package v2015.days.day01
 
-private fun toFloorSequence(input: String): Sequence<Long> {
+private fun toFloorSequence(input: String): Sequence<Int> {
     return sequence {
-        input.fold(0L) { floor, it ->
+        input.fold(0) { floor, it ->
             yield(floor)
-            floor + if (it == '(') 1L else -1L
+            floor + if (it == '(') 1 else -1
         }
     }
 }
 
-fun day01a(input: String): Long {
+fun day01a(input: String): Int {
     return toFloorSequence(input).last()
 }
 
 fun day01b(input: String): Int {
-    return toFloorSequence(input).takeWhile { it != -1L }.count()
+    return toFloorSequence(input).takeWhile { it != -1 }.count()
 }
