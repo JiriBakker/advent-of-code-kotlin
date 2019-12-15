@@ -4,11 +4,12 @@ import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
 import v2019.util.manhattanDistance
 import java.util.PriorityQueue
+import kotlin.math.min
 
 private enum class Direction {
     NORTH, EAST, SOUTH, WEST;
 
-    fun toLong(): Long {
+    fun toInstruction(): Long {
         return when (this) {
             NORTH -> 1L
             SOUTH -> 2L
@@ -22,14 +23,13 @@ private const val EMPTY = -1L
 private const val WALL = 0L
 private const val HALL = 1L
 private const val OXYGEN = 2L
-private const val EXPANDING_OXYGEN = 3L
 
 private data class Pos(val x: Long, val y: Long) {
-    fun left(): Pos = Pos(x - 1, y)
-    fun right(): Pos = Pos(x + 1, y)
-    fun above(): Pos = Pos(x, y - 1)
-    fun below(): Pos = Pos(x, y + 1)
-    fun neighbours(): List<Pos> = listOf(right(), left(), above(), below())
+    fun north() = Pos(x, y - 1)
+    fun east()  = Pos(x + 1, y)
+    fun south() = Pos(x, y + 1)
+    fun west()  = Pos(x - 1, y)
+    fun neighbours(): List<Pos> = listOf(north(), east(), south(), west())
 }
 
 private val ORIGIN = Pos(0, 0)
@@ -37,21 +37,29 @@ private val ORIGIN = Pos(0, 0)
 private data class Step(val pos: Pos, val distanceToTarget: Long, val stepsToReach: Long)
 
 private fun exploreGrid(intCodes: MutableMap<Long, Long>): MutableMap<Long, MutableMap<Long, Long>> {
-    var curX = ORIGIN.x
-    var curY = ORIGIN.y
+    var curPos = ORIGIN
     var curDirection = Direction.NORTH
 
-    fun stepBack() {
-        when (curDirection) {
-            Direction.NORTH -> curY++
-            Direction.EAST  -> curX--
-            Direction.SOUTH -> curY--
-            Direction.WEST  -> curX++
+    fun stepForward() {
+        curPos = when (curDirection) {
+            Direction.NORTH -> curPos.north()
+            Direction.EAST  -> curPos.east()
+            Direction.SOUTH -> curPos.south()
+            Direction.WEST  -> curPos.west()
         }
     }
 
-    fun turnRight(): Direction {
-        return when (curDirection) {
+    fun stepBack() {
+        curPos = when (curDirection) {
+            Direction.NORTH -> curPos.south()
+            Direction.EAST  -> curPos.west()
+            Direction.SOUTH -> curPos.north()
+            Direction.WEST  -> curPos.east()
+        }
+    }
+
+    fun turnRight() {
+        curDirection = when (curDirection) {
             Direction.NORTH -> Direction.EAST
             Direction.EAST  -> Direction.SOUTH
             Direction.SOUTH -> Direction.WEST
@@ -59,8 +67,8 @@ private fun exploreGrid(intCodes: MutableMap<Long, Long>): MutableMap<Long, Muta
         }
     }
 
-    fun turnLeft(): Direction {
-        return when (curDirection) {
+    fun turnLeft() {
+        curDirection = when (curDirection) {
             Direction.NORTH -> Direction.WEST
             Direction.EAST  -> Direction.NORTH
             Direction.SOUTH -> Direction.EAST
@@ -68,29 +76,20 @@ private fun exploreGrid(intCodes: MutableMap<Long, Long>): MutableMap<Long, Muta
         }
     }
 
-    fun stepForward() {
-        when (curDirection) {
-            Direction.NORTH -> curY--
-            Direction.EAST  -> curX++
-            Direction.SOUTH -> curY++
-            Direction.WEST  -> curX--
-        }
-    }
-
     val grid = mutableMapOf(ORIGIN.y to mutableMapOf(ORIGIN.x to HALL))
 
     var hasMoved = false
-    generateProgramOutput(intCodes) { curDirection.toLong() }
-        .takeWhile { !hasMoved || !(curX == ORIGIN.x && curY == ORIGIN.y) }
+    generateProgramOutput(intCodes) { curDirection.toInstruction() }
+        .takeWhile { !hasMoved || curPos != ORIGIN }
         .forEach { output ->
             stepForward()
-            grid.set(curX, curY, output)
+            grid.set(curPos, output)
             if (output == WALL) {
                 stepBack()
-                curDirection = turnRight()
+                turnRight()
             } else {
                 hasMoved = true
-                curDirection = turnLeft()
+                turnLeft()
             }
         }
 
@@ -112,8 +111,8 @@ private fun Map<Long, Map<Long, Long>>.get(pos: Pos, default: Long = EMPTY): Lon
     return this.getOrElse(pos.y, { mutableMapOf() }).getOrDefault(pos.x, default)
 }
 
-private fun MutableMap<Long, MutableMap<Long, Long>>.set(x: Long, y: Long, value: Long) {
-    this.getOrPut(y, { mutableMapOf() })[x] = value
+private fun MutableMap<Long, MutableMap<Long, Long>>.set(pos: Pos, value: Long) {
+    this.getOrPut(pos.y, { mutableMapOf() })[pos.x] = value
 }
 
 fun day15a(input: String): Long {
@@ -123,7 +122,7 @@ fun day15a(input: String): Long {
 
     val target = grid.cellsOfType(OXYGEN).first()
 
-    fun distanceToTarget(pos: Pos): Long = manhattanDistance(pos.x, pos.y, target.x, target.y)
+    fun distanceToTarget(pos: Pos) = manhattanDistance(pos.x, pos.y, target.x, target.y)
 
     val checked = mutableMapOf<Pos, Long>()
     val toCheck = PriorityQueue<Step> { a, b -> 10 * a.distanceToTarget.compareTo(b.distanceToTarget) + a.stepsToReach.compareTo(b.stepsToReach) }
@@ -155,24 +154,24 @@ fun day15b(input: String): Long {
 
     val grid = exploreGrid(intCodes)
 
-    fun hasOxygenNeighbour(pos: Pos): Boolean {
-        return pos.neighbours().any { grid.get(it) == OXYGEN }
+    val target = grid.cellsOfType(OXYGEN).first()
+
+    val distances = mutableMapOf<Pos, Long>()
+    fun getDistance(pos: Pos) = distances[pos] ?: Long.MAX_VALUE
+
+    val toVisit = PriorityQueue<Pair<Pos, Long>> { a, b -> a.second.compareTo(b.second) }
+    toVisit.add(target to 0L)
+
+    while (toVisit.isNotEmpty()) {
+        val (pos, distance) = toVisit.poll()
+        distances[pos] = min(getDistance(pos), distance)
+
+        toVisit.addAll(
+            pos.neighbours()
+                .filter { grid.get(it) == HALL && getDistance(it) > distance }
+                .map { it to distance + 1}
+        )
     }
 
-    var minutesPassed = 0L
-    do {
-        grid.cellsOfType(EXPANDING_OXYGEN)
-            .forEach { pos -> grid.set(pos.x, pos.y, OXYGEN) }
-
-        grid.cellsOfType(HALL)
-            .forEach { pos ->
-                if (hasOxygenNeighbour(pos)) {
-                    grid.set(pos.x, pos.y, EXPANDING_OXYGEN)
-                }
-            }
-
-        minutesPassed++
-    } while (grid.cellsOfType(HALL).any())
-
-    return minutesPassed
+    return distances.values.max()!!
 }
