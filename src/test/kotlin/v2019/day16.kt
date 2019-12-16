@@ -29,19 +29,15 @@ class Day16aTests {
 }
 
 class Day16bTests {
-    // @Test fun testExampleInput1() {
-    //     assertEquals("21098765", day16b("98765432109876543210"))
-    // }
-
-    @Test fun testExampleInput2() {
+    @Test fun testExampleInput1() {
         assertEquals("84462026", day16b("03036732577212944063491565474664"))
     }
 
-    @Test fun testExampleInput3() {
+    @Test fun testExampleInput2() {
         assertEquals("78725270", day16b("02935109699940807407585447034323"))
     }
 
-    @Test fun testExampleInput4() {
+    @Test fun testExampleInput3() {
         assertEquals("53553731", day16b("03081770884921959731165446850517"))
     }
 
