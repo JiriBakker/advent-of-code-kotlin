@@ -29,3 +29,7 @@ inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     }
     return sum
 }
+
+fun Int.safeMod(mod: Int): Int {
+    return (this + mod) % mod
+}
