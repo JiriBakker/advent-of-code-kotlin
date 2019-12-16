@@ -33,3 +33,17 @@ inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
 fun Int.safeMod(mod: Int): Int {
     return (this + mod) % mod
 }
+
+fun <T> List<T>.permute(): List<List<T>> {
+    fun <T> permute(available: List<T>, used: List<T>): List<List<T>> {
+        if (available.isEmpty()) {
+            return listOf(used)
+        }
+
+        return available.flatMap { current ->
+            permute( available.minus(current), used + current)
+        }
+    }
+
+    return permute(this, listOf())
+}
