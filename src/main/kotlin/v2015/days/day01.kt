@@ -2,10 +2,12 @@ package v2015.days.day01
 
 private fun toFloorSequence(input: String): Sequence<Int> {
     return sequence {
-        input.fold(0) { floor, it ->
-            yield(floor)
-            floor + if (it == '(') 1 else -1
-        }
+        yield(
+            input.fold(0) { floor, it ->
+                yield(floor)
+                floor + if (it == '(') 1 else -1
+            }
+        )
     }
 }
 
