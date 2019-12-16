@@ -26,26 +26,28 @@ private fun computeDigit(signal: IntArray, outputIndex: Int): Int {
     }
 }
 
-fun day16a(input: String, nrOfIterations: Int = 100): String {
+fun day16a(input: String, nrOfPhases: Int = 100): String {
     val signal = input.map(Character::getNumericValue).toIntArray()
 
-    for (i in 0 until nrOfIterations) {
-        iterateSignal(signal)
-    }
+    repeat(nrOfPhases) { iterateSignal(signal) }
 
     return signal.take(8).joinToString("")
 }
 
-fun day16b(input: String): String {
-    val baseDigits = input.map(Character::getNumericValue)
-    val signal = sequence { repeat(10000) { yieldAll(baseDigits) } }.toList().toIntArray()
+fun day16b(input: String, nrOfPhases: Int = 100): String {
+    val baseSignal = input.map(Character::getNumericValue)
 
-    for (i in 0 until 100) {
-        iterateSignal(signal)
-        println("Step $i")
+    val offset = input.take(7).toInt()
+
+    val signal = sequence { repeat(10000) { yieldAll(baseSignal) } }.drop(offset).toList().toIntArray()
+
+    repeat(nrOfPhases) {
+        var partialSum = signal.sum()
+        signal.forEachIndexed { index, value ->
+            signal[index] = ((partialSum % 10) + 10) % 10
+            partialSum -= value
+        }
     }
 
-    val offset = input.take(8).toInt()
-
-    return signal.drop(offset).take(8).joinToString("")
+    return signal.take(8).joinToString("")
 }
