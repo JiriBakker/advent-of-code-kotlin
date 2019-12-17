@@ -3,7 +3,8 @@ package v2019
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.days.day17.day17a
-import v2019.days.day17.day17b
+import v2019.days.day17.day17b_hardcoded
+import v2019.days.day17.day17b_compute
 import v2019.util.readInputLine
 
 class Day17aTests {
@@ -13,7 +14,11 @@ class Day17aTests {
 }
 
 class Day17bTests {
-    @Test fun testActualInput() {
-        assertEquals(897426, day17b(readInputLine("day17")))
+    @Test fun testActualInput_hardcoded() {
+        assertEquals(897426, day17b_hardcoded(readInputLine("day17")))
     }
+
+    // @Test fun testActualInput_compute() {
+    //     assertEquals(897426, day17b_compute(readInputLine("day17")))
+    // }
 }
