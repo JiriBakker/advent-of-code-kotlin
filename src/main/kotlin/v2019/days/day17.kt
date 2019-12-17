@@ -1,18 +1,20 @@
 package v2019.days.day17
 
+import v2015.util.min
 import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
 import java.util.ArrayDeque
 
-private fun findIntersections(grid: List<String>): Sequence<Pair<Int, Int>> {
+private fun findIntersections(grid: List<CharArray>): Sequence<Pair<Int, Int>> {
     return sequence {
         for (y in 1 until grid.size - 1) {
-            for (x in 1 until grid[0].length - 1) {
+            for (x in 1 until grid[0].size - 1) {
                 if (grid[y][x] == '#' &&
                     grid[y - 1][x] == '#' &&
                     grid[y + 1][x] == '#' &&
                     grid[y][x - 1] == '#' &&
-                    grid[y][x + 1] == '#') {
+                    grid[y][x + 1] == '#'
+                ) {
                     yield(x to y)
                 }
             }
@@ -29,28 +31,34 @@ fun day17a(input: String): Long {
             .joinToString("")
             .trim()
             .split('\n')
+            .map { it.toCharArray() }
 
     val intersections = findIntersections(grid)
 
     return intersections.sumBy { it.first * it.second }.toLong()
 }
 
+private fun vacuumWithInput(movementInput: String, intCodes: MutableMap<Long, Long>): Sequence<Long> {
+    val movementQueue = ArrayDeque<Long>(movementInput.map { it.toLong() })
+
+    intCodes[0] = 2
+
+    return generateProgramOutput(intCodes) { movementQueue.poll() }
+}
+
 fun day17b_hardcoded(input: String): Long {
     // Optimal path (manually determined):
     // R,8,R,10,R,10,R,4,R,8,R,10,R,12,R,8,R,10,R,10,R,12,R,4,L,12,L,12,R,8,R,10,R,10,R,4,R,8,R,10,R,12,R,12,R,4,L,12,L,12,R,8,R,10,R,10,R,4,R,8,R,10,R,12,R,12,R,4,L,12,L,12
-    val movementInput = ArrayDeque<Long>(
-        ("B,C,B,A,B,C,A,B,C,A\n" +
+    val movementInput =
+        "B,C,B,A,B,C,A,B,C,A\n" +
         "R,12,R,4,L,12,L,12\n" + // A
         "R,8,R,10,R,10\n" + // B
         "R,4,R,8,R,10,R,12\n" + // C
-        "n\n").map { it.toLong() }
-    )
+        "n\n"
 
     val intCodes = parseIntCodes(input)
-    intCodes[0] = 2
 
-    return generateProgramOutput(intCodes) { movementInput.poll() }
-        .last()
+    return vacuumWithInput(movementInput, intCodes).last()
 }
 
 private enum class Direction {
@@ -59,30 +67,30 @@ private enum class Direction {
 
 private data class Pos(var x: Int, var y: Int)
 
-private val vacuumChars = mapOf('^' to Direction.NORTH,'v' to Direction.SOUTH,'<' to Direction.WEST,'>' to Direction.EAST)
+private val vacuumChars =
+    mapOf('^' to Direction.NORTH, 'v' to Direction.SOUTH, '<' to Direction.WEST, '>' to Direction.EAST)
 
 fun day17b_compute(input: String): Long {
     val intCodes = parseIntCodes(input)
 
-    val staticGrid =
+    val grid =
         generateProgramOutput(intCodes.toMutableMap()) { 0 }
             .map { it.toChar() }
             .joinToString("")
             .trim()
             .split('\n')
-
-    val grid =
-        staticGrid
             .map { it.toCharArray() }
-            .toMutableList()
 
     val gridHeight = grid.size
     val gridWidth = grid[0].size
 
-    val nrOfIntersections = findIntersections(staticGrid)
-    var nrOfScaffolds = grid.sumBy { row -> row.count { it == '#' }} + nrOfIntersections.count()
+    val nrOfIntersections = findIntersections(grid)
+    var nrOfScaffolds = grid.sumBy { row -> row.count { it == '#' } } + nrOfIntersections.count()
 
-    val vacuumPos = grid.withIndex().flatMap { (y, row) -> row.withIndex().mapNotNull { (x, char) -> if (vacuumChars.keys.contains(char)) Pos(x, y) else null }}.first()
+    val vacuumPos = grid.withIndex().flatMap { (y, row) ->
+        row.withIndex().mapNotNull { (x, char) -> if (vacuumChars.keys.contains(char)) Pos(x, y) else null }
+    }.first()
+
     var vacuumDirection = when (grid[vacuumPos.y][vacuumPos.x]) {
         '^' -> Direction.NORTH
         'v' -> Direction.SOUTH
@@ -175,5 +183,59 @@ fun day17b_compute(input: String): Long {
         stepWhilePossible()
     } while (nrOfScaffolds > 0)
 
-    error("TODO generate A, B and C from movement instructions: " + movements.joinToString(","))
+    val movementsString = movements.joinToString(",")
+
+    fun findFunctions(maxFunctionLength: Int = 20): Triple<String, String, String> {
+        val replacementChars = setOf('A', 'B', 'C')
+        fun isReplacementChar(char: Char): Boolean = replacementChars.contains(char)
+        fun isComma(char: Char): Boolean = char == ','
+
+        for (aLength in (maxFunctionLength + 2) downTo 3) {
+            for (bLength in (maxFunctionLength + 2) downTo 3) {
+                val a = movementsString.take(aLength).trim(',')
+                val b = movementsString.takeLast(bLength).trim(',')
+
+                if (a.length > maxFunctionLength || b.length > maxFunctionLength) {
+                    continue
+                }
+
+                val withoutAB = movementsString.replace(a, "A".repeat(a.length)).replace(b, "B".repeat(b.length))
+
+                val cStart = withoutAB.indexOfFirst { !isReplacementChar(it) && !isComma(it) }
+                val cEnd = cStart +
+                    min(
+                        withoutAB.drop(cStart).indexOfFirst(::isReplacementChar),
+                        (maxFunctionLength + 2)
+                    )
+
+                for (cLength in cEnd - cStart downTo 3) {
+                    val c = movementsString.drop(cStart).take(cLength).trim(',')
+                    if (c.any(::isReplacementChar) || c.length > maxFunctionLength) {
+                        continue
+                    }
+
+                    val withoutABC = withoutAB.replace(c, "C".repeat(c.length))
+                    if (withoutABC.all { isReplacementChar(it) || isComma(it) }) {
+                        return Triple(a, b, c)
+                    }
+                }
+            }
+        }
+
+        error("No valid A, B, C combination found")
+    }
+
+    val (a, b, c) = findFunctions()
+
+    val mainRoutine =
+        movementsString
+            .replace(a, "A")
+            .replace(b, "B")
+            .replace(c, "C")
+            .replace(",", "")
+            .split("")
+            .joinToString(",")
+            .trim(',')
+
+    return vacuumWithInput("$mainRoutine\n$a\n$b\n$c\nn\n", intCodes).last()
 }

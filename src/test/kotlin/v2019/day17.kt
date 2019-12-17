@@ -18,7 +18,7 @@ class Day17bTests {
         assertEquals(897426, day17b_hardcoded(readInputLine("day17")))
     }
 
-    // @Test fun testActualInput_compute() {
-    //     assertEquals(897426, day17b_compute(readInputLine("day17")))
-    // }
+    @Test fun testActualInput_compute() {
+        assertEquals(897426, day17b_compute(readInputLine("day17")))
+    }
 }
