@@ -1,18 +1,20 @@
 package v2019.days.day18
 
+import v2019.util.combine
+import v2019.util.sumByLong
 import java.util.PriorityQueue
+import java.util.SortedMap
+import kotlin.math.min
 
-private data class State(val x: Int, val y: Int, val steps: Long, val keys: Set<Char> = emptySet()) {
-    val hash = "${x}_${y}_${keys.sorted().joinToString("")}"
-}
-
-private data class State2(val x: Int, val y: Int, val steps: Long, val keys: Map<Char, Long> = emptyMap(), val doors: Map<Char, Long> = emptyMap(), val dependencies: Map<Char, MutableList<Char>> = emptyMap()) {
-    val hash =
-        "${x}_" +
-            "${y}_" +
-            "${keys.keys.joinToString("")}_"// +
-            // "${doors.keys.sorted().joinToString("")}_"// +
-            // "${dependencies.map { (key, doors) -> "$key:[${doors.joinToString(",")}"}}"
+private data class PathState(
+    val x: Int,
+    val y: Int,
+    val steps: Long,
+    val keys: SortedMap<Char, Long> = sortedMapOf(),
+    val doors: Map<Char, Long> = emptyMap(),
+    val dependencies: Map<Char, MutableList<Char>> = emptyMap()
+) {
+    val hash = "${x}_${y}_${keys.keys.joinToString("")}"
 }
 
 private fun findInGrid(condition: (Char) -> Boolean, grid: List<CharArray>): Sequence<Pair<Int, Int>> {
@@ -27,46 +29,35 @@ private fun findInGrid(condition: (Char) -> Boolean, grid: List<CharArray>): Seq
     }
 }
 
-
-
 fun day18a(input: List<String>): Long {
     val grid = input.map(String::toCharArray)
 
     val (startX, startY) = findInGrid({ it == '@' }, grid).first()
     val nrOfKeys = findInGrid(Char::isLowerCase, grid).count()
 
-    val toVisit = PriorityQueue<State> { a, b -> a.steps.compareTo(b.steps) }
+    val toVisit = PriorityQueue<PathState> { a, b -> a.steps.compareTo(b.steps) }
     val visited = mutableSetOf<String>()
 
-    toVisit.add(State(startX, startY, 0, emptySet()))
+    toVisit.add(PathState(startX, startY, 0))
 
-    fun canAccessFrom(from: State, x: Int, y: Int): Boolean {
+    fun canAccessFrom(from: PathState, x: Int, y: Int): Boolean {
         if (y < 0 || y >= grid.size || x < 0 || x >= grid[y].size) {
             return false
         }
 
         val cell = grid[y][x]
-        if (cell == '#') {
-            return false
-        }
-
-        if (cell == '.' || cell == '@' || cell.isLowerCase()) {
-            return true
-        }
-
-        return from.keys.contains(cell.toLowerCase())
+        return cell != '#' && (!cell.isUpperCase() || from.keys.contains(cell.toLowerCase()))
     }
 
-    fun addIfViable(x: Int, y: Int, from: State) {
+    fun addIfViable(x: Int, y: Int, from: PathState) {
         if (canAccessFrom(from, x, y)) {
             val cell = grid[y][x]
-            val state =
-                if (cell.isLetter() && cell.isLowerCase() && !from.keys.contains(cell)) {
-                    State(x, y, from.steps + 1, from.keys.plus(cell))
-                } else {
-                    State(x, y, from.steps + 1, from.keys)
-                }
+            val keys = from.keys.toSortedMap()
+            if (cell.isLetter() && cell.isLowerCase() && !from.keys.contains(cell)) {
+                keys[cell] = from.steps + 1
+            }
 
+            val state = PathState(x, y, from.steps + 1, keys)
             if (!visited.contains(state.hash)) {
                 toVisit.add(state)
             }
@@ -95,10 +86,10 @@ fun day18a(input: List<String>): Long {
     error("No possible path to all keys")
 }
 
-private fun findPath(x: Int, y: Int, grid: List<CharArray>): List<State2> {
+private fun findPathsWithMaxKeys(x: Int, y: Int, grid: List<CharArray>): List<PathState> {
     val visited = mutableSetOf<String>()
-    val toVisit = PriorityQueue<State2> { a, b -> a.steps.compareTo(b.steps) }
-    toVisit.add(State2(x, y, 0))
+    val toVisit = PriorityQueue<PathState> { a, b -> a.steps.compareTo(b.steps) }
+    toVisit.add(PathState(x, y, 0))
 
     fun canAccessFrom(x: Int, y: Int): Boolean {
         return y >= 0 &&
@@ -108,7 +99,7 @@ private fun findPath(x: Int, y: Int, grid: List<CharArray>): List<State2> {
             grid[y][x] != '#'
     }
 
-    fun addIfViable(x: Int, y: Int, from: State2) {
+    fun addIfViable(x: Int, y: Int, from: PathState) {
         if (canAccessFrom(x, y)) {
             val cell = grid[y][x]
 
@@ -117,12 +108,12 @@ private fun findPath(x: Int, y: Int, grid: List<CharArray>): List<State2> {
                 doors[cell] = from.steps + 1
             }
 
-            val keys = from.keys.toMutableMap()
+            val keys = from.keys.toSortedMap()
             val dependencies = from.dependencies.toMutableMap()
 
             if (cell.isLowerCase() && !from.keys.contains(cell)) {
                 val depsForCell = dependencies.getOrPut(cell, { mutableListOf() })
-                depsForCell.addAll(doors.keys.filter { !keys.keys.contains(it.toLowerCase())})
+                depsForCell.addAll(doors.keys.filter { !keys.keys.contains(it.toLowerCase()) })
                 if (depsForCell.contains(cell.toUpperCase())) {
                     return
                 }
@@ -130,14 +121,14 @@ private fun findPath(x: Int, y: Int, grid: List<CharArray>): List<State2> {
                 keys[cell] = from.steps + 1
             }
 
-            val state = State2(x, y, from.steps + 1, keys, doors, dependencies)
+            val state = PathState(x, y, from.steps + 1, keys, doors, dependencies)
             if (!visited.contains(state.hash)) {
                 toVisit.add(state)
             }
         }
     }
 
-    val keyPaths = mutableListOf<State2>()
+    val paths = mutableListOf<PathState>()
     while (toVisit.isNotEmpty()) {
         val curState = toVisit.poll()
 
@@ -147,7 +138,7 @@ private fun findPath(x: Int, y: Int, grid: List<CharArray>): List<State2> {
         visited.add(curState.hash)
 
         if (grid[curState.y][curState.x].isLowerCase()) {
-            keyPaths.add(curState)
+            paths.add(curState)
         }
 
         addIfViable(curState.x + 1, curState.y, curState)
@@ -155,7 +146,50 @@ private fun findPath(x: Int, y: Int, grid: List<CharArray>): List<State2> {
         addIfViable(curState.x, curState.y + 1, curState)
         addIfViable(curState.x, curState.y - 1, curState)
     }
-    return keyPaths
+
+    val maxKeys = paths.map { it.keys.size }.max() ?: 0
+    return paths.filter { it.keys.size == maxKeys }
+}
+
+private fun splitVaults(grid: List<CharArray>, x: Int, y: Int) {
+    grid[y - 1][x - 1] = '@'
+    grid[y - 1][x] = '#'
+    grid[y - 1][x + 1] = '@'
+    grid[y][x - 1] = '#'
+    grid[y][x] = '#'
+    grid[y][x + 1] = '#'
+    grid[y + 1][x - 1] = '@'
+    grid[y + 1][x] = '#'
+    grid[y + 1][x + 1] = '@'
+}
+
+private fun hasDependencyCollisions(pathStates: List<PathState>): Boolean {
+    val dependencies =
+        pathStates.flatMap { state -> state.dependencies.entries.map { it.key to it.value } }.toMutableList()
+
+    while (dependencies.isNotEmpty()) {
+        val resolvedDependencies = dependencies.filter { it.second.isEmpty() }.map { it.first.toUpperCase() }
+        if (resolvedDependencies.isEmpty()) {
+            return true
+        }
+        dependencies.removeIf { it.second.isEmpty() }
+        dependencies.forEach { it.second.removeIf { dep -> resolvedDependencies.contains(dep) } }
+    }
+    return false
+}
+
+private fun findMinimalValidSteps(pathStates: List<List<PathState>>): Long {
+    val offsetCombinations = (0..10).toList().combine(4)
+
+    var optimal = Long.MAX_VALUE
+    offsetCombinations.forEach { offsets ->
+        val statesCombination = offsets.mapIndexed { index, offset -> pathStates[index].getOrNull(offset) }
+        if (statesCombination.all { it != null } && !hasDependencyCollisions(statesCombination.requireNoNulls())) {
+            optimal = min(optimal, statesCombination.requireNoNulls().sumByLong { it.steps })
+        }
+    }
+
+    return optimal
 }
 
 fun day18b(input: List<String>): Long {
@@ -163,44 +197,15 @@ fun day18b(input: List<String>): Long {
 
     val (startX, startY) = findInGrid({ it == '@' }, grid).first()
 
-    grid[startY - 1][startX - 1] = '@'
-    grid[startY - 1][startX] = '#'
-    grid[startY - 1][startX + 1] = '@'
-    grid[startY][startX - 1] = '#'
-    grid[startY][startX] = '#'
-    grid[startY][startX + 1] = '#'
-    grid[startY + 1][startX - 1] = '@'
-    grid[startY + 1][startX] = '#'
-    grid[startY + 1][startX + 1] = '@'
+    splitVaults(grid, startX, startY)
 
-    val keyPaths = mutableListOf(
-        findPath(startX - 1, startY - 1, grid),
-        findPath(startX + 1, startY - 1, grid),
-        findPath(startX - 1, startY + 1, grid),
-        findPath(startX + 1, startY + 1, grid)
-    )
+    val viablePaths =
+        mutableListOf(
+            findPathsWithMaxKeys(startX - 1, startY - 1, grid),
+            findPathsWithMaxKeys(startX + 1, startY - 1, grid),
+            findPathsWithMaxKeys(startX - 1, startY + 1, grid),
+            findPathsWithMaxKeys(startX + 1, startY + 1, grid)
+        )
 
-    val bestStates = keyPaths.map { states ->
-        val maxKeys = states.map { it.keys.size }.max() ?: 0
-        states.filter { it.keys.size == maxKeys && it.dependencies.none { (key, doors) -> doors.contains(key.toUpperCase()) } }
-    }
-
-    // val collectedKeys = mutableSetOf<Char>()
-    // val stepCounts = mutableListOf<Long>(0, 0, 0, 0)
-    // while (collectedKeys.size < nrOfKeys) {
-    //     for (i in 0 until 4) {
-    //         val reachablePaths = bestStates[i].filter { states ->
-    //
-    //             !collectedKeys.contains(key) && path.second.keys.all { collectedKeys.contains(it.toLowerCase()) } }
-    //
-    //         collectedKeys.addAll(reachablePaths.keys)
-    //         reachablePaths.map { it.value.first }.max().let { if (it != null) stepCounts[i] = it }
-    //     }
-    // }
-    //
-    // val nrOfSteps = stepCounts.sum()
-
-
-
-    error("No possible path to all keys")
+    return findMinimalValidSteps(viablePaths)
 }

@@ -1,6 +1,7 @@
 package v2019
 
 import org.junit.Assert.assertEquals
+import org.junit.Ignore
 import org.junit.Test
 import v2019.days.day18.day18a
 import v2019.days.day18.day18b
@@ -55,6 +56,7 @@ class Day18aTests {
             "########################")))
     }
 
+    @Ignore // Too slow
     @Test fun testActualInput() {
         assertEquals(3862, day18a(readInputLines("day18")))
     }
@@ -108,6 +110,6 @@ class Day18bTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(0, day18b(readInputLines("day18")))
+        assertEquals(1626, day18b(readInputLines("day18")))
     }
 }

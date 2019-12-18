@@ -34,6 +34,8 @@ import v2019.days.day16.day16a
 import v2019.days.day16.day16b
 import v2019.days.day17.day17a
 import v2019.days.day17.day17b_compute
+import v2019.days.day18.day18a
+import v2019.days.day18.day18b
 import v2019.extra.infiA
 import v2019.extra.infiB
 import v2019.util.readInputLine
@@ -82,4 +84,6 @@ fun main() {
     time { print("Day16b: " + day16b(readInputLine("day16"))) }
     time { print("Day17a: " + day17a(readInputLine("day17"))) }
     time { print("Day17b: " + day17b_compute(readInputLine("day17"))) }
+    //time { print("Day18a: " + day18a(readInputLines("day18"))) } // Too slow
+    time { print("Day18b: " + day18b(readInputLines("day18"))) }
 }

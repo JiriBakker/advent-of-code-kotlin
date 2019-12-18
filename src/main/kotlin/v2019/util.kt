@@ -38,7 +38,7 @@ fun Long.firstDigit(): Int {
 }
 
 fun <T> List<T>.permute(): List<List<T>> {
-    fun <T> permute(available: List<T>, used: List<T>): List<List<T>> {
+    fun permute(available: List<T>, used: List<T>): List<List<T>> {
         if (available.isEmpty()) {
             return listOf(used)
         }
@@ -49,6 +49,20 @@ fun <T> List<T>.permute(): List<List<T>> {
     }
 
     return permute(this, listOf())
+}
+
+fun <T> List<T>.combine(size: Int): List<List<T>> {
+    val available = this
+
+    fun combine(used: List<T>): List<List<T>> {
+        if (used.size == size) {
+            return listOf(used)
+        }
+
+        return available.flatMap { current: T -> combine( used + current) }
+    }
+
+    return combine(listOf())
 }
 
 fun pythDistance(x1: Int, y1: Int, x2: Int, y2: Int): Double {
