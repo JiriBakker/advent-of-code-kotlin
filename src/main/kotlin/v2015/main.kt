@@ -22,6 +22,8 @@ import v2015.days.day10.day10a
 import v2015.days.day10.day10b
 import v2015.days.day11.day11a
 import v2015.days.day11.day11b
+import v2015.days.day12.day12a
+import v2015.days.day12.day12b
 import v2015.util.readInputLine
 import v2015.util.readInputLines
 import kotlin.system.measureTimeMillis
@@ -54,4 +56,6 @@ fun main() {
     time { print("Day10b: " + day10b(readInputLine("day10"))) }
     time { print("Day11a: " + day11a(readInputLine("day11"))) }
     time { print("Day11b: " + day11b(readInputLine("day11"))) }
+    time { print("Day12a: " + day12a(readInputLine("day12"))) }
+    time { print("Day12b: " + day12b(readInputLine("day12"))) }
 }
