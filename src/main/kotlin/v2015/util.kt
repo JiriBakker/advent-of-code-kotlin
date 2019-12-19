@@ -47,3 +47,18 @@ fun <T> Collection<T>.permute(): List<List<T>> {
 
     return permute(this, listOf())
 }
+
+
+fun <T> Collection<T>.combine(size: Int): List<List<T>> {
+    val available = this
+
+    fun combine(used: List<T>): List<List<T>> {
+        if (used.size == size) {
+            return listOf(used)
+        }
+
+        return available.flatMap { current: T -> combine( used + current) }
+    }
+
+    return combine(listOf())
+}
