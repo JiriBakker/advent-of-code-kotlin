@@ -34,8 +34,8 @@ fun Int.safeMod(mod: Int): Int {
     return (this + mod) % mod
 }
 
-fun <T> List<T>.permute(): List<List<T>> {
-    fun <T> permute(available: List<T>, used: List<T>): List<List<T>> {
+fun <T> Collection<T>.permute(): List<List<T>> {
+    fun <T> permute(available: Collection<T>, used: List<T>): List<List<T>> {
         if (available.isEmpty()) {
             return listOf(used)
         }
