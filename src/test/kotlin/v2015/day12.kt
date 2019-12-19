@@ -45,6 +45,30 @@ class Day12aTests {
 }
 
 class Day12bTests {
+     @Test fun testExampleInput1() {
+        assertEquals(6, day12b("[1,2,3]"))
+    }
+
+    @Test fun testExampleInput2() {
+        assertEquals(4, day12b("[1,{\"c\":\"red\",\"b\":2},3]"))
+    }
+
+    @Test fun testExampleInput3() {
+        assertEquals(0, day12b("{\"d\":\"red\",\"e\":[1,2,3,4],\"f\":5}"))
+    }
+
+    @Test fun testExampleInput4() {
+        assertEquals(6, day12b("[1,\"red\",5]"))
+    }
+
+    @Test fun testCustomInput1() {
+        assertEquals(11, day12b("{\"test\":[{\"a\":\"red\",\"b\":100},10],\"test\":1}"))
+    }
+
+    @Test fun testCustomInput2() {
+        assertEquals(-11, day12b("{\"test\":[{\"a\":\"red\",\"b\":100},10,-22],\"test\":1}"))
+    }
+
     @Test fun testActualInput() {
         assertEquals(30265, day12b(readInputLine("day12")))
     }
