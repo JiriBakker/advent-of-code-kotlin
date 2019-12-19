@@ -1,8 +1,6 @@
 package v2015.days.day16
 
-private class Aunt(val nr: Int, val properties: Map<String, Int>) {
-
-}
+private class Aunt(val nr: Int, val properties: Map<String, Int>)
 
 private fun parseAunts(input: List<String>): List<Aunt> {
     return input.map {
