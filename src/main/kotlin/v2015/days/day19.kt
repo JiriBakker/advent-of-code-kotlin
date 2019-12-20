@@ -1,5 +1,7 @@
 package v2015.days.day19
 
+import java.util.PriorityQueue
+
 private fun parseInput(input: List<String>): Pair<String, Map<String, List<String>>> {
     val startMolecule = input.last()
     val replacements =
@@ -44,11 +46,60 @@ fun day19a(input: List<String>): Int {
     }.distinct().count()
 }
 
-fun day19b(input: List<String>): Int {
-    var (startMolecule, replacements) = parseInput(input)
+private class State(val string: String, val count: Int)
 
-    return 0
+private fun isAtIndex(toMatch: String, startIndex: Int, string: String): Boolean {
+    if (startIndex + toMatch.length > string.length) {
+        return false
+    }
+
+    for (i in toMatch.indices) {
+        if (string[startIndex + i] != toMatch[i]) {
+            return false
+        }
+    }
+    return true
 }
 
-// 501 low
-// 603 high
+fun day19b_quick(input: List<String>): Int {
+    val (startMolecule, _) = parseInput(input)
+
+    val elements = sequence {
+        var i = 0
+        while (i < startMolecule.length) {
+            if (i < startMolecule.length - 1 && startMolecule[i + 1].isLowerCase()) {
+                yield("${startMolecule[i++]}${startMolecule[i++]}")
+            } else {
+                yield("${startMolecule[i++]}")
+            }
+        }
+    }.toList()
+
+    return elements.size - elements.count { it == "Ar" || it == "Rn" } - elements.count { it == "Y" } * 2 - 1
+}
+
+fun day19b(input: List<String>): Int {
+    val (startMolecule, replacements) = parseInput(input)
+    val invertedReplacements = replacements.flatMap { replacement -> replacement.value.map { it to replacement.key } }
+
+    while (true) {
+        var string = startMolecule
+        var count = 0
+        val shuffledReplacements = invertedReplacements.shuffled()
+        while (string != "e") {
+            val prevCount = count
+            shuffledReplacements.forEach { (from, to) ->
+                string = string.replace (from.toRegex()) {
+                    count++
+                    to
+                }
+            }
+            if (prevCount == count) {
+                break
+            }
+        }
+        if (string == "e") {
+            return count
+        }
+    }
+}

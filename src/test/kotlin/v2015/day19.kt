@@ -32,16 +32,28 @@ class Day19aTests {
 
 class Day19bTests {
     @Test fun testExampleInput1() {
-        assertEquals(17, day19b(listOf(
-            ".#.#.#",
-            "...##.",
-            "#....#",
-            "..#...",
-            "#.#..#",
-            "####..")))
+        assertEquals(3, day19b(listOf(
+            "e => H",
+            "e => O",
+            "H => HO",
+            "H => OH",
+            "O => HH",
+            "",
+            "HOH")))
+    }
+
+    @Test fun testExampleInput2() {
+        assertEquals(6, day19b(listOf(
+            "e => H",
+            "e => O",
+            "H => HO",
+            "H => OH",
+            "O => HH",
+            "",
+            "HOHOHO")))
     }
 
     @Test fun testActualInput() {
-        assertEquals(924, day19b(readInputLines("day19")))
+        assertEquals(195, day19b(readInputLines("day19")))
     }
 }
