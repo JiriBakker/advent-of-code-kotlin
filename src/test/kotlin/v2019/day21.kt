@@ -4,24 +4,16 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.days.day21.day21a
 import v2019.days.day21.day21b
-import v2019.util.readInputLines
+import v2019.util.readInputLine
 
 class Day21aTests {
-    @Test fun testExampleInput1() {
-        assertEquals(0, day21a(listOf("")))
-    }
-
     @Test fun testActualInput() {
-        assertEquals(0, day21a(readInputLines("day21")))
+        assertEquals(19347995, day21a(readInputLine("day21")))
     }
 }
 
 class Day21bTests {
-    @Test fun testExampleInput1() {
-        assertEquals(0, day21b(listOf("")))
-    }
-
     @Test fun testActualInput() {
-        assertEquals(0, day21b(readInputLines("day21")))
+        assertEquals(1141826552, day21b(readInputLine("day21")))
     }
 }
