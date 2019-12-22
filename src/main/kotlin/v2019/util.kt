@@ -1,6 +1,7 @@
 package v2019.util
 
 import java.io.File
+import java.math.BigInteger
 import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
@@ -116,3 +117,20 @@ fun doBinarySearch(range: BinarySearchRange, target: Long, compute: (Long) -> Lo
     }
     return range.median()
 }
+
+fun Int.safeMod(mod: Int): Int {
+    return (this + mod) % mod
+}
+
+fun Long.safeMod(mod: Long): Long {
+    var result = this
+    do {
+        result = (result + mod) % mod
+    } while (result < 0)
+    return result
+}
+
+operator fun BigInteger.rem(m: Long): BigInteger = this.mod(BigInteger.valueOf(m))
+fun BigInteger.modPow(e: Long, m: Long): BigInteger = this.modPow(BigInteger.valueOf(e), BigInteger.valueOf(m))
+fun BigInteger.modInverse(m: Long): BigInteger = this.modInverse(BigInteger.valueOf(m))
+
