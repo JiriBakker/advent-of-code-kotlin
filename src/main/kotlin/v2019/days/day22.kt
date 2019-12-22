@@ -1,63 +1,61 @@
 package v2019.days.day22
 
-import v2019.util.safeMod
 import v2019.util.rem
+import v2019.util.times
+import v2019.util.minus
 import v2019.util.modPow
 import v2019.util.modInverse
 import java.math.BigInteger
 
-private fun parseInstructions(input: List<String>): List<Pair<String, Long>> {
-    return input.map {
-        val segments = it.split(" ")
-        when (segments[1]) {
-            "with" -> "deal" to segments[3].toLong()
-            "into" -> "reverse" to 0L
-            else -> "cut" to segments[1].toLong()
-        }
-    }
-}
-
-fun day22a(input: List<String>, nrOfCards: Long = 10007, cardNrToTrack: Long = 2019): Long {
-    val instructions = parseInstructions(input)
-
+fun day22a(instructions: List<String>, nrOfCards: Long = 10007, cardNrToTrack: Long = 2019): Long {
     return instructions.fold(cardNrToTrack) { index, instruction ->
-        when (instruction.first) {
-            "deal" -> (instruction.second * index) % nrOfCards
-            "reverse" -> (nrOfCards - 1) - index
-            else -> (index - instruction.second).safeMod(nrOfCards)
+        val segments = instruction.split(" ")
+        when (segments[1]) {
+            "with" -> {
+                val increment = segments[3].toLong()
+                (increment * index) % nrOfCards
+            }
+            "into" -> (nrOfCards - 1) - index
+            else -> {
+                val cutIndex = segments[1].toLong()
+                (index - cutIndex) % nrOfCards
+            }
         }
     }
 }
+
 
 fun day22b(
-    input: List<String>,
+    instructions: List<String>,
     nrOfCards: Long = 119315717514047,
     targetIndex: Long = 2020,
     repeats: Long = 101741582076661
 ): Long {
-    val instructions = parseInstructions(input)
-
     var offset = BigInteger.ZERO
     var delta = BigInteger.ONE
 
     instructions.forEach { instruction ->
-        when (instruction.first) {
-            "reverse" -> {
-                delta = (delta * BigInteger.valueOf(-1)) % nrOfCards
+        val segments = instruction.split(" ")
+        when (segments[1]) {
+            "into" -> {
+                delta = (delta * -1) % nrOfCards
                 offset = (offset + delta) % nrOfCards
             }
-            "cut" -> {
-                offset = (offset + (delta * BigInteger.valueOf(instruction.second))) % nrOfCards
+            "with" -> {
+                val increment = segments[3].toInt()
+                delta = (delta * increment.modInverse(nrOfCards)) % nrOfCards
             }
             else -> {
-                delta = (delta * BigInteger.valueOf(instruction.second).modInverse(nrOfCards)) % nrOfCards
+                val cutIndex = segments[1].toInt()
+                offset = (offset + (delta * cutIndex)) % nrOfCards
             }
+
         }
     }
 
     val finalDelta = delta.modPow(repeats, nrOfCards)
-    val finalOffset = (offset * (BigInteger.ONE - finalDelta) * (BigInteger.ONE - delta).modInverse(nrOfCards)) % nrOfCards
-    val finalIndex = (finalOffset + finalDelta * BigInteger.valueOf(targetIndex)) % nrOfCards
+    val finalOffset = (offset * (1 - finalDelta) * (1 - delta).modInverse(nrOfCards)) % nrOfCards
+    val finalIndex = (finalOffset + finalDelta * targetIndex) % nrOfCards
 
     return finalIndex.toLong()
 }

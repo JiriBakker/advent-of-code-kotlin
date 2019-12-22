@@ -131,6 +131,12 @@ fun Long.safeMod(mod: Long): Long {
 }
 
 operator fun BigInteger.rem(m: Long): BigInteger = this.mod(BigInteger.valueOf(m))
+operator fun BigInteger.times(other: Long): BigInteger = this.times(BigInteger.valueOf(other))
+operator fun BigInteger.times(other: Int): BigInteger = this.times(BigInteger.valueOf(other.toLong()))
+operator fun BigInteger.plus(other: Int): BigInteger = this.plus(BigInteger.valueOf(other.toLong()))
+operator fun Int.minus(other: BigInteger): BigInteger = BigInteger.valueOf(this.toLong()).minus(other)
 fun BigInteger.modPow(e: Long, m: Long): BigInteger = this.modPow(BigInteger.valueOf(e), BigInteger.valueOf(m))
 fun BigInteger.modInverse(m: Long): BigInteger = this.modInverse(BigInteger.valueOf(m))
+fun Long.modInverse(m: Long): BigInteger = BigInteger.valueOf(this).modInverse(BigInteger.valueOf(m))
+fun Int.modInverse(m: Long): BigInteger = BigInteger.valueOf(this.toLong()).modInverse(BigInteger.valueOf(m))
 
