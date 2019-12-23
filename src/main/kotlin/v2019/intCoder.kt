@@ -1,5 +1,9 @@
 package v2019.intCoder
 
+import kotlinx.coroutines.Deferred
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import java.util.ArrayDeque
 
 private enum class ParamMode {
@@ -32,6 +36,10 @@ private fun parseInstruction(value: Long): Instruction {
 }
 
 fun generateProgramOutput(intCodes: MutableMap<Long, Long>, inputProvider: () -> Long = { 0L }): Sequence<Long> {
+    return stepProgram(intCodes, inputProvider).filterNotNull()
+}
+
+fun stepProgram(intCodes: MutableMap<Long, Long>, inputProvider: () -> Long = { 0L }): Sequence<Long?> {
     return sequence {
         var relativeBase = 0L
 
@@ -95,8 +103,13 @@ fun generateProgramOutput(intCodes: MutableMap<Long, Long>, inputProvider: () ->
                     pointer += 4
                 }
                 3 -> {
-                    set(pointer + 1, inputProvider(), instruction.modes[0])
-                    pointer += 2
+                    val inputValue = inputProvider()
+                    // if (inputValue == -1L) {
+                    //     yield(-1L)
+                    // } else {
+                        set(pointer + 1, inputValue, instruction.modes[0])
+                        pointer += 2
+                    // }
                 }
                 4 -> {
                     yield(get(pointer + 1, instruction.modes[0]))
@@ -123,6 +136,7 @@ fun generateProgramOutput(intCodes: MutableMap<Long, Long>, inputProvider: () ->
                 99 -> return@sequence
                 else -> throw Exception("Unknown opcode ${instruction.opcode} from instruction ${intCodes[pointer]} at index $pointer")
             }
+            yield(null)
         }
     }
 }
