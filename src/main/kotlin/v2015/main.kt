@@ -24,6 +24,22 @@ import v2015.days.day11.day11a
 import v2015.days.day11.day11b
 import v2015.days.day12.day12a
 import v2015.days.day12.day12b
+import v2015.days.day13.day13a
+import v2015.days.day13.day13b
+import v2015.days.day14.day14a
+import v2015.days.day14.day14b
+import v2015.days.day15.day15a
+import v2015.days.day15.day15b
+import v2015.days.day16.day16a
+import v2015.days.day16.day16b
+import v2015.days.day17.day17a
+import v2015.days.day17.day17b
+import v2015.days.day18.day18a
+import v2015.days.day18.day18b
+import v2015.days.day19.day19a
+import v2015.days.day19.day19b
+import v2015.days.day20.day20a
+import v2015.days.day20.day20b
 import v2015.util.readInputLine
 import v2015.util.readInputLines
 import kotlin.system.measureTimeMillis
@@ -58,4 +74,20 @@ fun main() {
     time { print("Day11b: " + day11b(readInputLine("day11"))) }
     time { print("Day12a: " + day12a(readInputLine("day12"))) }
     time { print("Day12b: " + day12b(readInputLine("day12"))) }
+    time { print("Day13a: " + day13a(readInputLines("day13"))) }
+    time { print("Day13b: " + day13b(readInputLines("day13"))) }
+    time { print("Day14a: " + day14a(readInputLines("day14"))) }
+    time { print("Day14b: " + day14b(readInputLines("day14"))) }
+    time { print("Day15a: " + day15a(readInputLines("day15"))) }
+    time { print("Day15b: " + day15b(readInputLines("day15"))) }
+    time { print("Day16a: " + day16a(readInputLines("day16"))) }
+    time { print("Day16b: " + day16b(readInputLines("day16"))) }
+    time { print("Day17a: " + day17a(readInputLines("day17"))) }
+    time { print("Day17b: " + day17b(readInputLines("day17"))) }
+    time { print("Day18a: " + day18a(readInputLines("day18"))) }
+    time { print("Day18b: " + day18b(readInputLines("day18"))) }
+    time { print("Day19a: " + day19a(readInputLines("day19"))) }
+    time { print("Day19b: " + day19b(readInputLines("day19"))) }
+    time { print("Day20a: " + day20a(readInputLine("day20"))) }
+    time { print("Day20b: " + day20b(readInputLine("day20"))) }
 }

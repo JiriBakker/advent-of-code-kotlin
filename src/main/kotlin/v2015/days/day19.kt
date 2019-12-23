@@ -1,7 +1,5 @@
 package v2015.days.day19
 
-import java.util.PriorityQueue
-
 private fun parseInput(input: List<String>): Pair<String, Map<String, List<String>>> {
     val startMolecule = input.last()
     val replacements =
@@ -45,22 +43,6 @@ fun day19a(input: List<String>): Int {
         }
     }.distinct().count()
 }
-
-private class State(val string: String, val count: Int)
-
-private fun isAtIndex(toMatch: String, startIndex: Int, string: String): Boolean {
-    if (startIndex + toMatch.length > string.length) {
-        return false
-    }
-
-    for (i in toMatch.indices) {
-        if (string[startIndex + i] != toMatch[i]) {
-            return false
-        }
-    }
-    return true
-}
-
 fun day19b_quick(input: List<String>): Int {
     val (startMolecule, _) = parseInput(input)
 

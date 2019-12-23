@@ -44,9 +44,6 @@ private fun computeSum(input: String, startIndex: Int = 0, depth: Int = 0): Pair
             i++
         }
     }
-    if (foundRedValue) {
-        println("Dropping sum: $sum (depth: $depth, index: $i)")
-    }
     return (if (foundRedValue) 0L else sum) to i
 }
 
