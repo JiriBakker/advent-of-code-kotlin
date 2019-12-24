@@ -14,7 +14,12 @@ class Day24aTests {
 
 class Day24bTests {
     @Test fun testExampleInput1() {
-        assertEquals(0, day24b(listOf("")))
+        assertEquals(99, day24b(listOf(
+            "....#",
+            "#..#.",
+            "#.?##",
+            "..#..",
+            "#...."), 10))
     }
 
     @Test fun testActualInput() {
