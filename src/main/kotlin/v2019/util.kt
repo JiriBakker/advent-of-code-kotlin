@@ -139,4 +139,5 @@ fun BigInteger.modPow(e: Long, m: Long): BigInteger = this.modPow(BigInteger.val
 fun BigInteger.modInverse(m: Long): BigInteger = this.modInverse(BigInteger.valueOf(m))
 fun Long.modInverse(m: Long): BigInteger = BigInteger.valueOf(this).modInverse(BigInteger.valueOf(m))
 fun Int.modInverse(m: Long): BigInteger = BigInteger.valueOf(this.toLong()).modInverse(BigInteger.valueOf(m))
+fun Long.pow(e: Long): Long = this.toDouble().pow(e.toDouble()).toLong()
 
