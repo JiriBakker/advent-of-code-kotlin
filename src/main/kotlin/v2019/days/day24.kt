@@ -36,64 +36,76 @@ fun day24a(input: List<String>): Long {
     }
 }
 
+private data class Pos(val x: Int, val y: Int) {
+    fun north(): Pos = Pos(x, y - 1)
+    fun east(): Pos = Pos(x + 1, y)
+    fun south(): Pos = Pos(x, y + 1)
+    fun west(): Pos = Pos(x - 1, y)
+}
+
 private class Grid(var depth: Int, var cells: List<BooleanArray>) {
-    fun hasBug(x: Int, y: Int): Boolean? = cells.getOrNull(y)?.getOrNull(x)
+
+    fun hasBug(pos: Pos): Boolean? = cells.getOrNull(pos.y)?.getOrNull(pos.x)
 
     fun countBugs(): Int = cells.sumBy { row -> row.count { it } }
 
-    fun isOnNorthOuterEdge(x: Int, y: Int): Boolean = y == 0
-    fun isOnEastOuterEdge(x: Int, y: Int): Boolean = x == 4
-    fun isOnSouthOuterEdge(x: Int, y: Int): Boolean = y == 4
-    fun isOnWestOuterEdge(x: Int, y: Int): Boolean = x == 0
-    fun isOnNorthInnerEdge(x: Int, y: Int): Boolean = y == 1 && x == 2
-    fun isOnEastInnerEdge(x: Int, y: Int): Boolean = x == 3 && y == 2
-    fun isOnSouthInnerEdge(x: Int, y: Int): Boolean = y == 3 && x == 2
-    fun isOnWestInnerEdge(x: Int, y: Int): Boolean = x == 1 && y == 2
+    fun isOnNorthOuterEdge(pos: Pos): Boolean = pos.y == 0
+    fun isOnEastOuterEdge(pos: Pos): Boolean = pos.x == 4
+    fun isOnSouthOuterEdge(pos: Pos): Boolean = pos.y == 4
+    fun isOnWestOuterEdge(pos: Pos): Boolean = pos.x == 0
 
-    fun getCountForNorthOuterRow(): Int = cells[0].count { it }
-    fun getCountForEastOuterRow(): Int = cells.count { it[4] }
-    fun getCountForSouthOuterRow(): Int = cells[4].count { it }
-    fun getCountForWestOuterRow(): Int = cells.count { it[0] }
+    fun countBugsOnNorthOuterRow(): Int = cells[0].count { it }
+    fun countBugsOnEastOuterRow(): Int = cells.count { it[4] }
+    fun countBugsOnSouthOuterRow(): Int = cells[4].count { it }
+    fun countBugsOnWestOuterRow(): Int = cells.count { it[0] }
 
-    fun countAdjacentBugs(x: Int, y: Int, grids: Map<Int, Grid>): Int {
+    fun countAdjacentBugs(pos: Pos, grids: Map<Int, Grid>): Int {
         val parent = grids[depth + 1]
         val child = grids[depth - 1]
 
         var sum = 0
 
-        if (isOnNorthOuterEdge(x, y)) {
-            sum += if (parent?.hasBug(2, 1) == true) 1 else 0
-        } else if (isOnSouthInnerEdge(x, y)) {
-            sum += child?.getCountForSouthOuterRow() ?: 0
+        sum += if (isOnNorthOuterEdge(pos)) {
+            if (parent?.hasBug(northOfChild) == true) 1 else 0
+        } else if (pos == southOfChild) {
+            child?.countBugsOnSouthOuterRow() ?: 0
         } else {
-            sum += if (hasBug(x, y - 1) == true) 1 else 0
+            if (hasBug(pos.north()) == true) 1 else 0
         }
 
-        if (isOnEastOuterEdge(x, y)) {
-            sum += if (parent?.hasBug(3, 2) == true) 1 else 0
-        } else if (isOnWestInnerEdge(x, y)) {
-            sum += child?.getCountForWestOuterRow() ?: 0
+        sum += if (isOnEastOuterEdge(pos)) {
+            if (parent?.hasBug(eastOfChild) == true) 1 else 0
+        } else if (pos == westOfChild) {
+            child?.countBugsOnWestOuterRow() ?: 0
         } else {
-            sum += if (hasBug(x + 1, y) == true) 1 else 0
+            if (hasBug(pos.east()) == true) 1 else 0
         }
 
-        if (isOnSouthOuterEdge(x, y)) {
-            sum += if (parent?.hasBug(2, 3) == true) 1 else 0
-        } else if (isOnNorthInnerEdge(x, y)) {
-            sum += child?.getCountForNorthOuterRow() ?: 0
+        sum += if (isOnSouthOuterEdge(pos)) {
+            if (parent?.hasBug(southOfChild) == true) 1 else 0
+        } else if (pos == northOfChild) {
+            child?.countBugsOnNorthOuterRow() ?: 0
         } else {
-            sum += if (hasBug(x, y + 1) == true) 1 else 0
+            if (hasBug(pos.south()) == true) 1 else 0
         }
 
-        if (isOnWestOuterEdge(x, y)) {
-            sum += if (parent?.hasBug(1, 2) == true) 1 else 0
-        } else if (isOnEastInnerEdge(x, y)) {
-            sum += child?.getCountForEastOuterRow() ?: 0
+        sum += if (isOnWestOuterEdge(pos)) {
+            if (parent?.hasBug(westOfChild) == true) 1 else 0
+        } else if (pos == eastOfChild) {
+            child?.countBugsOnEastOuterRow() ?: 0
         } else {
-            sum += if (hasBug(x - 1, y) == true) 1 else 0
+            if (hasBug(pos.west()) == true) 1 else 0
         }
 
         return sum
+    }
+
+    companion object {
+        val childCell = Pos(2, 2)
+        val northOfChild = Pos(2, 1)
+        val eastOfChild = Pos(3, 2)
+        val southOfChild = Pos(2, 3)
+        val westOfChild = Pos(1, 2)
     }
 }
 
@@ -103,44 +115,47 @@ fun day24b(input: List<String>, minutes: Int = 200): Int {
     var grids = mapOf(0 to Grid(0, input.map { line -> line.map { cell -> cell == '#' }.toBooleanArray() }))
 
     for (minute in 1..minutes) {
-        val nextGrids = grids.values.plus(
-            grids.values.mapNotNull { grid ->
-                if (grids[grid.depth + 1] == null &&
-                    (grid.getCountForNorthOuterRow() in 1..2 ||
-                        grid.getCountForEastOuterRow() in 1..2 ||
-                        grid.getCountForSouthOuterRow() in 1..2 ||
-                        grid.getCountForWestOuterRow() in 1..2)
-                ) {
-                    emptyGrid(grid.depth + 1)
-                } else null
-            }
-        ).plus(
-            grids.values.mapNotNull { grid ->
-                if (grids[grid.depth - 1] == null &&
-                    (grid.hasBug(1,2) == true ||
-                        grid.hasBug(2,1) == true ||
-                        grid.hasBug(3,2) == true ||
-                        grid.hasBug(2,3) == true)
-                ) {
-                    emptyGrid(grid.depth - 1)
-                } else null
-            }
-        )
+        val nextGrids =
+            grids.values
+                .plus( // Add parent grid if needed
+                    grids.maxBy { it.key }!!
+                        .let { (_, grid) ->
+                            if (grid.countBugsOnNorthOuterRow() in 1..2 ||
+                                grid.countBugsOnEastOuterRow() in 1..2 ||
+                                grid.countBugsOnSouthOuterRow() in 1..2 ||
+                                grid.countBugsOnWestOuterRow() in 1..2
+                            ) {
+                                listOf(emptyGrid(grid.depth + 1))
+                            } else listOf()
+                        }
+                )
+                .plus( // Add child grid if needed
+                    grids.minBy { it.key }!!
+                        .let { (_, grid) ->
+                            if (grid.hasBug(Grid.northOfChild) == true ||
+                                grid.hasBug(Grid.eastOfChild) == true ||
+                                grid.hasBug(Grid.southOfChild) == true ||
+                                grid.hasBug(Grid.westOfChild) == true
+                        ) {
+                            listOf(emptyGrid(grid.depth - 1))
+                        } else listOf()
+                    }
+                )
 
         grids = nextGrids.map { grid ->
-            val nextGrid = Grid(grid.depth,
+            grid.depth to Grid(grid.depth,
                 grid.cells.mapIndexed { y, row ->
                     row.mapIndexed { x, bug ->
-                        if (x == 2 && y == 2) {
+                        val pos = Pos(x, y)
+                        if (pos == Grid.childCell) {
                             false
                         } else {
-                            val nrOfAdjacentBugs = grid.countAdjacentBugs(x, y, grids)
+                            val nrOfAdjacentBugs = grid.countAdjacentBugs(pos, grids)
                             nrOfAdjacentBugs == 1 || (!bug && nrOfAdjacentBugs == 2)
                         }
                     }.toBooleanArray()
                 }
             )
-            grid.depth to nextGrid
         }.toMap()
     }
 
