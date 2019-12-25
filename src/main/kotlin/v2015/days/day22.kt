@@ -8,7 +8,7 @@ private fun parseBossProperties(input: List<String>): Pair<Int, Int> {
     return hitPoints to damage
 }
 
-private data class FightStates(
+private data class FightState(
     val isPlayerTurn: Boolean,
     val manaSpent: Int,
     val bossHitPoints: Int,
@@ -18,8 +18,8 @@ private data class FightStates(
 )
 
 private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int, playerDamageAtBeginningOfRound: Int = 1): Int {
-    val toCheck = PriorityQueue<FightStates> { a, b -> a.manaSpent.compareTo(b.manaSpent)}
-    toCheck.add(FightStates(true, 0, bossBaseHitPoints, 50, 500))
+    val toCheck = PriorityQueue<FightState> { a, b -> a.manaSpent.compareTo(b.manaSpent)}
+    toCheck.add(FightState(true, 0, bossBaseHitPoints, 50, 500))
 
     while (toCheck.isNotEmpty()) {
         val fightState = toCheck.poll()
@@ -68,7 +68,7 @@ private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int,
                     return fightState.manaSpent + 53
                 }
                 toCheck.add(
-                    FightStates(
+                    FightState(
                         false,
                         fightState.manaSpent + 53,
                         bossHitPoints - 4,
@@ -85,7 +85,7 @@ private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int,
                     return fightState.manaSpent + 73
                 }
                 toCheck.add(
-                    FightStates(
+                    FightState(
                         false,
                         fightState.manaSpent + 73,
                         bossHitPoints - 2,
@@ -99,7 +99,7 @@ private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int,
             // Shield
             if (playerMana >= 113 && !isShieldActive()) {
                 toCheck.add(
-                    FightStates(
+                    FightState(
                         false,
                         fightState.manaSpent + 113,
                         bossHitPoints,
@@ -113,7 +113,7 @@ private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int,
             // Poison
             if (playerMana >= 173 && !isPoisonActive()) {
                 toCheck.add(
-                    FightStates(
+                    FightState(
                         false,
                         fightState.manaSpent + 173,
                         bossHitPoints,
@@ -127,7 +127,7 @@ private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int,
             // Recharge
             if (playerMana >= 229 && !isRechargeActive()) {
                 toCheck.add(
-                    FightStates(
+                    FightState(
                         false,
                         fightState.manaSpent + 229,
                         bossHitPoints,
@@ -147,7 +147,7 @@ private fun findMinimalManaStrategy(bossBaseHitPoints: Int, bossBaseDamage: Int,
             }
 
             toCheck.add(
-                FightStates(
+                FightState(
                     true,
                     fightState.manaSpent,
                     bossHitPoints,
