@@ -2,17 +2,16 @@ package v2016.days.day01
 
 import kotlin.math.abs
 
-data class Pos(val x: Int, val y: Int) {
+private data class Pos(val x: Int, val y: Int) {
+    fun turnRight(): Pos = Pos(-y, x)
+    fun turnLeft(): Pos = Pos(y, -x)
+    fun plus(other: Pos): Pos = Pos(x + other.x, y + other.y)
     fun manhattanDistance(): Int = abs(this.x) + abs(this.y)
 
     companion object {
         val ORIGIN = Pos(0, 0)
     }
 }
-
-private fun Pos.turnRight(): Pos = Pos(-y, x)
-private fun Pos.turnLeft(): Pos = Pos(y, -x)
-private fun Pos.plus(other: Pos): Pos = Pos(x + other.x, y + other.y)
 
 private fun parseMoves(input: String): List<Pair<Char, Int>> {
     return input

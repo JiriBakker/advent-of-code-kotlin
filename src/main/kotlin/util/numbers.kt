@@ -5,7 +5,6 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
 fun Long.toDigits(): List<Int> {
     return this.toString().map(Character::getNumericValue)
 }
@@ -33,7 +32,6 @@ fun manhattanDistance(x1: Long, y1: Long, x2: Long, y2: Long): Long {
 fun greatestCommonDenominator(a: Long, b: Long): Long = if (b == 0L) a else greatestCommonDenominator(b, a % b)
 fun leastCommonMultiple(a: Long, b: Long): Long = a / greatestCommonDenominator(a, b) * b
 fun leastCommonMultiple(nrs: Collection<Long>): Long = nrs.reduce(::leastCommonMultiple)
-
 
 fun Int.safeMod(mod: Int): Int {
     return (this + mod) % mod
