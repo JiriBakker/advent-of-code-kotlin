@@ -5,8 +5,13 @@ import kotlin.math.abs
 import kotlin.math.pow
 import kotlin.math.sqrt
 
+data class Pos(val x: Int, val y: Int) {
+    fun manhattanDistance(): Int = abs(this.x) + abs(this.y)
 
-
+    companion object {
+        val ORIGIN = Pos(0, 0)
+    }
+}
 
 fun Long.toDigits(): List<Int> {
     return this.toString().map(Character::getNumericValue)
@@ -20,8 +25,6 @@ fun Long.firstDigit(): Int {
     return Character.getNumericValue(this.toString().first())
 }
 
-
-
 fun pythDistance(x1: Int, y1: Int, x2: Int, y2: Int): Double {
     return pythDistance(x1.toDouble(), y1.toDouble(), x2.toDouble(), y2.toDouble())
 }
@@ -32,6 +35,10 @@ fun pythDistance(x1: Double, y1: Double, x2: Double, y2: Double): Double {
 
 fun manhattanDistance(x1: Long, y1: Long, x2: Long, y2: Long): Long {
     return abs(x2 - x1) + abs(y2 - y1)
+}
+
+fun Pair<Int, Int>.manhattanDistance(): Int {
+    return abs(this.first) + abs(this.second)
 }
 
 fun greatestCommonDenominator(a: Long, b: Long): Long = if (b == 0L) a else greatestCommonDenominator(b, a % b)
