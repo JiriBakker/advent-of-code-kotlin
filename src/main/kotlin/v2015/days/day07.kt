@@ -1,6 +1,6 @@
 package v2015.days.day07
 
-import v2015.util.safeMod
+import util.safeMod
 
 private class Instruction(val valueOrKey1: String, val valueOrKey2: String?, val compute: (Int, Int) -> Int)
 

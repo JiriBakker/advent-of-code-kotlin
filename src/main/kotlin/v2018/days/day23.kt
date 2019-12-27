@@ -1,7 +1,7 @@
 package v2018.days.day23
 
-import v2018.getBounds
-import v2018.sortMappedByDescending
+import util.getBounds
+import util.sortMappedByDescending
 
 private class Pos(val x: Int, val y: Int, val z: Int) {
     fun distanceTo(other: Pos): Int {

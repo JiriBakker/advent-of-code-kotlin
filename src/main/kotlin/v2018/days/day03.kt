@@ -1,7 +1,7 @@
 package v2018.days.day03
 
-import v2018.forEachCombinationPair
-import v2018.getBounds
+import util.forEachCombinationPair
+import util.getBounds
 
 private class Fabric(private val minX: Int, maxX: Int, private val minY: Int, maxY: Int) {
     private val inches: Array<Array<Int>> = Array(maxX - minX + 1) { Array(maxY - minY + 1) { 0 } }
@@ -65,10 +65,10 @@ fun day03b(claimLines: List<String>): Int? {
 
     val idsWithoutOverlap: MutableSet<Int> = claims.map { it.id }.toMutableSet()
 
-    claims.forEachCombinationPair {
-        if (it.first.overlapsWith(it.second)) {
-            idsWithoutOverlap.remove(it.first.id)
-            idsWithoutOverlap.remove(it.second.id)
+    claims.forEachCombinationPair { first, second ->
+        if (first.overlapsWith(second)) {
+            idsWithoutOverlap.remove(first.id)
+            idsWithoutOverlap.remove(second.id)
         }
     }
 

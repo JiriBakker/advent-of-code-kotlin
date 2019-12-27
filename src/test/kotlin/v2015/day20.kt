@@ -5,7 +5,7 @@ import org.junit.Ignore
 import org.junit.Test
 import v2015.days.day20.day20a
 import v2015.days.day20.day20b
-import v2015.util.readInputLine
+import util.readInputLine
 
 class Day20aTests {
     @Test fun testExampleInput1() {
@@ -34,13 +34,13 @@ class Day20aTests {
 
     @Ignore // Too slow
     @Test fun testActualInput() {
-        assertEquals(665280, day20a(readInputLine("day20")))
+        assertEquals(665280, day20a(readInputLine("day20", 2015)))
     }
 }
 
 class Day20bTests {
     @Ignore // Too slow
     @Test fun testActualInput() {
-        assertEquals(705600, day20b(readInputLine("day20")))
+        assertEquals(705600, day20b(readInputLine("day20", 2015)))
     }
 }

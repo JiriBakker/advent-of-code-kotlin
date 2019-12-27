@@ -1,7 +1,7 @@
 package v2015.days.day21
 
-import v2015.util.combine
-import v2015.util.max
+import util.combine
+import util.max
 
 private fun parseBossProperties(input: List<String>): Triple<Int, Int, Int> {
     val hitPoints = input[0].split(" ").last().toInt()

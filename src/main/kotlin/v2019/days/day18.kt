@@ -1,7 +1,7 @@
 package v2019.days.day18
 
-import v2019.util.combine
-import v2019.util.sumByLong
+import util.combine
+import util.sumByLong
 import java.util.PriorityQueue
 import java.util.SortedMap
 import kotlin.math.min

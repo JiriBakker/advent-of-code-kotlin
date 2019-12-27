@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2015.days.day13.day13a
 import v2015.days.day13.day13b
-import v2015.util.readInputLines
+import util.readInputLines
 
 class Day13aTests {
     @Test fun testExampleInput1() {
@@ -24,13 +24,13 @@ class Day13aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(664, day13a(readInputLines("day13")))
+        assertEquals(664, day13a(readInputLines("day13", 2015)))
     }
 }
 
 class Day13bTests {
     @Test fun testActualInput() {
-        assertEquals(640, day13b(readInputLines("day13")))
+        assertEquals(640, day13b(readInputLines("day13", 2015)))
     }
 }
 

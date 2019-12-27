@@ -1,6 +1,6 @@
 package v2019.days.day17
 
-import v2015.util.min
+import util.min
 import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
 import java.util.ArrayDeque

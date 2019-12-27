@@ -1,7 +1,7 @@
 package v2019.days.day24
 
-import v2019.util.pow
-import v2019.util.sumByLong
+import util.pow
+import util.sumByLong
 
 fun day24a(input: List<String>): Long {
     fun computeBiodiversity(x: Int, y: Int): Long = 2L.pow(y * 5L + x)

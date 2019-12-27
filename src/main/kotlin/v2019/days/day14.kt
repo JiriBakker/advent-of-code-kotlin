@@ -1,7 +1,7 @@
 package v2019.days.day14
 
-import v2019.util.BinarySearchRange
-import v2019.util.doBinarySearch
+import util.BinarySearchRange
+import util.doBinarySearch
 import java.util.ArrayDeque
 import kotlin.math.ceil
 import kotlin.math.max

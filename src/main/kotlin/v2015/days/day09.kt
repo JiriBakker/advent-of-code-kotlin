@@ -1,6 +1,6 @@
 package v2015.days.day09
 
-import v2015.util.permute
+import util.permute
 
 private fun parseRoutes(input: List<String>): List<Triple<String, String, Int>> {
     return input.map {

@@ -1,6 +1,6 @@
 package v2015.days.day15
 
-import v2015.util.combine
+import util.combine
 import kotlin.math.max
 
 private class Ingredient(val name: String, val capacity: Long, val durability: Long, val flavor: Long, val texture: Long, val calories: Long)

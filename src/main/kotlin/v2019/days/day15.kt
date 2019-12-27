@@ -2,7 +2,7 @@ package v2019.days.day15
 
 import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
-import v2019.util.manhattanDistance
+import util.manhattanDistance
 import java.util.PriorityQueue
 import kotlin.math.min
 

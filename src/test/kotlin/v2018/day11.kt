@@ -2,7 +2,7 @@ package v2018.days.day11
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2018.readInputLine
+import util.readInputLine
 
 class Day11aTests {
     @Test fun testComputePowerLevel1() {
@@ -35,7 +35,7 @@ class Day11aTests {
 
     @Test fun testActualInput() {
         assertEquals(Pair(235, 60),
-            day11a(readInputLine("day11"))
+            day11a(readInputLine("day11", 2018))
         )
     }
 }
@@ -55,7 +55,7 @@ class Day11bTests {
 
     @Test fun testActualInput() {
         assertEquals(Triple(233, 282, 11),
-            day11b(readInputLine("day11"))
+            day11b(readInputLine("day11", 2018))
         )
     }
 }

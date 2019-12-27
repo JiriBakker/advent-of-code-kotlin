@@ -1,8 +1,8 @@
 package v2019.days.day12
 
-import v2019.util.forEachCombinationPair
-import v2019.util.leastCommonMultiple
-import v2019.util.sumByLong
+import util.forEachCombinationPair
+import util.leastCommonMultiple
+import util.sumByLong
 import kotlin.math.abs
 
 private enum class Axis { X, Y, Z }

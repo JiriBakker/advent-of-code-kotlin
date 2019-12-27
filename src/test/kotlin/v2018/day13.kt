@@ -2,7 +2,7 @@ package v2018.days.day13
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2018.readInputLines
+import util.readInputLines
 
 class Day13aTests {
     @Test fun testExampleInput1() {
@@ -22,7 +22,7 @@ class Day13aTests {
 
     @Test fun testActualInput() {
         assertEquals(Pair(111, 13),
-            day13a(readInputLines("day13"))
+            day13a(readInputLines("day13", 2018))
         )
     }
 }
@@ -46,7 +46,7 @@ class Day13bTests {
 
     @Test fun testActualInput() {
         assertEquals(Pair(16, 73),
-            day13b(readInputLines("day13"))
+            day13b(readInputLines("day13", 2018))
         )
     }
 }

@@ -1,6 +1,6 @@
 package v2018.days.day02
 
-import v2018.forEachCombinationPair
+import util.forEachCombinationPair
 
 fun day02a(ids: List<String>): Int {
     val countLetters = { id: String ->
@@ -41,9 +41,9 @@ fun day02b(ids: List<String>): String {
         intersection
     }
 
-    ids.forEachCombinationPair {
-        val intersection = computeIdIntersection(it.first, it.second)
-        if (intersection.size == it.first.length - 1) {
+    ids.forEachCombinationPair { first, second ->
+        val intersection = computeIdIntersection(first, second)
+        if (intersection.size == first.length - 1) {
             return String(intersection.toCharArray())
         }
     }

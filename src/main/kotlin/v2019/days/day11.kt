@@ -1,6 +1,6 @@
 package v2019.days.day11
 
-import v2019.util.getBounds
+import util.getBounds
 import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
 

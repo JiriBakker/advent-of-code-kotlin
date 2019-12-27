@@ -4,7 +4,7 @@ import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2019.extra.infiA
 import v2019.extra.infiB
-import v2019.util.readInputLines
+import util.readInputLines
 
 class InfiATests {
     @Test fun testExampleInput1() {
@@ -16,12 +16,12 @@ class InfiATests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(7, infiA(readInputLines("infi")))
+        assertEquals(7, infiA(readInputLines("infi", 2019)))
     }
 }
 
 class InfiBTests {
     @Test fun testActualInput() {
-        assertEquals(58, infiB(readInputLines("infi")))
+        assertEquals(58, infiB(readInputLines("infi", 2019)))
     }
 }

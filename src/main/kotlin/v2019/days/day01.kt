@@ -1,6 +1,6 @@
 package v2019.days.day01
 
-import v2019.util.sumByLong
+import util.sumByLong
 import kotlin.math.max
 
 private fun computeRequiredFuel(mass: Long): Long {

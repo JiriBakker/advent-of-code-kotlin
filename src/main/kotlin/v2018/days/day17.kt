@@ -1,6 +1,6 @@
 package v2018.days.day17
 
-import v2018.getBounds
+import util.getBounds
 
 private class Pos(val x: Int, val y: Int)
 

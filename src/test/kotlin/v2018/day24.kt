@@ -2,7 +2,7 @@ package v2018.days.day24
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2018.readInputLines
+import util.readInputLines
 
 class Day24aTests {
     @Test fun testExampleInput1() {
@@ -37,7 +37,7 @@ class Day24aTests {
 
     @Test fun testActualInput() {
         assertEquals(22859,
-            day24a(readInputLines("day24"))
+            day24a(readInputLines("day24", 2018))
         )
     }
 }
@@ -61,7 +61,7 @@ class Day24BTests {
 
     @Test fun testActualInput() {
         assertEquals(2834,
-            day24b(readInputLines("day24"))
+            day24b(readInputLines("day24", 2018))
         )
     }
 }

@@ -1,6 +1,6 @@
 package v2018.days.day06
 
-import v2018.getBounds
+import util.getBounds
 
 private data class CoordinateArea(val id: Int, val x: Int, val y: Int) {
     var isInfinite = false

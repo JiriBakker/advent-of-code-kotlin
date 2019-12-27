@@ -1,6 +1,6 @@
 package v2018.days.day10
 
-import v2018.getBounds
+import util.getBounds
 
 private class Light(private val startX: Int, private val startY: Int, val speedX: Int, val speedY: Int) {
     var posX = startX

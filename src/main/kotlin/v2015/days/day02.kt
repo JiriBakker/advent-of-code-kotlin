@@ -1,8 +1,8 @@
 package v2015.days.day02
 
-import v2015.util.max
-import v2015.util.min
-import v2015.util.sumByLong
+import util.max
+import util.min
+import util.sumByLong
 
 private data class Dimensions(val l: Int, val w: Int, val h: Int)
 

@@ -1,6 +1,6 @@
 package v2015.days.day13
 
-import v2015.util.permute
+import util.permute
 
 private fun parseSeatings(input: List<String>): Map<String, Map<String, Int>> {
     val output = mutableMapOf<String, MutableMap<String,Int>>()

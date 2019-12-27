@@ -2,8 +2,8 @@ package v2019.days.day02
 
 import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
-import v2019.util.BinarySearchRange
-import v2019.util.doBinarySearch
+import util.BinarySearchRange
+import util.doBinarySearch
 
 fun day02a(input: String, overrides: List<Pair<Long, Long>> = listOf()): Long {
     val intCodes = parseIntCodes(input).toMutableMap()

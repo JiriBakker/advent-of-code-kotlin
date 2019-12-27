@@ -1,10 +1,10 @@
 package v2019.days.day22
 
-import v2019.util.rem
-import v2019.util.times
-import v2019.util.minus
-import v2019.util.modPow
-import v2019.util.modInverse
+import util.rem
+import util.times
+import util.minus
+import util.modPow
+import util.modInverse
 import java.math.BigInteger
 
 fun day22a(instructions: List<String>, nrOfCards: Long = 10007, cardNrToTrack: Long = 2019): Long {

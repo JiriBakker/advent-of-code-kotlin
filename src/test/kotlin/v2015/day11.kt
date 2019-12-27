@@ -5,7 +5,7 @@ import org.junit.Test
 import v2015.days.day11.day11a
 import v2015.days.day11.day11b
 import v2015.days.day11.isValidPassword
-import v2015.util.readInputLine
+import util.readInputLine
 
 class Day11aTests {
     @Test fun testExampleInput1() {
@@ -29,13 +29,13 @@ class Day11aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals("cqjxxyzz", day11a(readInputLine("day11")))
+        assertEquals("cqjxxyzz", day11a(readInputLine("day11", 2015)))
     }
 }
 
 class Day11bTests {
     @Test fun testActualInput() {
-        assertEquals("cqkaabcc", day11b(readInputLine("day11")))
+        assertEquals("cqkaabcc", day11b(readInputLine("day11", 2015)))
     }
 }
 

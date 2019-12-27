@@ -2,7 +2,7 @@ package v2019.days.day07
 
 import v2019.intCoder.generateProgramOutput
 import v2019.intCoder.parseIntCodes
-import v2019.util.permute
+import util.permute
 import java.util.ArrayDeque
 
 fun day07a(input: String): Long {

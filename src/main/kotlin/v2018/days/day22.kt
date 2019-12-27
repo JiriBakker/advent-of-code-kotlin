@@ -1,6 +1,5 @@
 package v2018.days.day22
 
-import v2018.Pos
 import java.util.PriorityQueue
 
 private enum class RegionType {
@@ -14,6 +13,8 @@ private enum class EquippedTool {
     ClimbingGear,
     Neither
 }
+
+private class Pos(val x: Int, val y: Int)
 
 private class Region(val x: Int, val y: Int, val erosionLevel: Long, val type: RegionType)
 
