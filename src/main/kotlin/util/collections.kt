@@ -58,3 +58,12 @@ inline fun <T, U : Comparable<U>> List<T>.sortMappedByDescending(selector: (T) -
         .sortedByDescending { it.second }
         .map { it.first }
 }
+
+fun Collection<String>.transpose(): Sequence<String> {
+    val strings = this
+    return sequence {
+        strings.first().indices.forEach { index ->
+            yield(strings.map { it[index] }.joinToString(""))
+        }
+    }
+}
