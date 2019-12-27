@@ -1,6 +1,14 @@
 package v2016.days.day01
 
-import util.Pos
+import kotlin.math.abs
+
+data class Pos(val x: Int, val y: Int) {
+    fun manhattanDistance(): Int = abs(this.x) + abs(this.y)
+
+    companion object {
+        val ORIGIN = Pos(0, 0)
+    }
+}
 
 private fun Pos.turnRight(): Pos = Pos(-y, x)
 private fun Pos.turnLeft(): Pos = Pos(y, -x)

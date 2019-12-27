@@ -1,7 +1,16 @@
 package v2016.days.day02
 
-import util.Pos
+
 import kotlin.math.abs
+
+data class Pos(val x: Int, val y: Int) {
+    fun manhattanDistance(): Int = abs(this.x) + abs(this.y)
+
+    companion object {
+        val ORIGIN = Pos(0, 0)
+    }
+}
+
 
 fun move(instructions: String, startPos: Pos, isValidPos: (Pos) -> Boolean): Pos {
     return instructions.fold(startPos) { pos, direction ->
