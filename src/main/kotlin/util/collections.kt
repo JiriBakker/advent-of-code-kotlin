@@ -72,3 +72,4 @@ fun <T> Collection<T>.partitionIndexed(predicate: (IndexedValue<T>) -> Boolean):
     val (first, second) = this.withIndex().partition(predicate)
     return first.map { it.value } to second.map { it.value }
 }
+
