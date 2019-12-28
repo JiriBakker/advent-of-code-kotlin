@@ -67,3 +67,8 @@ fun Collection<String>.transpose(): Sequence<String> {
         }
     }
 }
+
+fun <T> Collection<T>.partitionIndexed(predicate: (IndexedValue<T>) -> Boolean): Pair<List<T>, List<T>> {
+    val (first, second) = this.withIndex().partition(predicate)
+    return first.map { it.value } to second.map { it.value }
+}
