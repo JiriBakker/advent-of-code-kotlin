@@ -73,3 +73,6 @@ fun <T> Collection<T>.partitionIndexed(predicate: (IndexedValue<T>) -> Boolean):
     return first.map { it.value } to second.map { it.value }
 }
 
+fun <T> Collection<T>.multiplyBy(valueSelector: (T) -> Int): Int {
+    return this.fold(1) { product, element -> product * valueSelector(element) }
+}
