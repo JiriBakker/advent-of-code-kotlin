@@ -1,6 +1,6 @@
 package v2016.days.day11
 
-import util.combine
+import util.permute
 import java.util.PriorityQueue
 
 private fun parseInput(input: List<String>): List<MutableList<String>> {
@@ -17,7 +17,7 @@ private fun parseInput(input: List<String>): List<MutableList<String>> {
     }
 }
 
-private class State(val floors: List<List<String>>, val elevatorFloor: Int, val steps: Int, var prevState: State? = null) {
+private class State(val floors: List<List<String>>, val elevatorFloor: Int, val steps: Int) {
     val hash = floors.joinToString("_") { floor -> floor.sorted().joinToString("-") } + "_E$elevatorFloor"
 
     fun isTargetState(): Boolean = (0..2).all { floors[it].isEmpty() }
@@ -30,16 +30,15 @@ private class State(val floors: List<List<String>>, val elevatorFloor: Int, val 
         generators.isNotEmpty() && chipsWithoutGenerator.isNotEmpty()
     }
 
-     fun print() {
-        floors.reversed().forEachIndexed { nr, objects ->
-            print("F${4 - nr} ")
-            if (elevatorFloor == 3 - nr) {
-                print("E ")
-            } else print("  ")
-            objects.forEach { print(it.padEnd(4)) }
-            println()
+    fun move(itemsToMove: List<String>, destinationFloor: Int): State {
+        val nextFloors = floors.mapIndexed { floorNr, itemsOnFloor ->
+            when (floorNr) {
+                elevatorFloor -> itemsOnFloor.minus(itemsToMove)
+                destinationFloor -> itemsOnFloor.plus(itemsToMove)
+                else -> itemsOnFloor
+            }
         }
-        println()
+        return State(nextFloors, destinationFloor, steps + 1)
     }
 }
 
@@ -52,14 +51,6 @@ private fun findMoves(floors: List<List<String>>): Int {
         val state = toVisit.poll()
 
         if (state.isTargetState()) {
-            sequence {
-                var curState = state
-                do {
-                    yield(curState)
-
-                    curState = curState.prevState
-                } while (curState != null)
-            }.toList().reversed().forEach(State::print)
             return state.steps
         }
 
@@ -67,43 +58,24 @@ private fun findMoves(floors: List<List<String>>): Int {
             continue
         }
 
-        val itemsOnElevatorFloor = state.floors[state.elevatorFloor]
-        val itemCombinationsToTake = itemsOnElevatorFloor.combine(2).filter { it[0] != it[1] }.map { it.sorted() }.distinct()
-
-        itemsOnElevatorFloor.forEach { item ->
-            val nextItemsOnElevatorFloor = state.floors[state.elevatorFloor].minus(item)
-            if (state.elevatorFloor > 0) {
-                val itemsOnDestinationFloor = state.floors[state.elevatorFloor - 1].plus(item)
-                val nextFloors = state.floors.mapIndexed { index, floor ->
-                    when (index) {
-                        state.elevatorFloor -> nextItemsOnElevatorFloor
-                        state.elevatorFloor - 1 -> itemsOnDestinationFloor
-                        else -> floor
-                    }
-                }
-                val nextState = State(nextFloors, state.elevatorFloor - 1, state.steps + 1, state)
-                if (nextState.isValidState() && !visited.contains(nextState.hash)) {
+        fun addIfViable(itemCombinations: List<List<String>>, nextFloor: Int) {
+            itemCombinations.forEach { itemCombination ->
+                val nextState = state.move(itemCombination, nextFloor)
+                if (!visited.contains(nextState.hash) && nextState.isValidState()) {
                     toVisit.add(nextState)
                 }
             }
         }
 
-        itemCombinationsToTake.forEach { itemCombination ->
-            val nextItemsOnElevatorFloor = state.floors[state.elevatorFloor].minus(itemCombination)
-            if (state.elevatorFloor < 3) {
-                val itemsOnDestinationFloor = state.floors[state.elevatorFloor + 1].plus(itemCombination)
-                val nextFloors = state.floors.mapIndexed { index, floor ->
-                    when (index) {
-                        state.elevatorFloor -> nextItemsOnElevatorFloor
-                        state.elevatorFloor + 1 -> itemsOnDestinationFloor
-                        else -> floor
-                    }
-                }
-                val nextState = State(nextFloors, state.elevatorFloor + 1, state.steps + 1, state)
-                if (nextState.isValidState() && !visited.contains(nextState.hash)) {
-                    toVisit.add(nextState)
-                }
-            }
+        val itemsOnElevatorFloor = state.floors[state.elevatorFloor]
+        val itemCombinationsToTake = itemsOnElevatorFloor.permute(2)
+
+        if (state.elevatorFloor > 0) {
+            addIfViable(itemsOnElevatorFloor.map { listOf(it) }, state.elevatorFloor - 1)
+        }
+
+        if (state.elevatorFloor < 3) {
+            addIfViable(itemCombinationsToTake, state.elevatorFloor + 1)
         }
     }
 

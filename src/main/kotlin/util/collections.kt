@@ -8,9 +8,9 @@ inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     return sum
 }
 
-fun <T> Collection<T>.permute(): List<List<T>> {
+fun <T> Collection<T>.permute(maxSize: Int = Int.MAX_VALUE): List<List<T>> {
     fun permute(available: Collection<T>, used: List<T>): List<List<T>> {
-        if (available.isEmpty()) {
+        if (available.isEmpty() || used.size == maxSize) {
             return listOf(used)
         }
 
@@ -22,11 +22,11 @@ fun <T> Collection<T>.permute(): List<List<T>> {
     return permute(this, listOf())
 }
 
-fun <T> Collection<T>.combine(size: Int): List<List<T>> {
+fun <T> Collection<T>.combine(maxSize: Int): List<List<T>> {
     val available = this
 
     fun combine(used: List<T>): List<List<T>> {
-        if (used.size == size) {
+        if (used.size == maxSize) {
             return listOf(used)
         }
 
