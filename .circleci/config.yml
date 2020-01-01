@@ -9,7 +9,7 @@ jobs:
 
       - run:
           name: Tests 2015
-          command: ./gradlew test -i -Pyear=2015
+          command: ./gradlew test -i --debug --stacktrace -Pyear=2015
 
       - run:
           name: Tests 2018
