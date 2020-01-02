@@ -1,5 +1,6 @@
 package v2016.days.day17
 
+import util.priorityQueueBy
 import java.security.MessageDigest
 import java.util.PriorityQueue
 
@@ -14,7 +15,7 @@ private data class Pos(val x: Int, val y: Int)
 private data class Path(val pos: Pos, val movements: String)
 
 private fun findPathsToVault(passcode: String): Sequence<String> {
-    val toVisit = PriorityQueue<Path> { a, b -> a.movements.length.compareTo(b.movements.length) }
+    val toVisit = priorityQueueBy<Path> { it.movements.length }
     toVisit.add(Path(Pos(0, 0), ""))
 
     return sequence {

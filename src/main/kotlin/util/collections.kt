@@ -1,5 +1,7 @@
 package util
 
+import java.util.PriorityQueue
+
 inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     var sum = 0L
     for (element in this) {
@@ -75,4 +77,8 @@ fun <T> Collection<T>.partitionIndexed(predicate: (IndexedValue<T>) -> Boolean):
 
 fun <T> Collection<T>.multiplyBy(valueSelector: (T) -> Int): Int {
     return this.fold(1) { product, element -> product * valueSelector(element) }
+}
+
+fun <T> priorityQueueBy(valueSelector: (T) -> Comparable<*>): PriorityQueue<T> {
+    return PriorityQueue { a, b -> (valueSelector(a) as Comparable<Any>).compareTo(valueSelector(b)) }
 }
