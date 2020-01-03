@@ -34,7 +34,7 @@ fun leastCommonMultiple(a: Long, b: Long): Long = a / greatestCommonDenominator(
 fun leastCommonMultiple(nrs: Collection<Long>): Long = nrs.reduce(::leastCommonMultiple)
 
 fun Int.safeMod(mod: Int): Int {
-    return (this + mod) % mod
+    return this.toLong().safeMod(mod.toLong()).toInt()
 }
 
 fun Long.safeMod(mod: Long): Long {
