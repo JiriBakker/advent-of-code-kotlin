@@ -63,19 +63,11 @@ private fun findValidKeyIndices(salt: String, hashFunc: (String) -> String): Seq
 fun day14a(input: String): Int {
     return findValidKeyIndices(input, ::md5Hash)
         .take(64)
-        .mapIndexed { index, value ->
-            println("$index: $value")
-            value
-        }
         .last()
 }
 
 fun day14b(input: String): Int {
     return findValidKeyIndices(input, ::stretchedMd5Hash)
         .take(64)
-        .mapIndexed { index, value ->
-            println("$index: $value")
-            value
-        }
         .last()
 }
