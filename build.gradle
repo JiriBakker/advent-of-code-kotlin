@@ -28,8 +28,6 @@ dependencies {
 }
 
 test {
-    maxParallelForks = Runtime.runtime.availableProcessors().intdiv(2) ?: 1
-
     filter {
         includeTestsMatching project.hasProperty("year") ? "v" + getProperty("year") + ".*" : "*"
     }
