@@ -10,6 +10,8 @@ import v2017.days.day03.day03a
 import v2017.days.day03.day03b
 import v2017.days.day04.day04a
 import v2017.days.day04.day04b
+import v2017.days.day05.day05a
+import v2017.days.day05.day05b
 import kotlin.system.measureTimeMillis
 
 private fun time(func: () -> Unit) {
@@ -26,4 +28,6 @@ fun main() {
     time { print("Day03b: " + day03b(readInputLine("day03", 2017))) }
     time { print("Day04a: " + day04a(readInputLines("day04", 2017))) }
     time { print("Day04b: " + day04b(readInputLines("day04", 2017))) }
+    time { print("Day05a: " + day05a(readInputLines("day05", 2017))) }
+    time { print("Day05b: " + day05b(readInputLines("day05", 2017))) }
 }
