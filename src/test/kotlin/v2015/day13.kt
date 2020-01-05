@@ -1,6 +1,7 @@
 package v2015
 
 import org.junit.Assert.assertEquals
+import org.junit.Ignore
 import org.junit.Test
 import v2015.days.day13.day13a
 import v2015.days.day13.day13b
@@ -29,6 +30,7 @@ class Day13aTests {
 }
 
 class Day13bTests {
+    @Ignore // High memory load
     @Test fun testActualInput() {
         assertEquals(640, day13b(readInputLines("day13", 2015)))
     }
