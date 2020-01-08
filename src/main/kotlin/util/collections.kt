@@ -82,3 +82,15 @@ fun <T> Collection<T>.multiplyBy(valueSelector: (T) -> Int): Int {
 fun <T> priorityQueueBy(valueSelector: (T) -> Comparable<*>): PriorityQueue<T> {
     return PriorityQueue { a, b -> (valueSelector(a) as Comparable<Any>).compareTo(valueSelector(b)) }
 }
+
+fun <T> Collection<T>.allEqual(): Boolean {
+    return this.zipWithNext().all { it.first == it.second }
+}
+
+inline operator fun <T> List<T>.component6(): T {
+    return get(5)
+}
+
+inline operator fun <T> List<T>.component7(): T {
+    return get(6)
+}
