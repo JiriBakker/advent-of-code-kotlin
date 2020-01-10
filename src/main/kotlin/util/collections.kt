@@ -87,6 +87,10 @@ fun <T> Collection<T>.allEqual(): Boolean {
     return this.zipWithNext().all { it.first == it.second }
 }
 
+fun <K,V> Map<K,V>.sumBy(valueSelector: (Map.Entry<K,V>) -> Int): Int {
+    return this.map(valueSelector).sum()
+}
+
 inline operator fun <T> List<T>.component6(): T {
     return get(5)
 }
