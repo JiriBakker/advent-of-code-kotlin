@@ -1,6 +1,8 @@
 package util
 
+import java.util.ArrayDeque
 import java.util.PriorityQueue
+import java.util.Stack
 
 inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     var sum = 0L
@@ -89,6 +91,14 @@ fun <T> Collection<T>.allEqual(): Boolean {
 
 fun <K,V> Map<K,V>.sumBy(valueSelector: (Map.Entry<K,V>) -> Int): Int {
     return this.map(valueSelector).sum()
+}
+
+fun <T> Iterator<T>.nextOrNull(): T? {
+    return if (this.hasNext()) this.next() else null
+}
+
+fun <T> ArrayDeque<T>.popOrNull(): T? {
+    return if (this.isNotEmpty()) this.pop() else null
 }
 
 inline operator fun <T> List<T>.component6(): T {
