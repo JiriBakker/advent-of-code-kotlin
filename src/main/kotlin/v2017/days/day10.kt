@@ -22,18 +22,8 @@ private fun hash(elements: IntArray, lengths: List<Int>, startIndex: Int = 0, sk
     return startIndex to skipSize
 }
 
-fun day10a(input: String, nrOfElements: Int = 256): Int {
-    val lengths = input.split(',').map(String::toInt)
-
-    val elements = (0 until nrOfElements).toList().toIntArray()
-
-    hash(elements, lengths)
-
-    return elements[0] * elements[1]
-}
-
-fun day10b(input: String, nrOfElements: Int = 256): String {
-    val lengths = input.map(Char::toInt).plus(listOf(17, 31, 73, 47, 23))
+fun knotHash(string: String, nrOfElements: Int = 256): String {
+    val lengths = string.map(Char::toInt).plus(listOf(17, 31, 73, 47, 23))
 
     val elements = (0 until nrOfElements).toList().toIntArray()
 
@@ -49,4 +39,18 @@ fun day10b(input: String, nrOfElements: Int = 256): String {
                 .toString(16)
                 .padStart(2, '0')
         }
+}
+
+fun day10a(input: String, nrOfElements: Int = 256): Int {
+    val lengths = input.split(',').map(String::toInt)
+
+    val elements = (0 until nrOfElements).toList().toIntArray()
+
+    hash(elements, lengths)
+
+    return elements[0] * elements[1]
+}
+
+fun day10b(input: String, nrOfElements: Int = 256): String {
+    return knotHash(input, nrOfElements)
 }
