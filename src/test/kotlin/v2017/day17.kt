@@ -16,7 +16,7 @@ class Day17aTests {
 
 class Day17bTests {
     @Test fun testExampleInput1() {
-        assertEquals(638, day17b("3"))
+        assertEquals(1222153, day17b("3"))
     }
 
     @Test fun testActualInput() {
