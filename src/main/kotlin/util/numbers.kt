@@ -63,6 +63,7 @@ fun BigInteger.modInverse(m: Long): BigInteger = this.modInverse(BigInteger.valu
 fun Long.modInverse(m: Long): BigInteger = BigInteger.valueOf(this).modInverse(BigInteger.valueOf(m))
 fun Int.modInverse(m: Long): BigInteger = BigInteger.valueOf(this.toLong()).modInverse(BigInteger.valueOf(m))
 fun Long.pow(e: Long): Long = this.toDouble().pow(e.toDouble()).toLong()
+fun Long.sqrt(): Long = sqrt(this.toDouble()).toLong()
 
 fun Int.gt(other: Int): Boolean = this > other
 fun Int.gte(other: Int): Boolean = this >= other
