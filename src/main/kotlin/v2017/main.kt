@@ -42,6 +42,8 @@ import v2017.days.day19.day19a
 import v2017.days.day19.day19b
 import v2017.days.day20.day20a
 import v2017.days.day20.day20b
+import v2017.days.day21.day21a
+import v2017.days.day21.day21b
 import kotlin.system.measureTimeMillis
 
 private fun time(func: () -> Unit) {
@@ -90,4 +92,6 @@ fun main() {
     time { print("Day19b: " + day19b(readInputLines("day19", 2017))) }
     time { print("Day20a: " + day20a(readInputLines("day20", 2017))) }
     time { print("Day20b: " + day20b(readInputLines("day20", 2017))) }
+    time { print("Day21a: " + day21a(readInputLines("day21", 2017))) }
+    time { print("Day21b: " + day21b(readInputLines("day21", 2017))) }
 }
