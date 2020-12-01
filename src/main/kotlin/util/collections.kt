@@ -108,3 +108,7 @@ inline operator fun <T> List<T>.component6(): T {
 inline operator fun <T> List<T>.component7(): T {
     return get(6)
 }
+
+fun List<Int>.product(): Int {
+    return this.fold(1, { total, it -> total * it })
+}

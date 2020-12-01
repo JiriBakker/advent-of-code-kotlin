@@ -1,41 +1,65 @@
 package v2020.days.day01
 
-private fun findMatchingPair(target: Int, nrs: List<Int>, startIndex: Int = 0): Pair<Int, Int>? {
-    val seen = mutableSetOf<Int>()
+import util.product
 
-    tailrec fun findRecursive(curIndex: Int): Pair<Int, Int>? {
-        if (curIndex >= nrs.size) {
-            return null
-        }
+private fun findMatch(target: Int, length: Int, nrs: List<Int>): List<Int> {
+    val seen = mutableMapOf(1 to nrs.associateWith { listOf(it) }.toMutableMap())
 
-        val toFind = target - nrs[curIndex]
-        if (seen.contains(toFind)) {
-            return toFind to nrs[curIndex]
-        }
-
-        seen.add(nrs[curIndex])
-
-        return findRecursive(curIndex + 1)
+    fun memoize(combination: List<Int>) {
+        seen
+            .getOrPut(combination.size, { mutableMapOf() })
+            .putIfAbsent(combination.sum(), combination)
     }
 
-    return findRecursive(startIndex)
+    fun getMemoized(sum: Int, length: Int): List<Int>? {
+        return seen[length]?.get(sum)
+    }
+
+    fun findMatchRecursive(remaining: Int, length: Int, curNrIndex: Int, used: List<Int>): List<Int>? {
+        val memoized = getMemoized(remaining, length)
+        if (memoized != null) {
+            return used.plus(memoized)
+        }
+
+        if (length > 1) {
+            (curNrIndex until nrs.size).forEach { index ->
+                val nr = nrs[index]
+                val newUsed = used.plus(nr)
+
+                val match = findMatchRecursive(
+                    remaining - nr,
+                    length - 1,
+                    curNrIndex + 1,
+                    newUsed
+                )
+
+                if (match != null) {
+                    return match
+                }
+
+                memoize(newUsed)
+            }
+        }
+
+        return null
+    }
+
+    return findMatchRecursive(target, length, 0, emptyList()) ?: error("No match found")
 }
 
 fun day01a(input: List<String>): Int {
     val nrs = input.map(String::toInt)
-    val match = findMatchingPair(2020, nrs, 0) ?: error("No match found")
-    return match.first * match.second
+
+    val match = findMatch(2020, 2, nrs)
+
+    return match.product()
 }
 
 fun day01b(input: List<String>): Int {
     val nrs = input.map(String::toInt)
 
-    nrs.forEachIndexed { index, nr ->
-        val match = findMatchingPair(2020 - nr, nrs, index + 1)
-        if (match != null) {
-            return match.first * match.second * nr
-        }
-    }
+    val match = findMatch(2020, 3, nrs)
 
-    error("No match found")
+    return match.product()
 }
+
