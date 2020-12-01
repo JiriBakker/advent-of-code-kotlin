@@ -25,13 +25,13 @@ private fun runProgram(initialRegisters: Map<String, Long>, instructions: List<S
             }
             else -> error("Unknown instruction ${instructions[index]}")
         }
-    } while (index++ in instructions.indices)
+    } while (++index in instructions.indices)
 
     return multiplicationCount
 }
 
 fun day23a(input: List<String>): Int {
-    val registers = ('a' until 'h').associate { it.toString() to 0L }
+    val registers = ('a' .. 'h').associate { it.toString() to 0L }
     return runProgram(registers, input)
 }
 
