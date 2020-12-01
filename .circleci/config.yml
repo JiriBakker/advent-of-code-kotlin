@@ -11,9 +11,9 @@ jobs:
           name: Tests 2015
           command: ./gradlew test -Pyear=2015
 
-      - run:
-          name: Tests 2016
-          command: ./gradlew test -Pyear=2016
+#      - run:
+#          name: Tests 2016
+#          command: ./gradlew test -Pyear=2016
 
       - run:
           name: Tests 2017
@@ -26,3 +26,7 @@ jobs:
       - run:
           name: Tests 2019
           command: ./gradlew test -Pyear=2019
+
+      - run:
+          name: Tests 2020
+          command: ./gradlew test -Pyear=2020
