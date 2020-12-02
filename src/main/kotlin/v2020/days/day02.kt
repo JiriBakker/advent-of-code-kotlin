@@ -43,8 +43,8 @@ fun day02b(input: List<String>): Int {
         .map(::parseLine)
         .count { (policy, password) ->
             val count =
-                if (password.hasCharAtPos(policy.char, policy.nr1)) 1 else 0 +
-                if (password.hasCharAtPos(policy.char, policy.nr2)) 1 else 0
+                (if (password.hasCharAtPos(policy.char, policy.nr1)) 1 else 0) +
+                (if (password.hasCharAtPos(policy.char, policy.nr2)) 1 else 0)
 
             count == 1
         }
