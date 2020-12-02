@@ -1,7 +1,5 @@
 package v2020.days.day02
 
-import util.product
-
 private data class Policy(
     val nr1: Int,
     val nr2: Int,
@@ -24,6 +22,10 @@ private fun countLetters(password: String): Map<Char, Int> {
     })
 }
 
+private fun String.hasCharAtPos(char: Char, base1Pos: Int): Boolean {
+    return this.getOrNull(base1Pos - 1) == char
+}
+
 fun day02a(input: List<String>): Int {
     return input
         .map(::parseLine)
@@ -40,13 +42,9 @@ fun day02b(input: List<String>): Int {
     return input
         .map(::parseLine)
         .count { (policy, password) ->
-            var count = 0
-            if (password.getOrNull(policy.nr1 - 1) == policy.char) {
-                count++
-            }
-            if (password.getOrNull(policy.nr2 - 1) == policy.char) {
-                count++
-            }
+            val count =
+                if (password.hasCharAtPos(policy.char, policy.nr1)) 1 else 0 +
+                if (password.hasCharAtPos(policy.char, policy.nr2)) 1 else 0
 
             count == 1
         }
