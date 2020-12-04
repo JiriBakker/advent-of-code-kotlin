@@ -63,7 +63,6 @@ fun day03b(input: String): Int {
             ).sumBy { ports.getOrDefault(it, 0) }
 
             ports[pos] = port
-            println("Port at $pos: $port")
             port
         }
         .first { it > portToFind }
