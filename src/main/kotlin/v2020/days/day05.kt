@@ -14,9 +14,9 @@ fun day05a(input: List<String>): Int {
 }
 
 fun day05b(input: List<String>): Int {
-    val seatIds = input.map(String::toSeatId).sorted()
-
-    return seatIds
+    return input
+        .map(String::toSeatId)
+        .sorted()
         .zipWithNext()
         .first { (cur, next) -> cur != next - 1 }
         .let { it.first + 1 }
