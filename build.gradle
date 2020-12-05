@@ -13,12 +13,10 @@ buildscript {
 apply plugin: 'kotlin'
 apply plugin: 'application'
 
+mainClassName = project.hasProperty("year") ? "v" + getProperty("year") + "/MainKt" : "INPUT-YEAR"
+
 repositories {
     jcenter()
-}
-
-run {
-    main = project.hasProperty("year") ? "v" + getProperty("year") + "/MainKt" : "INPUT-YEAR"
 }
 
 dependencies {

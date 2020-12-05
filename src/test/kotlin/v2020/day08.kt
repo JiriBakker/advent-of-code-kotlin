@@ -1,0 +1,29 @@
+package v2020
+
+import org.junit.Assert.assertEquals
+import org.junit.Test
+import v2020.days.day08.day08a
+import v2020.days.day08.day08b
+import util.readInputLines
+
+class Day08aTests {
+    // @Test fun testExampleInput1() {
+    //     assertEquals(0, day08a(listOf(
+    //         "")))
+    // }
+    //
+    // @Test fun testActualInput() {
+    //     assertEquals(0, day08a(readInputLines("day08", 2020)))
+    // }
+}
+
+class Day08bTests {
+    // @Test fun testExampleInput1() {
+    //     assertEquals(0, day08b(listOf(
+    //         "")))
+    // }
+    //
+    // @Test fun testActualInput() {
+    //     assertEquals(0, day08b(readInputLines("day08", 2020)))
+    // }
+}
