@@ -1,5 +1,7 @@
 package v2020.days.day04
 
+import util.splitByDoubleNewLine
+
 private class Passport(fields: Map<String, String>) {
 
     // byr (Birth Year)
@@ -100,26 +102,17 @@ private class Passport(fields: Map<String, String>) {
 }
 
 private fun parsePassports(input: List<String>): List<Passport> {
-    val passports = mutableListOf<Passport>()
-    var passportFields = mutableMapOf<String, String>()
-
-    input.forEach { line ->
-        if (line.isEmpty()) {
-            passports.add(Passport(passportFields))
-            passportFields = mutableMapOf()
-        } else {
-            line.split(" ").forEach { field ->
-                val (key, value) = field.split(":")
-                passportFields[key] = value
+    return input.splitByDoubleNewLine()
+        .map { lines ->
+            val passportFields = mutableMapOf<String, String>()
+            lines.forEach { line ->
+                line.split(" ").forEach { field ->
+                    val (key, value) = field.split(":")
+                    passportFields[key] = value
+                }
             }
+            Passport(passportFields)
         }
-    }
-
-    if (passportFields.isNotEmpty()) {
-        passports.add(Passport(passportFields))
-    }
-
-    return passports
 }
 
 fun day04a(input: List<String>): Int {

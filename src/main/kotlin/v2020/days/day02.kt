@@ -1,5 +1,7 @@
 package v2020.days.day02
 
+import util.countLetters
+
 private data class Policy(
     val nr1: Int,
     val nr2: Int,
@@ -15,13 +17,6 @@ private fun parseLine(line: String): Pair<Policy, String> {
     return Policy(nr1.toInt(), nr2.toInt(), char.first()) to password
 }
 
-private fun countLetters(password: String): Map<Char, Int> {
-    return password.fold(mutableMapOf(), { counts, char ->
-        counts.put(char, counts.getOrDefault(char, 0) + 1)
-        counts
-    })
-}
-
 private fun String.hasCharAtPos(char: Char, base1Pos: Int): Boolean {
     return this.getOrNull(base1Pos - 1) == char
 }
@@ -31,7 +26,7 @@ fun day02a(input: List<String>): Int {
         .map(::parseLine)
         .count { (policy, password) ->
             val nrOfCharOccurrences =
-                countLetters(password)
+                password.countLetters()
                     .getOrDefault(policy.char, 0)
 
             nrOfCharOccurrences in policy.nr1 .. policy.nr2
