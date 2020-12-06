@@ -13,3 +13,23 @@ fun readInputLine(day: String, year: Int): String {
 fun parseCsv(exampleInput: String): List<String> {
     return exampleInput.split(",")
 }
+
+fun List<String>.splitByDoubleNewLine(): List<List<String>> {
+    val groups = mutableListOf<List<String>>()
+    var group = mutableListOf<String>()
+
+    this.forEach { line ->
+        if (line.isEmpty()) {
+            groups.add(group)
+            group = mutableListOf()
+        } else {
+            group.add(line)
+        }
+    }
+
+    if (group.isNotEmpty()) {
+        groups.add(group)
+    }
+
+    return groups
+}
