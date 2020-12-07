@@ -27,24 +27,20 @@ private fun parseHierarchy(input: List<String>): Pair<BagHierarchy, BagHierarchy
 
 fun day07a(input: List<String>): Int {
     val (hierarchy, _) = parseHierarchy(input)
+    val seen = mutableSetOf<String>()
 
-    fun findNested(bag: String, seen: MutableSet<String> = mutableSetOf()): MutableSet<String> {
+    fun findNested(bag: String) {
         if (!seen.add(bag)) {
-            return seen
+            return
         }
 
-        seen.addAll(
-            hierarchy[bag]
-                ?.keys
-                ?.flatMap { innerBag -> findNested(innerBag, seen) }
-                ?: emptyList()
-        )
-
-        return seen
+        hierarchy[bag]
+            ?.keys
+            ?.forEach { innerBag -> findNested(innerBag) }
     }
 
-    return findNested("shiny gold")
-        .size - 1
+    findNested("shiny gold")
+    return seen.size - 1
 }
 
 fun day07b(input: List<String>): Int {
