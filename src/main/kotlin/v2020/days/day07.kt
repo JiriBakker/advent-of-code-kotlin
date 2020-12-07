@@ -1,10 +1,61 @@
 package v2020.days.day07
 
+private typealias BagHierarchy = Map<String, Map<String, Int>>
+
+private fun parseHierarchy(input: List<String>): Pair<BagHierarchy, BagHierarchy> {
+    val topDownHierarchy = mutableMapOf<String, Map<String, Int>>()
+    val bottomUpHierarchy = mutableMapOf<String, Map<String, Int>>()
+
+    input.forEach { line ->
+        val words = line.split(" ")
+        val outerBag = "${words[0]} ${words[1]}"
+
+        words.drop(4).chunked(4)
+            .forEach { bag ->
+                if (bag[0] != "no") {
+                    val (count, tint, color) = bag
+                    val innerBag = "$tint $color"
+
+                    topDownHierarchy[innerBag] = topDownHierarchy.getOrDefault(innerBag, mutableMapOf()).plus(outerBag to count.toInt())
+                    bottomUpHierarchy[outerBag] = bottomUpHierarchy.getOrDefault(outerBag, mutableMapOf()).plus(innerBag to count.toInt())
+                }
+            }
+    }
+
+    return topDownHierarchy to bottomUpHierarchy
+}
+
 fun day07a(input: List<String>): Int {
-    return 0
+    val (hierarchy, _) = parseHierarchy(input)
+
+    fun findNested(bag: String, seen: MutableSet<String> = mutableSetOf()): MutableSet<String> {
+        if (!seen.add(bag)) {
+            return seen
+        }
+
+        seen.addAll(
+            hierarchy[bag]
+                ?.keys
+                ?.flatMap { innerBag -> findNested(innerBag, seen) }
+                ?: emptyList()
+        )
+
+        return seen
+    }
+
+    return findNested("shiny gold")
+        .size - 1
 }
 
 fun day07b(input: List<String>): Int {
-    return 0
-}
+    val (_, hierarchy) = parseHierarchy(input)
 
+    fun countNested(bag: String): Int {
+        return hierarchy[bag]
+            ?.entries
+            ?.sumBy { (innerBag, count) -> countNested(innerBag) * count + count }
+            ?: 0
+    }
+
+    return countNested("shiny gold")
+}
