@@ -1,7 +1,7 @@
 package v2020.days.day08
 
 private fun runProgram(input: List<String>): Pair<Boolean, Int> {
-    val instructions = input.map { line -> line.split(" ").map { it.trimEnd(',') } }
+    val instructions = input.map { line -> line.split(" ") }
 
     val seen = mutableSetOf<Int>()
     var accumulator = 0
