@@ -3,8 +3,8 @@ package v2020
 import org.junit.Assert.assertEquals
 import org.junit.Test
 import v2020.days.day08.day08a
-import v2020.days.day08.day08b
 import util.readInputLines
+import v2020.days.day08.day08b
 
 class Day08aTests {
     @Test fun testExampleInput1() {

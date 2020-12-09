@@ -1,14 +1,20 @@
 package v2020.days.day08
 
-private fun runProgram(input: List<String>): Pair<Boolean, Int> {
+private fun runProgram(input: List<String>, allowSwap: Boolean = false): Pair<Boolean, Int> {
     val instructions = input.map { line -> line.split(" ") }
+    val seenUnswappedPointers = mutableSetOf<Int>()
+    val seenSwappedPointers = mutableSetOf<Int>()
 
-    val seen = mutableSetOf<Int>()
-    var accumulator = 0
-    var pointer = 0
+    val toCheck = ArrayDeque<Triple<Int, Int, Boolean>>()
+    toCheck.add(Triple(0, 0, !allowSwap))
 
-    while (true) {
-        if (!seen.add(pointer)) {
+    while (toCheck.isNotEmpty()) {
+        val (pointer, accumulator, hasSwapped) = toCheck.removeFirst()
+
+        if ((!hasSwapped && !seenUnswappedPointers.add(pointer)) || (hasSwapped && !seenSwappedPointers.add(pointer))) {
+            if (allowSwap) {
+                continue
+            }
             return false to accumulator
         }
 
@@ -18,41 +24,40 @@ private fun runProgram(input: List<String>): Pair<Boolean, Int> {
 
         val instruction = instructions[pointer]
         when (instruction[0]) {
-            "nop" -> pointer++
-            "acc" -> {
-                accumulator += instruction[1].toInt()
-                pointer++
+            "nop" -> {
+                if (allowSwap && !hasSwapped) {
+                    toCheck.addLast(Triple(pointer + instruction[1].toInt(), accumulator, true))
+                }
+                toCheck.addLast(Triple(pointer + 1, accumulator, hasSwapped))
             }
-            "jmp" -> pointer += instruction[1].toInt()
+            "jmp" -> {
+                if (allowSwap && !hasSwapped) {
+                    toCheck.addLast(Triple(pointer + 1, accumulator, true))
+                }
+                toCheck.addLast(Triple(pointer + instruction[1].toInt(), accumulator, hasSwapped))
+            }
+            "acc" -> {
+                toCheck.addLast(Triple(pointer + 1, accumulator + instruction[1].toInt(), hasSwapped))
+            }
             else -> error("Unknown instruction")
         }
     }
+
+    error("Program never terminated")
 }
 
-private fun swapNopJmp(instruction: String): String {
-    return instruction
-        .replace("nop", "tmp")
-        .replace("jmp", "nop")
-        .replace("tmp", "jmp")
-}
 
 fun day08a(input: List<String>): Int {
     return runProgram(input).second
 }
 
 fun day08b(input: List<String>): Int {
-    input.mapIndexed { index, line ->
-        if (line.startsWith("nop") || line.startsWith("jmp")) {
-            val inputCopy = input.toMutableList()
-            inputCopy[index] = swapNopJmp(line)
-
-            val (terminated, accumulator) = runProgram(inputCopy)
-            if (terminated) {
-                return accumulator
-            }
-        }
+    val (terminated, accumulator) = runProgram(input, allowSwap = true)
+    if (terminated) {
+        return accumulator
     }
 
     error("Program never terminated")
 }
+
 
