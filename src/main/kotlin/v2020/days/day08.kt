@@ -44,7 +44,8 @@ fun day08b(input: List<String>): Int {
     input.mapIndexed { index, line ->
         if (line.startsWith("nop") || line.startsWith("jmp")) {
             val inputCopy = input.toMutableList()
-            inputCopy[index] = swapNopJmp(inputCopy[index])
+            inputCopy[index] = swapNopJmp(line)
+
             val (terminated, accumulator) = runProgram(inputCopy)
             if (terminated) {
                 return accumulator
