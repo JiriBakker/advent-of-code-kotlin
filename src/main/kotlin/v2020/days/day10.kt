@@ -20,17 +20,21 @@ fun day10a(input: List<String>): Int {
 fun day10b(input: List<String>): Long {
     val joltDiffs = getJoltDiffs(input)
 
-    return joltDiffs.fold(Pair(1L, 0)) {(comboCount, seqOfOnesLength), joltDiff ->
-        if (joltDiff == 1) {
-            comboCount to seqOfOnesLength + 1
-        } else {
-            when (seqOfOnesLength) {
-                4 -> comboCount * 7 to 0
-                3 -> comboCount * 4 to 0
-                2 -> comboCount * 2 to 0
-                else -> comboCount to 0
+    return joltDiffs
+        .fold(Pair(1L, 0))
+            { (comboCount, seqOfOnesLength), joltDiff ->
+                if (joltDiff == 1) {
+                    comboCount to seqOfOnesLength + 1
+                } else {
+                    when (seqOfOnesLength) {
+                        // Expect input to never produce longer sequences of ones than length 4
+                        4 -> comboCount * 7 to 0
+                        3 -> comboCount * 4 to 0
+                        2 -> comboCount * 2 to 0
+                        else -> comboCount to 0
+                    }
+                }
             }
-        }
-    }.first
+        .first
 }
 
