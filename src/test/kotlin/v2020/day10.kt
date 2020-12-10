@@ -113,6 +113,19 @@ class Day10bTests {
             "3")))
     }
 
+    @Test fun testCustomInput1_withDelta2() {
+        assertEquals(9, day10b(listOf(
+            "1",
+            "2",
+            "4",
+            "7",
+            "8",
+            "10",
+            "11",
+            "14"
+        )))
+    }
+
     @Test fun testActualInput() {
         assertEquals(99214346656768L, day10b(readInputLines("day10", 2020)))
     }
