@@ -45,15 +45,15 @@ private fun iterateGrid(
                 nextGrid[y][x] = '.'
             } else {
                 val neighbours = getNeighbours(x, y)
-                if (grid[y][x] == 'L' && neighbours.none { it == '#' }) {
+                if (cell == 'L' && neighbours.none { it == '#' }) {
                     nextGrid[y][x] = '#'
                     hasChanged = true
-                } else if (grid[y][x] == '#' && neighbours.count { it == '#' } >= filledSeatsLimit){
+                } else if (cell == '#' && neighbours.count { it == '#' } >= filledSeatsLimit) {
                     nextGrid[y][x] = 'L'
                     hasChanged = true
                 }
                 else {
-                    nextGrid[y][x] = grid[y][x]
+                    nextGrid[y][x] = cell
                 }
             }
         }
