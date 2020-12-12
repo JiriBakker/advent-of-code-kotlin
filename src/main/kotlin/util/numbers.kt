@@ -33,6 +33,10 @@ fun greatestCommonDenominator(a: Long, b: Long): Long = if (b == 0L) a else grea
 fun leastCommonMultiple(a: Long, b: Long): Long = a / greatestCommonDenominator(a, b) * b
 fun leastCommonMultiple(nrs: Collection<Long>): Long = nrs.reduce(::leastCommonMultiple)
 
+fun Int.normalize(): Int {
+    return if (this == 0) 0 else this / abs(this)
+}
+
 fun Int.safeMod(mod: Int): Int {
     return this.toLong().safeMod(mod.toLong()).toInt()
 }
