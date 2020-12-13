@@ -7,8 +7,8 @@ fun day13a(input: List<String>): Long {
     val departTime = input[0].toLong()
     val busIntervals = input[1].replace("x,", "").split(",").map { it.toLong() }
 
-    fun computeTimeToWait(busNr: Long): Long {
-        return busNr - departTime % busNr
+    fun computeTimeToWait(busInterval: Long): Long {
+        return busInterval - departTime % busInterval
     }
 
     return busIntervals
