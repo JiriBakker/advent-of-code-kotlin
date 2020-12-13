@@ -33,8 +33,7 @@ private fun findAlignmentTime(busCycle1: BusCycle, busCycle2: BusCycle): BusCycl
 fun day13b(input: List<String>): Long {
     val buses = input[1]
         .split(",")
-        .mapIndexed { index, busNr -> if (busNr == "x") null else BusCycle(busNr.toLong(), index.toLong()) }
-        .filterNotNull()
+        .mapIndexedNotNull { index, busNr -> if (busNr == "x") null else BusCycle(busNr.toLong(), index.toLong()) }
 
     return buses.reduce { acc, bus -> findAlignmentTime(acc, bus) }.offset
 }
