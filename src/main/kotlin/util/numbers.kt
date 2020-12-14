@@ -75,3 +75,5 @@ fun Int.gte(other: Int): Boolean = this >= other
 fun Int.lt(other: Int): Boolean = this < other
 fun Int.lte(other: Int): Boolean = this <= other
 fun Int.notEquals(other: Int): Boolean = this != other
+
+fun BigInteger.asBinaryString(length: Int = 32): String = this.toString(2).padStart(length, '0')
