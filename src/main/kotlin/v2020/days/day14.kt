@@ -2,73 +2,78 @@ package v2020.days.day14
 
 import java.math.BigInteger
 
+private fun String.extractMask(): String =
+    this.substring(7)
 
+private fun String.extractMemIndex(): Long =
+    this.split("]").first().split("[").last().toLong()
+
+private fun String.extractDecimal(): Long =
+    this.split("= ").last().toLong()
+
+private fun BigInteger.filter(inputMask: BigInteger, filterMask: BigInteger): Long =
+    this.and(inputMask).or(filterMask).toLong()
 
 fun day14a(input: List<String>): Long {
-    var mask0 = BigInteger.ZERO
-    var mask1 = BigInteger.ZERO
-    val mem = mutableMapOf<Int, BigInteger>()
+    val mem = mutableMapOf<Long, Long>()
+
+    var inputMask = BigInteger.ZERO
+    var filterMask = BigInteger.ZERO
 
     input.forEach { line ->
         if (line.startsWith("mask")) {
-            val maskString = line.substring(7)
-            mask0 = BigInteger.ZERO
-            mask1 = BigInteger.ZERO
-            maskString.forEachIndexed { index, char ->
+            inputMask = BigInteger.ZERO
+            filterMask = BigInteger.ZERO
+            line.extractMask().forEachIndexed { index, char ->
                 when (char) {
-                    '0' -> mask0 = mask0.clearBit(35 - index)
-                    '1' -> mask0 = mask0.setBit(35 - index)
-                    'X' -> mask1 = mask1.setBit(35 - index)
+                    '0' -> filterMask = filterMask.clearBit(35 - index)
+                    '1' -> filterMask = filterMask.setBit(35 - index)
+                    'X' -> inputMask = inputMask.setBit(35 - index)
                 }
             }
         } else {
-            val memIndex = line.split("]").first().split("[").last().toInt()
-            val decimal = line.split("= ").last().toLong()
-            val bigInt = BigInteger.valueOf(decimal)
-            mem[memIndex] = bigInt.and(mask1).or(mask0)
+            val bigInt = line.extractDecimal().toBigInteger()
+            mem[line.extractMemIndex()] = bigInt.filter(inputMask, filterMask)
         }
     }
 
-    return mem.values.fold(BigInteger.ZERO) { acc, bigInt -> acc.plus(bigInt) }.toLong()
+    return mem.values.sum()
 }
 
 fun day14b(input: List<String>): Long {
-    var mask0 = BigInteger.ZERO
-    var floatingMasks = mutableListOf<BigInteger>()
     val mem = mutableMapOf<Long, Long>()
+
+    var inputMask = BigInteger.ZERO
+    var floatingMasks = mutableListOf<BigInteger>()
 
     input.forEach { line ->
         if (line.startsWith("mask")) {
-            val maskString = line.substring(7)
-            mask0 = BigInteger.ZERO
             var baseMask = BigInteger.ZERO
-            floatingMasks = mutableListOf()
+            inputMask = BigInteger.ZERO
 
-            maskString.forEachIndexed { index, char ->
+            line.extractMask().forEachIndexed { index, char ->
                 when (char) {
-                    '0' -> mask0 = mask0.setBit(35 - index)
+                    '0' -> inputMask = inputMask.setBit(35 - index)
                     '1' -> baseMask = baseMask.setBit(35 - index)
                 }
             }
 
-            floatingMasks.add(baseMask)
-            maskString.forEachIndexed { index, char ->
+            floatingMasks = mutableListOf(baseMask)
+            line.extractMask().forEachIndexed { index, char ->
                 if (char == 'X') {
                     floatingMasks.addAll(floatingMasks.map { mask -> mask.flipBit(35 - index) })
                 }
             }
         } else {
-            val memIndex = line.split("]").first().split("[").last().toLong()
-            val decimal = line.split("= ").last().toLong()
-            val bigInt = BigInteger.valueOf(memIndex)
+            val bigInt = line.extractMemIndex().toBigInteger()
+            val decimal = line.extractDecimal()
 
             floatingMasks.forEach { floatingMask ->
-                val newMemIndex = bigInt.and(mask0).or(floatingMask)
-                mem[newMemIndex.toLong()] = decimal
+                val memIndex = bigInt.filter(inputMask, floatingMask)
+                mem[memIndex] = decimal
             }
         }
     }
 
-    return mem.values.fold(0L) { acc, long -> acc.plus(long) }
+    return mem.values.sum()
 }
-
