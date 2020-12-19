@@ -2,12 +2,13 @@ package v2020.days.day19
 
 import util.combine
 
-private typealias Rules = Map<Int, Rule>
-private typealias LetterIndices = Pair<Int, Int>
-
 private data class Rule(val index: Int, val options: List<List<Int>>)
 
-private fun parseInput(input: List<String>): Triple<Rules, List<String>, LetterIndices> {
+private typealias Rules = Map<Int, Rule>
+private typealias Messages = List<String>
+private typealias LetterIndices = Pair<Int, Int>
+
+private fun parseInput(input: List<String>): Triple<Rules, Messages, LetterIndices> {
     var indexA = -1
     var indexB = -1
 
@@ -36,46 +37,38 @@ private fun parseInput(input: List<String>): Triple<Rules, List<String>, LetterI
     return Triple(rules, messages, indexA to indexB)
 }
 
-private fun match(message: String, rules: Rules, ruleIndex: Int, letterIndices: LetterIndices, startIndex: Int = 0): Pair<Boolean, Int> {
+private fun match(message: String, rules: Rules, ruleToMatch: Int, letterIndices: LetterIndices): Boolean {
     val (indexA, indexB) = letterIndices
 
-    val rule = rules[ruleIndex] ?: error("Unexpected rule index: $ruleIndex")
-    rule.options.forEach checkOption@{ option ->
-        var index = startIndex
-        option.forEach {
-            when (it) {
-                indexA -> {
-                    if (message[index] != 'a') {
-                        return@checkOption
+    fun matchRecur(rule: Rule, startIndex: Int = 0): Pair<Boolean, Int> {
+        rule.options.forEach checkOption@{ option ->
+            var index = startIndex
+            option.forEach {
+                when (it) {
+                    indexA -> if (message[index] != 'a') return@checkOption
+                    indexB -> if (message[index] != 'b') return@checkOption
+                    else -> {
+                        val (matched, newIndex) = matchRecur(rules[it]!!, index)
+                        if (!matched) return@checkOption
+                        index = newIndex - 1
                     }
-                    index++
                 }
-                indexB -> {
-                    if (message[index] != 'b') {
-                        return@checkOption
-                    }
-                    index++
-                }
-                else -> {
-                    val (matched, newIndex) = match(message, rules, it, letterIndices, index)
-                    if (!matched) {
-                        return@checkOption
-                    }
-                    index = newIndex
-                }
+                index++
             }
+            return true to index
         }
-        return true to index
+        return false to startIndex
     }
-    return false to startIndex
+
+    val (matched, index) = matchRecur(rules[ruleToMatch]!!)
+    return matched && index == message.length
 }
 
 fun day19a(input: List<String>): Int {
     val (rules, messages, letterIndices) = parseInput(input)
 
     return messages.count { message ->
-        val (matched, index) = match(message, rules, 0, letterIndices)
-        matched && index == message.length
+        match(message, rules, 0, letterIndices)
     }
 }
 
@@ -87,8 +80,8 @@ fun day19b(input: List<String>, rule31and42MatchLength: Int = 8): Int {
 
     listOf('a','b').combine(rule31and42MatchLength).forEach { chars ->
         val message = chars.joinToString("")
-        if (match(message, rules, 31, letterIndices).first) options31.add(message)
-        if (match(message, rules, 42, letterIndices).first) options42.add(message)
+        if (match(message, rules, 31, letterIndices)) options31.add(message)
+        if (match(message, rules, 42, letterIndices)) options42.add(message)
     }
 
     val matches = messages.filter { message ->
