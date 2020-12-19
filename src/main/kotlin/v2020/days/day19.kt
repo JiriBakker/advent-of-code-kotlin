@@ -2,43 +2,41 @@ package v2020.days.day19
 
 import util.combine
 
+private typealias Rules = Map<Int, Rule>
+private typealias LetterIndices = Pair<Int, Int>
+
 private data class Rule(val index: Int, val options: List<List<Int>>)
 
-private fun parseInput(input: List<String>): Triple<Map<Int, Rule>, List<String>, Pair<Int, Int>> {
+private fun parseInput(input: List<String>): Triple<Rules, List<String>, LetterIndices> {
     var indexA = -1
     var indexB = -1
-    val rules = input.takeWhile { it.isNotEmpty() }
-        .mapNotNull { line ->
-            val (id, rest) = line.split(": ")
-            when (rest) {
-                "\"a\"" -> {
-                    indexA = id.toInt()
-                    null
-                }
-                "\"b\"" -> {
-                    indexB = id.toInt()
-                    null
-                }
+
+    val rules = mutableMapOf<Int, Rule>()
+
+    input.takeWhile { it.isNotEmpty() }
+        .forEach { line ->
+            val (indexString, rest) = line.split(": ")
+            val index = indexString.toInt()
+
+            when (rest[1]) {
+                'a' -> indexA = index
+                'b' -> indexB = index
                 else -> {
                     val options = rest.split(" | ")
-
-                    id.toInt() to Rule(id.toInt(), options.map { option ->
-                        option.split(" ").map { it.toInt() }
-                    })
+                    rules[index] =
+                        Rule(index, options.map { option ->
+                            option.split(" ").map { it.toInt() }
+                        })
                 }
             }
-        }.toMap()
+        }
 
     val messages = input.dropWhile { it.isNotEmpty() }.drop(1)
 
     return Triple(rules, messages, indexA to indexB)
 }
 
-private fun match(message: String, rules: Map<Int, Rule>, ruleIndex: Int, letterIndices: Pair<Int, Int>, startIndex: Int = 0): Pair<Boolean, Int> {
-    if (startIndex !in message.indices) {
-        return false to startIndex
-    }
-
+private fun match(message: String, rules: Rules, ruleIndex: Int, letterIndices: LetterIndices, startIndex: Int = 0): Pair<Boolean, Int> {
     val (indexA, indexB) = letterIndices
 
     val rule = rules[ruleIndex] ?: error("Unexpected rule index: $ruleIndex")
