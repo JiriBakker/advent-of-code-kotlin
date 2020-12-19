@@ -41,7 +41,7 @@ private fun match(message: String, rules: Map<Int, Rule>, ruleIndex: Int, letter
 
     val (indexA, indexB) = letterIndices
 
-    val rule = rules[ruleIndex]!!
+    val rule = rules[ruleIndex] ?: error("Unexpected rule index: $ruleIndex")
     rule.options.forEach checkOption@{ option ->
         var index = startIndex
         option.forEach {
@@ -94,55 +94,13 @@ fun day19b(input: List<String>, rule31and42MatchLength: Int = 8): Int {
     }
 
     val matches = messages.filter { message ->
-        var remainder = message
-
-        var countRemove31s = 0
-        do {
-            val lastLength = remainder.length
-            options31.forEach { option ->
-                if (remainder.endsWith(option)) {
-                    remainder = remainder.dropLast(option.length)
-                    countRemove31s++
-                }
-            }
-        } while (remainder.length < lastLength)
-
-        var countRemove42s = 0
-
-        do {
-            val lastLength = remainder.length
-            options42.forEach { option ->
-                if (remainder.endsWith(option)) {
-                    remainder = remainder.dropLast(option.length)
-                    countRemove42s++
-                }
-            }
-        } while (remainder.length < lastLength)
-
-        remainder.isEmpty() && countRemove31s > 0 && countRemove42s > countRemove31s
-    }
-
-    return matches.count()
-}
-
-fun day19b2(input: List<String>, rule31and42MatchLength: Int = 8): Int {
-    val (rules, messages, letterIndices) = parseInput(input)
-
-    val options31 = mutableSetOf<String>()
-    val options42 = mutableSetOf<String>()
-
-    listOf('a','b').combine(rule31and42MatchLength).forEach { chars ->
-        val message = chars.joinToString("")
-        if (match(message, rules, 31, letterIndices).first) options31.add(message)
-        if (match(message, rules, 42, letterIndices).first) options42.add(message)
-    }
-
-    val matches = messages.filter { message ->
-        val chunks = message.chunked(5)
+        val chunks = message.chunked(rule31and42MatchLength)
         val remainder = chunks.dropWhile { chunk -> options42.contains(chunk) }
-        remainder.size <= chunks.size / 2
+        val remainder2 = remainder.dropWhile { chunk -> options31.contains(chunk) }
+
+        remainder.size < (chunks.size + 1) / 2
             && remainder.isNotEmpty()
-            && remainder.dropWhile { chunk -> options31.contains(chunk) }.isEmpty()
+            && remainder2.isEmpty()
     }
     return matches.count()
 }
