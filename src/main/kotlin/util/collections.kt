@@ -112,3 +112,63 @@ inline operator fun <T> List<T>.component7(): T {
 fun List<Int>.product(): Int {
     return this.fold(1, { total, it -> total * it })
 }
+
+fun <T> List<List<T>>.rotatedRight(): List<List<T>> {
+    val grid = this.map { it.toMutableList() }
+    val height = this.size
+    val width = this.first().size
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            grid[x][width - 1 - y] = this[y][x]
+        }
+    }
+    return grid
+}
+
+fun <T> List<List<T>>.rotatedLeft(): List<List<T>> {
+    val grid = this.map { it.toMutableList() }
+    val height = this.size
+    val width = this.first().size
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            grid[y][x] = this[x][height - 1 - y]
+        }
+    }
+    return grid
+}
+
+fun <T> List<List<T>>.rotatedTwice(): List<List<T>> {
+    val grid = this.map { it.toMutableList() }
+    val height = this.size
+    val width = this.first().size
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            grid[y][x] = this[height - 1 - y][width - 1 - x]
+        }
+    }
+    return grid
+}
+
+fun <T> List<List<T>>.flippedHorizontal(): List<List<T>> {
+    val grid = this.map { it.toMutableList() }
+    val height = this.size
+    val width = this.first().size
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            grid[y][x] = this[y][width - 1 - x]
+        }
+    }
+    return grid
+}
+
+fun <T> List<List<T>>.flipVertical(): List<List<T>> {
+    val grid = this.map { it.toMutableList() }
+    val height = this.size
+    val width = this.first().size
+    for (y in 0 until height) {
+        for (x in 0 until width) {
+            grid[y][x] = this[height - 1 - y][x]
+        }
+    }
+    return grid
+}

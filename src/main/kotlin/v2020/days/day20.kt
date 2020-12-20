@@ -1,5 +1,10 @@
 package v2020.days.day20
 
+import util.flippedHorizontal
+import util.flipVertical
+import util.rotatedLeft
+import util.rotatedRight
+import util.rotatedTwice
 import util.splitByDoubleNewLine
 import java.util.SortedMap
 
@@ -31,16 +36,18 @@ private class Tile private constructor(val id: Int, val grid: List<List<Char>>) 
             return chars.joinToString("")
         }
 
-        edges = mapOf(
+        val baseEdges = mutableMapOf(
             Edge.TOP to collect(0, 0, 1, 0),
             Edge.LEFT to collect(0, 9, 0, -1),
             Edge.RIGHT to collect(9, 0, 0, 1),
-            Edge.BOTTOM to collect(9, 9, -1, 0),
-            Edge.FLIPPED_TOP to collect(0, 0, 1, 0).reversed(),
-            Edge.FLIPPED_LEFT to collect(0, 9, 0, -1).reversed(),
-            Edge.FLIPPED_RIGHT to collect(9, 0, 0, 1).reversed(),
-            Edge.FLIPPED_BOTTOM to collect(9, 9, -1, 0).reversed()
+            Edge.BOTTOM to collect(9, 9, -1, 0)
         )
+        edges = baseEdges.plus(listOf(
+            Edge.FLIPPED_TOP to baseEdges[Edge.TOP]!!.reversed(),
+            Edge.FLIPPED_LEFT to baseEdges[Edge.LEFT]!!.reversed(),
+            Edge.FLIPPED_RIGHT to baseEdges[Edge.RIGHT]!!.reversed(),
+            Edge.FLIPPED_BOTTOM to baseEdges[Edge.BOTTOM]!!.reversed()
+        ))
     }
 
     fun findAlignment(other: Tile, edge: Edge): Edge? {
@@ -53,71 +60,47 @@ private class Tile private constructor(val id: Int, val grid: List<List<Char>>) 
         return when (alignment.first) {
             Edge.RIGHT -> {
                 when (alignment.second) {
-                    Edge.LEFT -> rotateRight(rotateRight(flipHorizontal(this)))
-                    Edge.BOTTOM -> rotateRight(flipHorizontal(this))
-                    Edge.RIGHT -> flipHorizontal(this)
-                    Edge.TOP -> flipHorizontal(rotateRight(this))
+                    Edge.LEFT -> this.flipVertical()
+                    Edge.BOTTOM -> this.flipHorizontal().rotateRight()
+                    Edge.RIGHT -> this.flipHorizontal()
+                    Edge.TOP -> this.flipHorizontal().rotateLeft()
                     Edge.FLIPPED_LEFT -> this
-                    Edge.FLIPPED_TOP -> rotateRight(rotateRight(rotateRight(this)))
-                    Edge.FLIPPED_RIGHT -> rotateRight(rotateRight(this))
-                    Edge.FLIPPED_BOTTOM -> rotateRight(this)
+                    Edge.FLIPPED_TOP -> this.rotateLeft()
+                    Edge.FLIPPED_RIGHT -> this.rotateTwice()
+                    Edge.FLIPPED_BOTTOM -> this.rotateRight()
                 }
             }
             Edge.BOTTOM -> {
                 when (alignment.second) {
-                    Edge.TOP -> flipHorizontal(this)
-                    Edge.LEFT -> flipHorizontal(rotateRight(this))
-                    Edge.BOTTOM -> flipHorizontal(rotateRight(rotateRight(this)))
-                    Edge.RIGHT -> rotateRight(flipHorizontal(this))
-                    Edge.FLIPPED_BOTTOM -> rotateRight(rotateRight(this))
-                    Edge.FLIPPED_LEFT -> rotateRight(this)
+                    Edge.TOP -> this.flipHorizontal()
+                    Edge.LEFT -> this.flipVertical().rotateRight()
+                    Edge.BOTTOM -> this.flipVertical()
+                    Edge.RIGHT -> this.flipVertical().rotateLeft()
+                    Edge.FLIPPED_BOTTOM -> this.rotateTwice()
+                    Edge.FLIPPED_LEFT -> this.rotateRight()
                     Edge.FLIPPED_TOP -> this
-                    Edge.FLIPPED_RIGHT -> rotateRight(rotateRight(rotateRight(this)))
+                    Edge.FLIPPED_RIGHT -> this.rotateLeft()
                 }
             }
             else -> error("Can only align on RIGHT and BOTTOM, not ${alignment.first}")
         }
     }
 
+    fun rotateRight(): Tile = Tile(this.id, this.grid.rotatedRight())
+    fun rotateLeft(): Tile = Tile(this.id, this.grid.rotatedLeft())
+    fun rotateTwice(): Tile = Tile(this.id, this.grid.rotatedTwice())
+    fun flipHorizontal(): Tile = Tile(this.id, this.grid.flippedHorizontal())
+    fun flipVertical(): Tile = Tile(this.id, this.grid.flipVertical())
+
     companion object {
         fun parse(lines: List<String>): Tile {
             val id = lines.first().replace("Tile ", "").replace(":", "").toInt()
             return Tile(id, lines.drop(1).map { it.toList() } )
         }
-
-        fun rotateRight(tile: Tile): Tile {
-            return Tile(tile.id, tile.grid.rotateRight())
-        }
-
-        fun flipHorizontal(tile: Tile): Tile {
-            return Tile(tile.id, tile.grid.flipHorizontal())
-        }
     }
 }
 
-private fun <T> List<List<T>>.rotateRight(): List<List<T>> {
-    val grid = this.map { it.toMutableList() }
-    val width = this.first().size
-    for (y in this.indices) {
-        for (x in 0 until width) {
-            grid[x][width - 1 - y] = this[y][x]
-        }
-    }
-    return grid
-}
-
-private fun <T> List<List<T>>.flipHorizontal(): List<List<T>> {
-    val grid = this.map { it.toMutableList() }
-    val width = this.first().size
-    for (y in this.indices) {
-        for (x in 0 until width) {
-            grid[y][x] = this[y][width - 1 - x]
-        }
-    }
-    return grid
-}
-
-private fun countNonMonsterHashes(image: List<List<Char>>): Int {
+private fun List<List<Char>>.countNonMonsterHashes(): Int {
     val monster = listOf(
         "                  # ",
         "#    ##    ##    ###",
@@ -152,28 +135,27 @@ private fun countNonMonsterHashes(image: List<List<Char>>): Int {
         return grid.countHashes()
     }
 
-    val hashCount = image.countHashes()
+    val baseHashCount = this.countHashes()
 
     return sequenceOf(
-        monsterSearch(image),
-        monsterSearch(image.rotateRight()),
-        monsterSearch(image.rotateRight().rotateRight()),
-        monsterSearch(image.rotateRight().rotateRight().rotateRight()),
-        monsterSearch(image.flipHorizontal()),
-        monsterSearch(image.flipHorizontal().rotateRight()),
-        monsterSearch(image.flipHorizontal().rotateRight().rotateRight()),
-        monsterSearch(image.flipHorizontal().rotateRight().rotateRight().rotateRight()),
+        monsterSearch(this),
+        monsterSearch(this.rotatedRight()),
+        monsterSearch(this.rotatedTwice()),
+        monsterSearch(this.rotatedLeft()),
+        monsterSearch(this.flippedHorizontal()),
+        monsterSearch(this.flippedHorizontal().rotatedRight()),
+        monsterSearch(this.flippedHorizontal().rotatedTwice()),
+        monsterSearch(this.flippedHorizontal().rotatedLeft()),
     )
-        .dropWhile { it == hashCount}
-        .first()
+        .first { it < baseHashCount}
 }
 
-private fun tilesToImage(imageTiles: List<List<Tile>>): List<List<Char>> {
+private fun List<List<Tile>>.combineToImage(): List<List<Char>> {
     val image = mutableListOf<MutableList<Char>>()
-    for (y1 in imageTiles.indices) {
+    for (y1 in this.indices) {
         for (y2 in 1 until 9) {
             image.add(mutableListOf())
-            for (tile in imageTiles[y1]) {
+            for (tile in this[y1]) {
                 for (x2 in 1 until 9) {
                     image[y1 * 8 + (y2 - 1)].add(tile.grid[y2][x2])
                 }
@@ -204,7 +186,6 @@ fun day20a(input: List<String>): Long {
     val corners = neighbours.filter { it.value.size == 2 }
 
     return corners.keys.fold(1L) { acc, entry -> acc * entry }
-
 }
 
 fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {
@@ -219,48 +200,45 @@ fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {
     val topLeftTile = tiles[topLeftCorner.key]!!
 
     val imageTiles = mutableListOf(mutableListOf(topLeftTile))
+    repeat(imageWidthInTiles - 1) { imageTiles.add(mutableListOf()) }
 
-    fun findMatchingTile(prevTile: Tile, edge: Edge): Tile {
+    fun Tile.findMatchingTile(edge: Edge): Tile {
         val (nextTile, alignment) =
-            neighbours[prevTile.id]!!
+            neighbours[this.id]!!
                 .map {
                     val otherTile = tiles[it.value]!!
-                    otherTile to prevTile.findAlignment(otherTile, edge)
+                    otherTile to this.findAlignment(otherTile, edge)
                 }
                 .single { it.second != null }
 
         return nextTile.align(edge to alignment!!)
     }
 
-    fun saveTile(tile: Tile, y: Int) {
-        imageTiles[y].add(tile)
-        tiles[tile.id] = tile
+    fun Tile.commitToRow(y: Int) {
+        imageTiles[y].add(this)
+        tiles[this.id] = this
     }
 
     fun fillRow(left: Tile, y: Int) {
         var curTile = left
         (1 until imageWidthInTiles).forEach { x ->
-            curTile = findMatchingTile(curTile, Edge.RIGHT)
-            saveTile(curTile, y)
+            curTile = curTile.findMatchingTile(Edge.RIGHT)
+            curTile.commitToRow(y)
         }
     }
 
     fun fillLeft(y: Int): Tile {
         val above = imageTiles[y - 1][0]
-        val nextTile = findMatchingTile(above, Edge.BOTTOM)
-        saveTile(nextTile, y)
+        val nextTile = above.findMatchingTile(Edge.BOTTOM)
+        nextTile.commitToRow(y)
         return nextTile
     }
 
     fillRow(topLeftTile, 0)
 
     (1 until imageWidthInTiles).forEach { y ->
-        imageTiles.add(mutableListOf())
-        val left = fillLeft(y)
-        fillRow(left, y)
+        fillRow(fillLeft(y), y)
     }
 
-    val image = tilesToImage(imageTiles)
-
-    return countNonMonsterHashes(image)
+    return imageTiles.combineToImage().countNonMonsterHashes()
 }
