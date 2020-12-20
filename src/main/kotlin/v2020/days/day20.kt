@@ -1,6 +1,7 @@
 package v2020.days.day20
 
 import util.splitByDoubleNewLine
+import java.util.SortedMap
 
 private enum class Edge {
     TOP,
@@ -14,7 +15,6 @@ private enum class Edge {
 }
 
 private class Tile private constructor(val id: Int, val grid: List<List<Char>>) {
-
     var edges: Map<Edge, String>
         private set
 
@@ -43,16 +43,11 @@ private class Tile private constructor(val id: Int, val grid: List<List<Char>>) 
         )
     }
 
-    fun canAlign(other: Tile): Boolean {
-        return this.edges.entries.any { (edge, chars) -> other.edges.entries.any { (otherEdge, otherChars) -> chars == otherChars } }
-    }
-
     fun findAlignment(other: Tile, edge: Edge): Edge? {
         return other.edges.entries.firstOrNull { (_, otherChars) -> this.edges[edge] == otherChars }?.key
     }
 
-    override fun toString(): String =
-        "Tile $id"
+    override fun toString(): String = "Tile $id"
 
     fun align(alignment: Pair<Edge, Edge>): Tile {
         return when (alignment.first) {
@@ -103,30 +98,23 @@ private class Tile private constructor(val id: Int, val grid: List<List<Char>>) 
 private fun <T> List<List<T>>.rotateRight(): List<List<T>> {
     val grid = this.map { it.toMutableList() }
     val width = this.first().size
-    val height = this.size
-
-    for (y in 0 until height) {
+    for (y in this.indices) {
         for (x in 0 until width) {
             grid[x][width - 1 - y] = this[y][x]
         }
     }
-
-
     return grid
 }
 
 private fun <T> List<List<T>>.flipHorizontal(): List<List<T>> {
+    val grid = this.map { it.toMutableList() }
     val width = this.first().size
-    val height = this.size
-
-    val dest = mutableListOf<MutableList<T>>()
-    for (y in 0 until height) {
-        dest.add(mutableListOf())
+    for (y in this.indices) {
         for (x in 0 until width) {
-            dest[y].add(this[y][width - 1 - x])
+            grid[y][x] = this[y][width - 1 - x]
         }
     }
-    return dest
+    return grid
 }
 
 private fun countNonMonsterHashes(image: List<List<Char>>): Int {
@@ -143,8 +131,8 @@ private fun countNonMonsterHashes(image: List<List<Char>>): Int {
         val grid = startGrid.map { it.toMutableList() }
         for (y in 0 until grid.size - monster.size) {
             (0 until grid[y].size - monster[0].length).forEach match@{ x ->
-                for (my in 0 until monster.size) {
-                    for (mx in 0 until monster[my].length) {
+                for (my in monster.indices) {
+                    for (mx in monster[my].indices) {
                         if (monster[my][mx] == '#') {
                             if (grid[y + my][x + mx] != '#') {
                                 return@match
@@ -152,9 +140,8 @@ private fun countNonMonsterHashes(image: List<List<Char>>): Int {
                         }
                     }
                 }
-
-                for (my in 0 until monster.size) {
-                    for (mx in 0 until monster[my].length) {
+                for (my in monster.indices) {
+                    for (mx in monster[my].indices) {
                         if (monster[my][mx] == '#') {
                             grid[y + my][x + mx] = '.'
                         }
@@ -196,17 +183,27 @@ private fun tilesToImage(imageTiles: List<List<Tile>>): List<List<Char>> {
     return image
 }
 
+private fun constructNeighbourMap(tiles: List<Tile>): SortedMap<Int, Map<Edge, Int>> {
+    return tiles.map { tile ->
+        tile.id to tiles.mapNotNull { other ->
+            listOf(Edge.TOP, Edge.RIGHT, Edge.BOTTOM, Edge.LEFT)
+                .map { edge -> edge to tile.findAlignment(other, edge) }
+                .singleOrNull { it.second != null }
+                ?.let { other to it.first }
+        }
+            .map { it.second to it.first.id }
+            .toMap()
+    }.toMap().toSortedMap()
+}
 
 fun day20a(input: List<String>): Long {
     val tiles = input.splitByDoubleNewLine().map(Tile::parse)
 
-    val alignCounts = tiles.map { tile ->
-        tile to tiles.filter { other -> other != tile && other.canAlign(tile) }
-    }.toMap()
+    val neighbours = constructNeighbourMap(tiles)
 
-    val corners = alignCounts.filter { it.value.size == 2 }
+    val corners = neighbours.filter { it.value.size == 2 }
 
-    return corners.entries.fold(1L) { acc, entry -> acc * entry.key.id.toLong() }
+    return corners.keys.fold(1L) { acc, entry -> acc * entry }
 
 }
 
@@ -216,21 +213,7 @@ fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {
         tile.id to tile
     }.toMap().toMutableMap()
 
-    val neighbours: Map<Int, Map<Edge, Int>> = tiles.values.map { tile ->
-        tile.id to tiles.values.mapNotNull { other ->
-            if (other != tile) {
-                other to listOf(Edge.TOP, Edge.RIGHT, Edge.BOTTOM, Edge.LEFT)
-                    .map { edge -> edge to tile.findAlignment(other, edge) }
-                    .singleOrNull { it.second != null }
-                    ?.let { it.first }
-            } else {
-                null
-            }
-        }
-            .filter { it.second != null }
-            .map { it.second!! to it.first.id }
-            .toMap()
-    }.toMap().toSortedMap()
+    val neighbours = constructNeighbourMap(tiles.values.toList())
 
     val topLeftCorner = neighbours.entries.single { it.value.size == 2 && it.value.keys.contains(Edge.BOTTOM) && it.value.keys.contains(Edge.RIGHT) }
     val topLeftTile = tiles[topLeftCorner.key]!!
@@ -281,4 +264,3 @@ fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {
 
     return countNonMonsterHashes(image)
 }
-
