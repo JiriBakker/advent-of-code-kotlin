@@ -232,63 +232,49 @@ fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {
             .toMap()
     }.toMap().toSortedMap()
 
-    val corners = neighbours.filter { it.value.size == 2 }
+    val topLeftCorner = neighbours.entries.single { it.value.size == 2 && it.value.keys.contains(Edge.BOTTOM) && it.value.keys.contains(Edge.RIGHT) }
+    val topLeftTile = tiles[topLeftCorner.key]!!
 
-    val imageTiles = mutableListOf<MutableList<Tile>>(mutableListOf())
-    val used = mutableSetOf<Int>()
+    val imageTiles = mutableListOf(mutableListOf(topLeftTile))
 
-    val topLeft = corners.entries.single { it.value.keys.contains(Edge.BOTTOM) && it.value.keys.contains(Edge.RIGHT) }
+    fun findMatchingTile(prevTile: Tile, edge: Edge): Tile {
+        val (nextTile, alignment) =
+            neighbours[prevTile.id]!!
+                .map {
+                    val otherTile = tiles[it.value]!!
+                    otherTile to prevTile.findAlignment(otherTile, edge)
+                }
+                .single { it.second != null }
 
-    imageTiles[0].add(tiles[topLeft.key]!!)
-    used.add(topLeft.key)
-
-    var curTileId = topLeft.key
-    (1 until imageWidthInTiles).forEach { x ->
-        val curTile = tiles[curTileId]!!
-        val alignments = neighbours[curTileId]!!.filter { !used.contains(it.value) }.map {
-            val otherTile = tiles[it.value]!!
-            otherTile to curTile.findAlignment(otherTile, Edge.RIGHT)
-        }
-        val (nextTileId, alignment) = alignments.single { it.second != null }.let { it.first.id to it.second!! }
-
-        val nextTile = tiles[nextTileId]!!
-        val alignedNextTile = nextTile.align(Edge.RIGHT to alignment)
-        imageTiles[0].add(alignedNextTile)
-        used.add(alignedNextTile.id)
-        tiles[alignedNextTile.id] = alignedNextTile
-        curTileId = alignedNextTile.id
+        return nextTile.align(edge to alignment!!)
     }
+
+    fun saveTile(tile: Tile, y: Int) {
+        imageTiles[y].add(tile)
+        tiles[tile.id] = tile
+    }
+
+    fun fillRow(left: Tile, y: Int) {
+        var curTile = left
+        (1 until imageWidthInTiles).forEach { x ->
+            curTile = findMatchingTile(curTile, Edge.RIGHT)
+            saveTile(curTile, y)
+        }
+    }
+
+    fun fillLeft(y: Int): Tile {
+        val above = imageTiles[y - 1][0]
+        val nextTile = findMatchingTile(above, Edge.BOTTOM)
+        saveTile(nextTile, y)
+        return nextTile
+    }
+
+    fillRow(topLeftTile, 0)
 
     (1 until imageWidthInTiles).forEach { y ->
         imageTiles.add(mutableListOf())
-        val leftAbove = imageTiles[y - 1][0]
-        val (nextTileId, alignment) = neighbours[leftAbove.id]!!.filter { !used.contains(it.value) }.map {
-            val otherTile = tiles[it.value]!!
-            otherTile.id to leftAbove.findAlignment(otherTile, Edge.BOTTOM)
-        }.single { it.second != null }
-
-        val nextTile = tiles[nextTileId]!!
-        val alignedNextTile = nextTile.align(Edge.BOTTOM to alignment!!)
-        imageTiles[y].add(alignedNextTile)
-        used.add(alignedNextTile.id)
-        tiles[alignedNextTile.id] = alignedNextTile
-        curTileId = alignedNextTile.id
-
-        (1 until imageWidthInTiles).forEach { x ->
-            val curTile = tiles[curTileId]!!
-            val (nextTileId, alignment) = neighbours[curTileId]!!.filter { !used.contains(it.value) }.map {
-                val otherTile = tiles[it.value]!!
-                otherTile.id to curTile.findAlignment(otherTile, Edge.RIGHT)
-            }.single { it.second != null }
-
-            val nextTile = tiles[nextTileId]!!
-            val alignedNextTile = nextTile.align(Edge.RIGHT to alignment!!)
-            imageTiles[y].add(alignedNextTile)
-            used.add(alignedNextTile.id)
-            tiles[alignedNextTile.id] = alignedNextTile
-            curTileId = alignedNextTile.id
-        }
-
+        val left = fillLeft(y)
+        fillRow(left, y)
     }
 
     val image = tilesToImage(imageTiles)
