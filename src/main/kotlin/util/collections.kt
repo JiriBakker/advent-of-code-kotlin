@@ -172,3 +172,7 @@ fun <T> List<List<T>>.flipVertical(): List<List<T>> {
     }
     return grid
 }
+
+fun <T> MutableMap<T, Int>.inc(key: T) {
+    this[key] = this.getOrDefault(key, 0) + 1
+}
