@@ -1,5 +1,6 @@
 package v2020.days.day21
 
+import util.findKeyForMaxValue
 import util.inc
 
 private typealias Ingredient = String
@@ -47,20 +48,6 @@ private fun deduceAllergens(input: List<String>): Pair<IngredientOccurrences, Ve
     }
 
     return ingredientOccurrences to verifiedAllergens
-}
-
-private fun <T> Map<T, Int>.findKeyForMaxValue(): T? {
-    var maxValue = Int.MIN_VALUE
-    var maxKeys = mutableListOf<T>()
-    this.entries.forEach { (key, value) ->
-        if (value > maxValue) {
-            maxValue = value
-            maxKeys = mutableListOf(key)
-        } else if (value == maxValue) {
-            maxKeys.add(key)
-        }
-    }
-    return maxKeys.singleOrNull()
 }
 
 fun day21a(input: List<String>): Int {

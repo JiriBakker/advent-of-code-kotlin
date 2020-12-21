@@ -176,3 +176,17 @@ fun <T> List<List<T>>.flipVertical(): List<List<T>> {
 fun <T> MutableMap<T, Int>.inc(key: T) {
     this[key] = this.getOrDefault(key, 0) + 1
 }
+
+fun <T> Map<T, Int>.findKeyForMaxValue(): T? {
+    var maxValue = Int.MIN_VALUE
+    var maxKeys = mutableListOf<T>()
+    this.entries.forEach { (key, value) ->
+        if (value > maxValue) {
+            maxValue = value
+            maxKeys = mutableListOf(key)
+        } else if (value == maxValue) {
+            maxKeys.add(key)
+        }
+    }
+    return maxKeys.singleOrNull()
+}
