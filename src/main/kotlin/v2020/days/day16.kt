@@ -1,5 +1,7 @@
 package v2020.days.day16
 
+import util.product
+
 private typealias Ticket = List<Int>
 
 private class FieldRange(private val min1: Int, private val max1: Int, private val min2: Int, private val max2: Int) {
@@ -76,6 +78,7 @@ fun day16b(input: List<String>): Long {
     return translatedFields
         .filterKeys { it.startsWith("departure") }
         .values
-        .fold(1L) { acc, column -> acc * myTicket[column] }
+        .map { myTicket[it].toLong() }
+        .product()
 }
 

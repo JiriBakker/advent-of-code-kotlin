@@ -2,7 +2,6 @@ package util
 
 import java.util.ArrayDeque
 import java.util.PriorityQueue
-import java.util.Stack
 
 inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
     var sum = 0L
@@ -109,41 +108,49 @@ inline operator fun <T> List<T>.component7(): T {
     return get(6)
 }
 
-fun List<Int>.product(): Int {
+fun Collection<Int>.product(): Int {
     return this.fold(1, { total, it -> total * it })
 }
 
+fun Collection<Long>.product(): Long {
+    return this.fold(1L, { total, it -> total * it })
+}
+
 fun <T> List<List<T>>.rotatedRight(): List<List<T>> {
-    val grid = this.map { it.toMutableList() }
     val height = this.size
     val width = this.first().size
-    for (y in 0 until height) {
-        for (x in 0 until width) {
-            grid[x][width - 1 - y] = this[y][x]
-        }
+    return this.rotateApply(height, width) { x, y ->
+        y to (height - 1 - x)
     }
-    return grid
 }
 
 fun <T> List<List<T>>.rotatedLeft(): List<List<T>> {
-    val grid = this.map { it.toMutableList() }
     val height = this.size
     val width = this.first().size
-    for (y in 0 until height) {
-        for (x in 0 until width) {
-            grid[y][x] = this[x][height - 1 - y]
-        }
+    return this.rotateApply(height, width) { x, y ->
+        (width - 1 - y) to x
     }
-    return grid
 }
 
 fun <T> List<List<T>>.rotatedTwice(): List<List<T>> {
-    val grid = this.map { it.toMutableList() }
     val height = this.size
     val width = this.first().size
+    return this.rotateApply(width, height) { x, y ->
+        (width - 1 - x) to (height - 1 - y)
+    }
+}
+
+private fun <T> List<List<T>>.rotateApply(
+    width: Int,
+    height: Int,
+    indexConverter: (Int, Int) -> Pair<Int, Int>
+): List<List<T>> {
+    val grid = mutableListOf<MutableList<T>>()
     for (y in 0 until height) {
+        grid.add(mutableListOf())
         for (x in 0 until width) {
-            grid[y][x] = this[height - 1 - y][width - 1 - x]
+            val (sourceX, sourceY) = indexConverter(x, y)
+            grid[y].add(this[sourceY][sourceX])
         }
     }
     return grid

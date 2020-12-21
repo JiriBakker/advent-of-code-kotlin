@@ -2,6 +2,7 @@ package v2020.days.day20
 
 import util.flippedHorizontal
 import util.flipVertical
+import util.product
 import util.rotatedLeft
 import util.rotatedRight
 import util.rotatedTwice
@@ -19,7 +20,7 @@ private enum class Edge {
     FLIPPED_LEFT,
 }
 
-private class Tile private constructor(val id: Int, val grid: List<List<Char>>) {
+private class Tile private constructor(val id: Long, val grid: List<List<Char>>) {
     var edges: Map<Edge, String>
         private set
 
@@ -94,26 +95,26 @@ private class Tile private constructor(val id: Int, val grid: List<List<Char>>) 
 
     companion object {
         fun parse(lines: List<String>): Tile {
-            val id = lines.first().replace("Tile ", "").replace(":", "").toInt()
+            val id = lines.first().replace("Tile ", "").replace(":", "").toLong()
             return Tile(id, lines.drop(1).map { it.toList() } )
         }
     }
 }
 
 private fun List<List<Char>>.countNonMonsterHashes(): Int {
-    val monster = listOf(
-        "                  # ",
-        "#    ##    ##    ###",
-        " #  #  #  #  #  #   "
+    val baseMonster: List<List<Char>> = listOf(
+        "                  # ".toList(),
+        "#    ##    ##    ###".toList(),
+        " #  #  #  #  #  #   ".toList()
     )
 
     fun List<List<Char>>.countHashes(): Int =
         this.sumBy { row -> row.count { it == '#' } }
 
-    fun monsterSearch(startGrid: List<List<Char>>): Int {
-        val grid = startGrid.map { it.toMutableList() }
+    fun monsterSearch(monster: List<List<Char>>): Int {
+        val grid = this.map { it.toMutableList() }
         for (y in 0 until grid.size - monster.size) {
-            (0 until grid[y].size - monster[0].length).forEach match@{ x ->
+            (0 until grid[y].size - monster[0].size).forEach match@{ x ->
                 for (my in monster.indices) {
                     for (mx in monster[my].indices) {
                         if (monster[my][mx] == '#') {
@@ -138,14 +139,14 @@ private fun List<List<Char>>.countNonMonsterHashes(): Int {
     val baseHashCount = this.countHashes()
 
     return sequenceOf(
-        monsterSearch(this),
-        monsterSearch(this.rotatedRight()),
-        monsterSearch(this.rotatedTwice()),
-        monsterSearch(this.rotatedLeft()),
-        monsterSearch(this.flippedHorizontal()),
-        monsterSearch(this.flippedHorizontal().rotatedRight()),
-        monsterSearch(this.flippedHorizontal().rotatedTwice()),
-        monsterSearch(this.flippedHorizontal().rotatedLeft()),
+        monsterSearch(baseMonster),
+        monsterSearch(baseMonster.rotatedRight()),
+        monsterSearch(baseMonster.rotatedTwice()),
+        monsterSearch(baseMonster.rotatedLeft()),
+        monsterSearch(baseMonster.flippedHorizontal()),
+        monsterSearch(baseMonster.flippedHorizontal().rotatedRight()),
+        monsterSearch(baseMonster.flippedHorizontal().rotatedTwice()),
+        monsterSearch(baseMonster.flippedHorizontal().rotatedLeft())
     )
         .first { it < baseHashCount}
 }
@@ -165,7 +166,7 @@ private fun List<List<Tile>>.combineToImage(): List<List<Char>> {
     return image
 }
 
-private fun constructNeighbourMap(tiles: List<Tile>): SortedMap<Int, Map<Edge, Int>> {
+private fun constructNeighbourMap(tiles: List<Tile>): SortedMap<Long, Map<Edge, Long>> {
     return tiles.map { tile ->
         tile.id to tiles.mapNotNull { other ->
             listOf(Edge.TOP, Edge.RIGHT, Edge.BOTTOM, Edge.LEFT)
@@ -185,7 +186,7 @@ fun day20a(input: List<String>): Long {
 
     val corners = neighbours.filter { it.value.size == 2 }
 
-    return corners.keys.fold(1L) { acc, entry -> acc * entry }
+    return corners.keys.product()
 }
 
 fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {

@@ -1,5 +1,7 @@
 package v2020.days.day18
 
+import util.product
+
 private fun compute(expression: String, startIndex: Int = 0): Pair<Int, Long> {
     var curOperator: (Long, Long) -> Long = Long::plus
 
@@ -81,8 +83,7 @@ private fun compute2(expression: String, startIndex: Int = 0): Pair<Int, Long> {
     sum += popLastNr()
     if (sum > 0) sums.add(sum)
 
-    val total = sums.fold(1L) { acc, it -> acc * it }
-    return index to total
+    return index to sums.product()
 }
 
 private typealias ComputeFunc = (String) -> Pair<Int, Long>

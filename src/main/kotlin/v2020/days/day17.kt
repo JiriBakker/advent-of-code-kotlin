@@ -236,28 +236,18 @@ private class Space4D(input: List<String>) {
     }
 }
 
-
 fun day17a(input: List<String>): Int {
     val space = Space3D(input)
-    space.print()
 
-    (1..6).forEach {
-        space.iterate()
-        space.print()
-    }
+    repeat(6) { space.iterate() }
 
     return space.countActive()
 }
 
 fun day17b(input: List<String>): Int {
     val space = Space4D(input)
-    // space.print()
 
-    (1..6).forEach {
-        space.iterate()
-        // space.print()
-    }
+    repeat(6) { space.iterate() }
 
     return space.countActive()
 }
-

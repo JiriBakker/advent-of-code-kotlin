@@ -70,38 +70,38 @@ fun main() {
     time { print("Day04b: " + day04b(readInputLines("day04", 2020))) }
     time { print("Day05a: " + day05a(readInputLines("day05", 2020))) }
     time { print("Day05b: " + day05b(readInputLines("day05", 2020))) }
-    // time { print("Day06a: " + day06a(readInputLines("day06", 2020))) }
-    // time { print("Day06b: " + day06b(readInputLines("day06", 2020))) }
-    // time { print("Day07a: " + day07a(readInputLines("day07", 2020))) }
-    // time { print("Day07b: " + day07b(readInputLines("day07", 2020))) }
-    // time { print("Day08a: " + day08a(readInputLines("day08", 2020))) }
-    // time { print("Day08b: " + day08b(readInputLines("day08", 2020))) }
-    // time { print("Day09a: " + day09a(readInputLines("day09", 2020))) }
-    // time { print("Day09b: " + day09b(readInputLines("day09", 2020))) }
-    // time { print("Day10a: " + day10a(readInputLines("day10", 2020))) }
-    // time { print("Day10b: " + day10b(readInputLines("day10", 2020))) }
-    // time { print("Day11a: " + day11a(readInputLines("day11", 2020))) }
-    // time { print("Day11b: " + day11b(readInputLines("day11", 2020))) }
-    // time { print("Day12a: " + day12a(readInputLines("day12", 2020))) }
-    // time { print("Day12b: " + day12b(readInputLines("day12", 2020))) }
-    // time { print("Day13a: " + day13a(readInputLines("day13", 2020))) }
-    // time { print("Day13b: " + day13b(readInputLines("day13", 2020))) }
-    // time { print("Day14a: " + day14a(readInputLines("day14", 2020))) }
-    // time { print("Day14b: " + day14b(readInputLines("day14", 2020))) }
-    // time { print("Day15a: " + day15a(readInputLines("day15", 2020))) }
-    // time { print("Day15b: " + day15b(readInputLines("day15", 2020))) }
-    // time { print("Day16a: " + day16a(readInputLines("day16", 2020))) }
-    // time { print("Day16b: " + day16b(readInputLines("day16", 2020))) }
-    // time { print("Day17a: " + day17a(readInputLines("day17", 2020))) }
-    // time { print("Day17b: " + day17b(readInputLines("day17", 2020))) }
-    // time { print("Day18a: " + day18a(readInputLines("day18", 2020))) }
-    // time { print("Day18b: " + day18b(readInputLines("day18", 2020))) }
-    // time { print("Day19a: " + day19a(readInputLines("day19", 2020))) }
-    // time { print("Day19b: " + day19b(readInputLines("day19", 2020))) }
-    // time { print("Day20a: " + day20a(readInputLines("day20", 2020))) }
-    // time { print("Day20b: " + day20b(readInputLines("day20", 2020))) }
-    // time { print("Day21a: " + day21a(readInputLines("day21", 2020))) }
-    // time { print("Day21b: " + day21b(readInputLines("day21", 2020))) }
+    time { print("Day06a: " + day06a(readInputLines("day06", 2020))) }
+    time { print("Day06b: " + day06b(readInputLines("day06", 2020))) }
+    time { print("Day07a: " + day07a(readInputLines("day07", 2020))) }
+    time { print("Day07b: " + day07b(readInputLines("day07", 2020))) }
+    time { print("Day08a: " + day08a(readInputLines("day08", 2020))) }
+    time { print("Day08b: " + day08b(readInputLines("day08", 2020))) }
+    time { print("Day09a: " + day09a(readInputLines("day09", 2020))) }
+    time { print("Day09b: " + day09b(readInputLines("day09", 2020))) }
+    time { print("Day10a: " + day10a(readInputLines("day10", 2020))) }
+    time { print("Day10b: " + day10b(readInputLines("day10", 2020))) }
+    time { print("Day11a: " + day11a(readInputLines("day11", 2020))) }
+    time { print("Day11b: " + day11b(readInputLines("day11", 2020))) }
+    time { print("Day12a: " + day12a(readInputLines("day12", 2020))) }
+    time { print("Day12b: " + day12b(readInputLines("day12", 2020))) }
+    time { print("Day13a: " + day13a(readInputLines("day13", 2020))) }
+    time { print("Day13b: " + day13b(readInputLines("day13", 2020))) }
+    time { print("Day14a: " + day14a(readInputLines("day14", 2020))) }
+    time { print("Day14b: " + day14b(readInputLines("day14", 2020))) }
+    time { print("Day15a: " + day15a(readInputLines("day15", 2020))) }
+    time { print("Day15b: " + day15b(readInputLines("day15", 2020))) }
+    time { print("Day16a: " + day16a(readInputLines("day16", 2020))) }
+    time { print("Day16b: " + day16b(readInputLines("day16", 2020))) }
+    time { print("Day17a: " + day17a(readInputLines("day17", 2020))) }
+    time { print("Day17b: " + day17b(readInputLines("day17", 2020))) }
+    time { print("Day18a: " + day18a(readInputLines("day18", 2020))) }
+    time { print("Day18b: " + day18b(readInputLines("day18", 2020))) }
+    time { print("Day19a: " + day19a(readInputLines("day19", 2020))) }
+    time { print("Day19b: " + day19b(readInputLines("day19", 2020))) }
+    time { print("Day20a: " + day20a(readInputLines("day20", 2020))) }
+    time { print("Day20b: " + day20b(readInputLines("day20", 2020))) }
+    time { print("Day21a: " + day21a(readInputLines("day21", 2020))) }
+    time { print("Day21b: " + day21b(readInputLines("day21", 2020))) }
     // time { print("Day22a: " + day22a(readInputLines("day22", 2020))) }
     // time { print("Day22b: " + day22b(readInputLines("day22", 2020))) }
     // time { print("Day23a: " + day23a(readInputLines("day23", 2020))) }
