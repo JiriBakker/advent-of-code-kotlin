@@ -2,16 +2,25 @@ package v2020.days.day22
 
 import util.splitByDoubleNewLine
 
-private class PlayerCards(cards: Collection<Int>) {
+private fun parseInput(input: List<String>): Pair<Player, Player> {
+    val (player1Lines, player2Lines) = input.splitByDoubleNewLine()
+
+    val player1Cards = player1Lines.drop(1).map(String::toInt).let { Player(1, it) }
+    val player2Cards = player2Lines.drop(1).map(String::toInt).let { Player(2, it) }
+
+    return player1Cards to player2Cards
+}
+
+private class Player(val nr: Int, cards: Collection<Int>) {
     private val cards = ArrayDeque(cards)
 
     val size get() = cards.size
 
     fun hasNoCards() = cards.isEmpty()
 
-    val topCard get() = cards.removeFirst()
+    fun popCard() = cards.removeFirst()
 
-    fun grabCards(card1: Int, card2: Int) {
+    fun addCards(card1: Int, card2: Int) {
         cards.addLast(card1)
         cards.addLast(card2)
     }
@@ -19,85 +28,79 @@ private class PlayerCards(cards: Collection<Int>) {
     fun computeScore(): Long =
         cards.foldIndexed(0L) { index, acc, it ->  acc + (cards.size - index) * it }
 
-    fun copy(nrOfCards: Int): PlayerCards = PlayerCards(cards.take(nrOfCards))
+    fun copy(nrOfCards: Int): Player = Player(nr, cards.take(nrOfCards))
 
     val hash get() = cards.joinToString("_")
 }
 
 fun day22a(input: List<String>): Long {
-    val (player1, player2) = input.splitByDoubleNewLine()
-
-    val player1Cards = player1.drop(1).map(String::toInt).let { PlayerCards(it) }
-    val player2Cards = player2.drop(1).map(String::toInt).let { PlayerCards(it) }
+    val (player1, player2) = parseInput(input)
 
     while (true) {
-        if (player1Cards.hasNoCards()) {
-            return player2Cards.computeScore()
-        } else if (player2Cards.hasNoCards()) {
-            return player1Cards.computeScore()
+        if (player1.hasNoCards()) {
+            return player2.computeScore()
+        } else if (player2.hasNoCards()) {
+            return player1.computeScore()
         }
 
-        val player1Card = player1Cards.topCard
-        val player2Card = player2Cards.topCard
+        val player1Card = player1.popCard()
+        val player2Card = player2.popCard()
 
         if (player1Card > player2Card) {
-            player1Cards.grabCards(player1Card, player2Card)
+            player1.addCards(player1Card, player2Card)
         } else {
-            player2Cards.grabCards(player2Card, player1Card)
+            player2.addCards(player2Card, player1Card)
         }
     }
 }
 
-private fun findWinner(player1Cards: PlayerCards, player2Cards: PlayerCards): Pair<Int, PlayerCards> {
+private fun playGame(player1: Player, player2: Player): Player {
     val seen = mutableSetOf<String>()
     fun seenStateBefore(): Boolean {
-        val hash = player1Cards.hash + "___" + player2Cards.hash
+        val hash = player1.hash + "___" + player2.hash
         return !seen.add(hash)
     }
 
     while (true) {
         if (seenStateBefore()) {
-            return 1 to player1Cards
+            return player1
         }
 
-        if (player1Cards.hasNoCards()) {
-            return 2 to player2Cards
-        } else if (player2Cards.hasNoCards()) {
-            return 1 to player1Cards
+        if (player1.hasNoCards()) {
+            return player2
+        } else if (player2.hasNoCards()) {
+            return player1
         }
 
-        val player1Card = player1Cards.topCard
-        val player2Card = player2Cards.topCard
+        val player1Card = player1.popCard()
+        val player2Card = player2.popCard()
 
-        if (player1Card > player1Cards.size || player2Card > player2Cards.size) {
+        if (player1Card > player1.size || player2Card > player2.size) {
             if (player1Card > player2Card) {
-                player1Cards.grabCards(player1Card, player2Card)
+                player1.addCards(player1Card, player2Card)
                 continue
             } else {
-                player2Cards.grabCards(player2Card, player1Card)
+                player2.addCards(player2Card, player1Card)
                 continue
             }
         }
 
-        val nextPlayer1Cards = player1Cards.copy(player1Card)
-        val nextPlayer2Cards = player2Cards.copy(player2Card)
+        val nextPlayer1Cards = player1.copy(player1Card)
+        val nextPlayer2Cards = player2.copy(player2Card)
 
-        val (winner, _) = findWinner(nextPlayer1Cards, nextPlayer2Cards)
-        when (winner) {
-            1 -> player1Cards.grabCards(player1Card, player2Card)
-            2 -> player2Cards.grabCards(player2Card, player1Card)
+        val winner = playGame(nextPlayer1Cards, nextPlayer2Cards)
+        when (winner.nr) {
+            1 -> player1.addCards(player1Card, player2Card)
+            2 -> player2.addCards(player2Card, player1Card)
         }
     }
 }
 
 fun day22b(input: List<String>): Long {
-    val (player1, player2) = input.splitByDoubleNewLine()
+    val (player1, player2) = parseInput(input)
 
-    val player1Cards = player1.drop(1).map(String::toInt).let { PlayerCards(it) }
-    val player2Cards = player2.drop(1).map(String::toInt).let { PlayerCards(it) }
+    val winner = playGame(player1, player2)
 
-    val (_, winnerCards) = findWinner(player1Cards, player2Cards)
-
-    return winnerCards.computeScore()
+    return winner.computeScore()
 }
 
