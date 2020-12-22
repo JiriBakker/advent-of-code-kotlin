@@ -16,6 +16,10 @@ private class Player(val nr: Int, cards: Collection<Int>) {
 
     val size get() = cards.size
 
+    val score get() = cards.foldIndexed(0L) { index, acc, it ->  acc + (cards.size - index) * it }
+
+    val hash get() = cards.joinToString("_")
+
     fun hasNoCards() = cards.isEmpty()
 
     fun popCard() = cards.removeFirst()
@@ -25,12 +29,7 @@ private class Player(val nr: Int, cards: Collection<Int>) {
         cards.addLast(card2)
     }
 
-    fun computeScore(): Long =
-        cards.foldIndexed(0L) { index, acc, it ->  acc + (cards.size - index) * it }
-
     fun copy(nrOfCards: Int): Player = Player(nr, cards.take(nrOfCards))
-
-    val hash get() = cards.joinToString("_")
 }
 
 fun day22a(input: List<String>): Long {
@@ -38,9 +37,9 @@ fun day22a(input: List<String>): Long {
 
     while (true) {
         if (player1.hasNoCards()) {
-            return player2.computeScore()
+            return player2.score
         } else if (player2.hasNoCards()) {
-            return player1.computeScore()
+            return player1.score
         }
 
         val player1Card = player1.popCard()
@@ -57,7 +56,7 @@ fun day22a(input: List<String>): Long {
 private fun playGame(player1: Player, player2: Player): Player {
     val seen = mutableSetOf<String>()
     fun seenStateBefore(): Boolean {
-        val hash = player1.hash + "___" + player2.hash
+        val hash = "${player1.score}___${player2.score}"
         return !seen.add(hash)
     }
 
@@ -101,6 +100,6 @@ fun day22b(input: List<String>): Long {
 
     val winner = playGame(player1, player2)
 
-    return winner.computeScore()
+    return winner.score
 }
 
