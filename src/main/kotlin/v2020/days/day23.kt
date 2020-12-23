@@ -1,19 +1,43 @@
 package v2020.days.day23
 
 private data class Cup(val nr: Int) {
-    lateinit var prev: Cup
     lateinit var next: Cup
     lateinit var below: Cup
+}
+
+private fun Cup.find(nr: Int): Cup {
+    var cup = this
+    while (cup.nr != nr) {
+        cup = cup.next
+    }
+    return cup
+}
+
+private fun Cup.findLast(): Cup {
+    var cup = this
+    while (cup.next.nr != this.nr) {
+        cup = cup.next
+    }
+    return cup
+}
+
+private fun Cup.collectAll(): List<Cup> {
+    val cups = mutableListOf<Cup>()
+    var cup = this
+    do {
+        cups.add(cup)
+        cup = cup.next
+    }
+    while (cup != this)
+    return cups
 }
 
 private fun parseCups(input: String): Cup {
     val cups = input.map { Cup(it.toString().toInt()) }
 
     var prevCup = cups.first()
-    prevCup.prev = cups.last()
     cups.last().next = prevCup
     cups.drop(1).forEach { cup ->
-        cup.prev = prevCup
         prevCup.next = cup
         prevCup = cup
     }
@@ -39,12 +63,9 @@ private fun move(curCup: Cup): Cup {
         destination = destination.below
     }
 
-    destination.next.prev = nextCup3
     curCup.next = nextCup3.next
-    curCup.next.prev = curCup
     nextCup3.next = destination.next
     destination.next = nextCup
-    nextCup.prev = destination
 
     return curCup.next
 }
@@ -56,57 +77,36 @@ fun day23a(input: List<String>, nrOfMoves: Int = 100): Long {
         curCup = move(curCup)
     }
 
-    fun findCup(nr: Int): Cup {
-        var cup = curCup
-        while (cup.nr != nr) {
-            cup = cup.next
-        }
-        return cup
-    }
-
-    val cup1 = findCup(1)
-    curCup = cup1.next
-    var result = ""
-    while (curCup != cup1) {
-        result = "$result${curCup.nr}"
-        curCup = curCup.next
-    }
-
-    return result.toLong()
+    return curCup
+        .find(1)
+        .collectAll()
+        .drop(1)
+        .joinToString("") { it.nr.toString() }
+        .toLong()
 }
 
 fun day23b(input: List<String>, nrOfMoves: Int = 10_000_000): Long {
     val startCup = parseCups(input.first())
 
-    fun findCup(nr: Int): Cup {
-        var cup = startCup
-        while (cup.nr != nr) {
-            cup = cup.next
-        }
-        return cup
-    }
-
     // TODO non-hardcoded values?
-    val cup1 = findCup(1)
-    var below = findCup(9)
+    val cup1 = startCup.find(1)
+    var below = startCup.find(9)
 
-    var curCup = startCup.prev
+    var curCup = startCup.findLast()
     (10 .. 1_000_000).forEach { nr ->
         val cup = Cup(nr)
-        cup.prev = curCup
         cup.below = below
         curCup.next = cup
         below = cup
         curCup = cup
     }
 
-    startCup.prev = curCup
     curCup.next = startCup
     cup1.below = curCup
 
     curCup = startCup
 
-    repeat(nrOfMoves + 10) {
+    repeat(nrOfMoves) {
         curCup = move(curCup)
     }
 
