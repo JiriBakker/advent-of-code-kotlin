@@ -14,7 +14,7 @@ private fun parseInput(input: List<String>): Pair<Player, Player> {
 private class Player(val nr: Int, cards: Collection<Int>) {
     private val cards = ArrayDeque(cards)
 
-    val size get() = cards.size
+    val nrOfCards get() = cards.size
 
     val score get() = cards.foldIndexed(0L) { index, acc, it ->  acc + (cards.size - index) * it }
 
@@ -74,7 +74,7 @@ private fun playGame(player1: Player, player2: Player): Player {
         val player1Card = player1.popCard()
         val player2Card = player2.popCard()
 
-        if (player1Card > player1.size || player2Card > player2.size) {
+        if (player1Card > player1.nrOfCards || player2Card > player2.nrOfCards) {
             if (player1Card > player2Card) {
                 player1.addCards(player1Card, player2Card)
                 continue
