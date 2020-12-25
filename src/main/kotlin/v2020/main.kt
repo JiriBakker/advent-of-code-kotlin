@@ -51,7 +51,6 @@ import v2020.days.day23.day23b
 import v2020.days.day24.day24a
 import v2020.days.day24.day24b
 import v2020.days.day25.day25a
-import v2020.days.day25.day25b
 import kotlin.system.measureTimeMillis
 
 private fun time(func: () -> Unit) {
@@ -102,12 +101,11 @@ fun main() {
     time { print("Day20b: " + day20b(readInputLines("day20", 2020))) }
     time { print("Day21a: " + day21a(readInputLines("day21", 2020))) }
     time { print("Day21b: " + day21b(readInputLines("day21", 2020))) }
-    // time { print("Day22a: " + day22a(readInputLines("day22", 2020))) }
-    // time { print("Day22b: " + day22b(readInputLines("day22", 2020))) }
-    // time { print("Day23a: " + day23a(readInputLines("day23", 2020))) }
-    // time { print("Day23b: " + day23b(readInputLines("day23", 2020))) }
-    // time { print("Day24a: " + day24a(readInputLines("day24", 2020))) }
-    // time { print("Day24b: " + day24b(readInputLines("day24", 2020))) }
-    // time { print("Day25a: " + day25a(readInputLines("day25", 2020))) }
-    // time { print("Day25b: " + day25b(readInputLines("day25", 2020))) }
+    time { print("Day22a: " + day22a(readInputLines("day22", 2020))) }
+    time { print("Day22b: " + day22b(readInputLines("day22", 2020))) }
+    time { print("Day23a: " + day23a(readInputLines("day23", 2020))) }
+    time { print("Day23b: " + day23b(readInputLines("day23", 2020))) }
+    time { print("Day24a: " + day24a(readInputLines("day24", 2020))) }
+    time { print("Day24b: " + day24b(readInputLines("day24", 2020))) }
+    time { print("Day25a: " + day25a(readInputLines("day25", 2020))) }
 }
