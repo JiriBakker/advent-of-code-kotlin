@@ -18,7 +18,24 @@ private fun parseInput(input: List<String>): List<MutableList<String>> {
 }
 
 private class State(val floors: List<List<String>>, val elevatorFloor: Int, val steps: Int) {
-    val hash = floors.joinToString("_") { floor -> floor.sorted().joinToString("-") } + "_E$elevatorFloor"
+    val hash = computeHash()
+
+    private fun computeHash(): String {
+        val pairLocations = mutableMapOf<String, MutableList<Int>>()
+        floors.forEachIndexed { floorNr, objectsOnFloor ->
+            objectsOnFloor.forEach { obj ->
+                val element = obj.substring(0, 2)
+                pairLocations
+                    .getOrPut(element) { mutableListOf() }
+                    .add(floorNr)
+            }
+        }
+
+        return pairLocations.values
+            .map { it.sorted().joinToString("&") }
+            .sorted()
+            .joinToString("_") + "_E$elevatorFloor"
+    }
 
     fun isTargetState(): Boolean = (0..2).all { floors[it].isEmpty() }
     fun isValidState(): Boolean = floors.none { floor ->
@@ -40,6 +57,7 @@ private class State(val floors: List<List<String>>, val elevatorFloor: Int, val 
         }
         return State(nextFloors, destinationFloor, steps + 1)
     }
+
 }
 
 private fun findMoves(floors: List<List<String>>): Int {
