@@ -99,8 +99,8 @@ private fun updateNeighbours(grid: Grid, x: Int, y: Int, updateOperation: (Cell)
 }
 
 private fun iterate(grid: Grid, nrOfIterations: Int): Int {
-    var nrOfWooded = grid.sumBy { it.count { cell -> cell.type == CellType.WOODED } }
-    var nrOfLumberyards = grid.sumBy { it.count { cell -> cell.type == CellType.LUMBERYARD } }
+    var nrOfWooded = grid.sumOf { it.count { cell -> cell.type == CellType.WOODED } }
+    var nrOfLumberyards = grid.sumOf { it.count { cell -> cell.type == CellType.LUMBERYARD } }
 
     val prevScores = mutableMapOf<Int, Int>()
     fun hasRecurrence(iteration: Int): Boolean {

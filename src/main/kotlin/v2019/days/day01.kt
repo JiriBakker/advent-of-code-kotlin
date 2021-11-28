@@ -1,6 +1,6 @@
 package v2019.days.day01
 
-import util.sumByLong
+import util.sumOfLong
 import kotlin.math.max
 
 private fun computeRequiredFuel(mass: Long): Long {
@@ -10,13 +10,13 @@ private fun computeRequiredFuel(mass: Long): Long {
 fun day01a(input: List<String>): Long {
     return input
         .map { it.toLong() }
-        .sumByLong(::computeRequiredFuel)
+        .sumOfLong(::computeRequiredFuel)
 }
 
 fun day01b(input: List<String>): Long {
     return input
         .map { it.toLong() }
-        .sumByLong { mass ->
+        .sumOfLong { mass ->
             generateSequence(computeRequiredFuel(mass), ::computeRequiredFuel)
                 .takeWhile { it > 0L }
                 .sum()

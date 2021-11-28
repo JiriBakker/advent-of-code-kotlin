@@ -60,7 +60,7 @@ fun day03b(input: String): Int {
                 x + 1 to y - 1,
                 x + 1 to y,
                 x + 1 to y + 1
-            ).sumBy { ports.getOrDefault(it, 0) }
+            ).sumOf { ports.getOrDefault(it, 0) }
 
             ports[pos] = port
             port

@@ -44,7 +44,7 @@ private fun deduceAllergens(input: List<String>): Pair<IngredientOccurrences, Ve
         verifiedAllergens[solvedAllergen] = solvedIngredient!!
 
         possibleIngredients.remove(solvedAllergen)
-        possibleIngredients.entries.forEach { (allergen, ingredients) -> ingredients.remove(solvedIngredient) }
+        possibleIngredients.entries.forEach { (_, ingredients) -> ingredients.remove(solvedIngredient) }
     }
 
     return ingredientOccurrences to verifiedAllergens
@@ -52,8 +52,8 @@ private fun deduceAllergens(input: List<String>): Pair<IngredientOccurrences, Ve
 
 fun day21a(input: List<String>): Int {
     val (ingredientOccurrences, verifiedAllergens) = deduceAllergens(input)
-    val unknownIngredients = ingredientOccurrences.entries.filter { (ingredient, occurrences) -> !verifiedAllergens.containsValue(ingredient) }
-    return unknownIngredients.sumBy { it.value }
+    val unknownIngredients = ingredientOccurrences.entries.filter { (ingredient, _) -> !verifiedAllergens.containsValue(ingredient) }
+    return unknownIngredients.sumOf { it.value }
 }
 
 fun day21b(input: List<String>): String {

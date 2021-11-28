@@ -109,7 +109,7 @@ private fun List<List<Char>>.countNonMonsterHashes(): Int {
     )
 
     fun List<List<Char>>.countHashes(): Int =
-        this.sumBy { row -> row.count { it == '#' } }
+        this.sumOf { row -> row.count { it == '#' } }
 
     fun monsterSearch(monster: List<List<Char>>): Int {
         val grid = this.map { it.toMutableList() }
@@ -222,7 +222,7 @@ fun day20b(input: List<String>, imageWidthInTiles: Int = 12): Int {
 
     fun fillRow(left: Tile, y: Int) {
         var curTile = left
-        (1 until imageWidthInTiles).forEach { x ->
+        (1 until imageWidthInTiles).forEach { _ ->
             curTile = curTile.findMatchingTile(Edge.RIGHT)
             curTile.commitToRow(y)
         }

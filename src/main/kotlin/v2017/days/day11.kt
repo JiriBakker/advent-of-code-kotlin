@@ -41,5 +41,5 @@ fun day11a(input: String): Int {
 }
 
 fun day11b(input: String): Int {
-    return countSteps(input.split(',')).max()!!
+    return countSteps(input.split(',')).maxOrNull()!!
 }

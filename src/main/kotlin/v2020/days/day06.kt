@@ -6,12 +6,12 @@ import util.splitByDoubleNewLine
 fun day06a(input: List<String>): Int {
     return input.splitByDoubleNewLine()
         .map { group -> group.countAnswers() }
-        .sumBy { it.size }
+        .sumOf { it.size }
 }
 
 fun day06b(input: List<String>): Int {
     return input.splitByDoubleNewLine()
         .map { group -> group.size to group.countAnswers() }
-        .sumBy { (groupSize, answerCounts) -> answerCounts.values.count { it == groupSize }}
+        .sumOf { (groupSize, answerCounts) -> answerCounts.values.count { it == groupSize }}
 }
 

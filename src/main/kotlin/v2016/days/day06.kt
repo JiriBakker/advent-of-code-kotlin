@@ -11,12 +11,12 @@ private fun columnCharCounts(input: List<String>): List<Map<Char, Int>> {
 
 fun day06a(input: List<String>): String {
     return columnCharCounts(input)
-        .map { it.maxBy { (_, count) -> count }!!.key }
+        .map { it.maxByOrNull { (_, count) -> count }!!.key }
         .joinToString("")
 }
 
 fun day06b(input: List<String>): String {
     return columnCharCounts(input)
-        .map { it.minBy { (_, count) -> count }!!.key }
+        .map { it.minByOrNull { (_, count) -> count }!!.key }
         .joinToString("")
 }

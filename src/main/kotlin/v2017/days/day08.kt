@@ -44,7 +44,7 @@ private fun applyInstructions(instructions: List<String>, valueProcessor: (Int) 
 fun day08a(input: List<String>): Int {
     return applyInstructions(input)
         .values
-        .max()!!
+        .maxOrNull()!!
 }
 
 fun day08b(input: List<String>): Int {

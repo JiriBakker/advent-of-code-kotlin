@@ -1,6 +1,6 @@
 package v2016.days.day20
 
-import util.sumByLong
+import util.sumOfLong
 import java.util.ArrayDeque
 
 private fun parsePortRanges(input: List<String>): List<Pair<Long, Long>> {
@@ -40,5 +40,5 @@ fun day20a(input: List<String>, maxPortInclusive: Long = 4294967295L): Long {
 fun day20b(input: List<String>, maxPortInclusive: Long = 4294967295L): Long {
     return findOpenPortRanges(parsePortRanges(input), maxPortInclusive)
         .toList()
-        .sumByLong { it.second - it.first + 1}
+        .sumOfLong { it.second - it.first + 1}
 }

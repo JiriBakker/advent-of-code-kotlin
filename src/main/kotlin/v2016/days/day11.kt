@@ -12,7 +12,7 @@ private fun parseInput(input: List<String>): List<MutableList<String>> {
             .joinToString(" ")
             .split(", and ", ", ", " and ")
             .filter { it != "nothing relevant" }
-            .map { item -> item.split(" ").drop(1).joinToString("") { it.take(2).toUpperCase() }.dropLast(1) }
+            .map { item -> item.split(" ").drop(1).joinToString("") { it.take(2).uppercase() }.dropLast(1) }
             .toMutableList()
     }
 }

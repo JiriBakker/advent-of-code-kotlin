@@ -68,7 +68,7 @@ fun day11a(input: List<String>): Int {
     while (true) {
         val (nextGrid, hasChanged) = iterateGrid(grid)
         if (!hasChanged) {
-            return nextGrid.sumBy { row -> row.count { it == '#' } }
+            return nextGrid.sumOf { row -> row.count { it == '#' } }
         }
         grid = nextGrid
     }
@@ -80,7 +80,7 @@ fun day11b(input: List<String>): Int {
     while (true) {
         val (nextGrid, hasChanged) = iterateGrid(grid, true, 5)
         if (!hasChanged) {
-            return nextGrid.sumBy { row -> row.count { it == '#' } }
+            return nextGrid.sumOf { row -> row.count { it == '#' } }
         }
         grid = nextGrid
     }

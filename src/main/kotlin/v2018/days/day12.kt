@@ -15,8 +15,8 @@ private class Tunnel(pots: Map<Int, Boolean>) {
 
     fun applyNotes(notesTrie: NotesTrie) {
         val nextPots = pots.mapValues { false }.toMutableMap()
-        val minPotIndex = pots.keys.min()!! - 2
-        val maxPotIndex = pots.keys.max()!! + 2
+        val minPotIndex = pots.keys.minOrNull()!! - 2
+        val maxPotIndex = pots.keys.maxOrNull()!! + 2
 
         for (i in minPotIndex..maxPotIndex) {
             val curPots = getPotSegment(i)

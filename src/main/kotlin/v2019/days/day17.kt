@@ -27,7 +27,7 @@ fun day17a(input: String): Long {
 
     val grid =
         generateProgramOutput(intCodes) { 0 }
-            .map { it.toChar() }
+            .map { it.toInt().toChar() }
             .joinToString("")
             .trim()
             .split('\n')
@@ -35,11 +35,11 @@ fun day17a(input: String): Long {
 
     val intersections = findIntersections(grid)
 
-    return intersections.sumBy { it.first * it.second }.toLong()
+    return intersections.sumOf { it.first * it.second }.toLong()
 }
 
 private fun vacuumWithInput(movementInput: String, intCodes: MutableMap<Long, Long>): Sequence<Long> {
-    val movementQueue = ArrayDeque<Long>(movementInput.map { it.toLong() })
+    val movementQueue = ArrayDeque<Long>(movementInput.map { it.code.toLong() })
 
     intCodes[0] = 2
 
@@ -75,7 +75,7 @@ fun day17b_compute(input: String): Long {
 
     val grid =
         generateProgramOutput(intCodes.toMutableMap()) { 0 }
-            .map { it.toChar() }
+            .map { it.toInt().toChar() }
             .joinToString("")
             .trim()
             .split('\n')
@@ -85,7 +85,7 @@ fun day17b_compute(input: String): Long {
     val gridWidth = grid[0].size
 
     val nrOfIntersections = findIntersections(grid)
-    var nrOfScaffolds = grid.sumBy { row -> row.count { it == '#' } } + nrOfIntersections.count()
+    var nrOfScaffolds = grid.sumOf { row -> row.count { it == '#' } } + nrOfIntersections.count()
 
     val vacuumPos = grid.withIndex().flatMap { (y, row) ->
         row.withIndex().mapNotNull { (x, char) -> if (vacuumChars.keys.contains(char)) Pos(x, y) else null }

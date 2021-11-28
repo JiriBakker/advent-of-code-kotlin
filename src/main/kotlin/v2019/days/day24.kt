@@ -1,7 +1,7 @@
 package v2019.days.day24
 
 import util.pow
-import util.sumByLong
+import util.sumOfLong
 
 fun day24a(input: List<String>): Long {
     fun computeBiodiversity(x: Int, y: Int): Long = 2L.pow(y * 5L + x)
@@ -28,7 +28,7 @@ fun day24a(input: List<String>): Long {
                 else 0L
             }.toLongArray()
         }
-        val biodiversity = grid.sumByLong(LongArray::sum)
+        val biodiversity = grid.sumOfLong(LongArray::sum)
         if (prevBiodiversities.contains(biodiversity)) {
             return biodiversity
         }
@@ -47,7 +47,7 @@ private class Grid(var depth: Int, var cells: List<BooleanArray>) {
 
     fun hasBug(pos: Pos): Boolean? = cells.getOrNull(pos.y)?.getOrNull(pos.x)
 
-    fun countBugs(): Int = cells.sumBy { row -> row.count { it } }
+    fun countBugs(): Int = cells.sumOf { row -> row.count { it } }
 
     fun isOnNorthOuterEdge(pos: Pos): Boolean = pos.y == 0
     fun isOnEastOuterEdge(pos: Pos): Boolean = pos.x == 4
@@ -118,7 +118,7 @@ fun day24b(input: List<String>, minutes: Int = 200): Int {
         val nextGrids =
             grids.values
                 .plus( // Add parent grid if needed
-                    grids.maxBy { it.key }!!
+                    grids.maxByOrNull { it.key }!!
                         .let { (_, grid) ->
                             if (grid.countBugsOnNorthOuterRow() in 1..2 ||
                                 grid.countBugsOnEastOuterRow() in 1..2 ||
@@ -130,7 +130,7 @@ fun day24b(input: List<String>, minutes: Int = 200): Int {
                         }
                 )
                 .plus( // Add child grid if needed
-                    grids.minBy { it.key }!!
+                    grids.minByOrNull { it.key }!!
                         .let { (_, grid) ->
                             if (grid.hasBug(Grid.northOfChild) == true ||
                                 grid.hasBug(Grid.eastOfChild) == true ||
@@ -159,6 +159,6 @@ fun day24b(input: List<String>, minutes: Int = 200): Int {
         }.toMap()
     }
 
-    return grids.values.sumBy { it.countBugs() }
+    return grids.values.sumOf { it.countBugs() }
 }
 

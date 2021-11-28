@@ -16,7 +16,7 @@ private fun swapPos(input: String, index1: Int, index2: Int): String {
 }
 
 private fun swapChar(input: String, char1: Char, char2: Char): String {
-    return input.mapIndexed { index, char ->
+    return input.mapIndexed { _, char ->
         when (char) {
             char1 -> char2
             char2 -> char1

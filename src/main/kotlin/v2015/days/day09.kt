@@ -25,15 +25,15 @@ private fun computeRouteSums(routes: List<Triple<String, String, Int>>): List<In
                 }
         }
         .filter { it.size == destinations.size - 1 }
-        .map { route -> route.sumBy { it.third }}
+        .map { route -> route.sumOf { it.third }}
 }
 
 fun day09a(input: List<String>): Int {
     val routes = parseRoutes(input)
-    return computeRouteSums(routes).min()!!
+    return computeRouteSums(routes).minOrNull()!!
 }
 
 fun day09b(input: List<String>): Int {
     val routes = parseRoutes(input)
-    return computeRouteSums(routes).max()!!
+    return computeRouteSums(routes).maxOrNull()!!
 }

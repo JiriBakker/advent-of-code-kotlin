@@ -14,7 +14,7 @@ private fun findRepeatedDistribution(registers: IntArray): Triple<IntArray, Int,
         }
         visited[hash] = cycle
 
-        val nrOfBlocksToRedistribute = registers.max()!!
+        val nrOfBlocksToRedistribute = registers.maxOrNull()!!
         val registerIndexToRedistribute = registers.indexOfFirst { it == nrOfBlocksToRedistribute }
 
         registers[registerIndexToRedistribute] = 0

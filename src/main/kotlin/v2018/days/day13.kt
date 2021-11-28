@@ -98,7 +98,7 @@ private class Tracks private constructor(private val grid: Array<Array<TrackCell
     companion object {
         fun parse(inputLines: List<String>): Tracks {
             val height = inputLines.size
-            val width = inputLines.map { it.length }.max()!!
+            val width = inputLines.map { it.length }.maxOrNull()!!
 
             val grid: Array<Array<TrackCell?>> = Array(width) { Array<TrackCell?>(height) { null } }
             val carts = PriorityQueue<Cart> { a, b -> (a.y * height + a.x).compareTo(b.y * height + b.x) }

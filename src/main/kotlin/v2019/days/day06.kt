@@ -30,7 +30,7 @@ private fun parseSpaceObjects(input: List<String>): Map<String, SpaceObject> {
 }
 
 private fun countOrbitDescendancies(spaceObject: SpaceObject, nrOfAncestors: Int): Int {
-    return spaceObject.orbiters.sumBy {
+    return spaceObject.orbiters.sumOf {
         countOrbitDescendancies(it, nrOfAncestors + 1)
     } + nrOfAncestors
 }

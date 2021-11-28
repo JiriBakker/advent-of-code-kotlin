@@ -41,7 +41,7 @@ private fun applyOperations(operations: List<String>): List<BooleanArray> {
 
 fun day08a(input: List<String>): Int {
     val display = applyOperations(input)
-    return display.sumBy { row -> row.count { it } }
+    return display.sumOf { row -> row.count { it } }
 }
 
 fun day08b(input: List<String>): String {

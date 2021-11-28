@@ -9,15 +9,15 @@ import util.readInputLine
 
 class Day11aTests {
     @Test fun testExampleInput1() {
-        assertEquals(false, isValidPassword("hijklmmn".map { it.toInt() }))
+        assertEquals(false, isValidPassword("hijklmmn".map { it.code }))
     }
 
     @Test fun testExampleInput2() {
-        assertEquals(false, isValidPassword("abbceffg".map { it.toInt() }))
+        assertEquals(false, isValidPassword("abbceffg".map { it.code }))
     }
 
     @Test fun testExampleInput3() {
-        assertEquals(false, isValidPassword("abbcegjk".map { it.toInt() }))
+        assertEquals(false, isValidPassword("abbcegjk".map { it.code }))
     }
 
     @Test fun testExampleInput4() {

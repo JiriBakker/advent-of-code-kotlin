@@ -10,7 +10,7 @@ private const val START = -1
 private const val FINISH = -2
 
 private fun parseGrid(input: List<String>): Pair<List<IntArray>, Map<String, PortalPair>> {
-    val width = input.map { it.length }.max()!! - 4
+    val width = input.map { it.length }.maxOrNull()!! - 4
     val height = input.size - 4
 
     val portals = mutableMapOf<String, Pair<Int, Pos>>()

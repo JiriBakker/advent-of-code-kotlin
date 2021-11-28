@@ -18,9 +18,9 @@ private class Bot(val id: Int, var receiverLower: ValueReceiver? = null, var rec
         }
 
         return if (receiver == receiverLower) {
-            values.min()!!
+            values.minOrNull()!!
         } else {
-            values.max()!!
+            values.maxOrNull()!!
         }
     }
 

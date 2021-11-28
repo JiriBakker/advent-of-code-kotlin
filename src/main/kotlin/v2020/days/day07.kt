@@ -49,7 +49,7 @@ fun day07b(input: List<String>): Int {
     fun countNested(bag: String): Int {
         return hierarchy[bag]
             ?.entries
-            ?.sumBy { (innerBag, count) -> countNested(innerBag) * count + count }
+            ?.sumOf { (innerBag, count) -> countNested(innerBag) * count + count }
             ?: 0
     }
 

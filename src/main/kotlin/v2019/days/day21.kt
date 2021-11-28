@@ -8,7 +8,7 @@ private const val NEWLINE = 10L
 
 private fun runSpringDroidProgram(intCodes: MutableMap<Long, Long>, vararg instructions: String): Long {
     val inputQueue = ArrayDeque<Long>()
-    inputQueue.addAll(instructions.toList().flatMap { instruction -> instruction.map { it.toLong() }.plus(NEWLINE) })
+    inputQueue.addAll(instructions.toList().flatMap { instruction -> instruction.map { it.code.toLong() }.plus(NEWLINE) })
 
     return generateProgramOutput(intCodes) { inputQueue.poll() }
         .firstOrNull { it > 256 }

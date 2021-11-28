@@ -50,11 +50,11 @@ fun Long.safeMod(mod: Long): Long {
 }
 
 fun min(vararg ints: Int): Int {
-    return ints.min()!!
+    return ints.minOrNull()!!
 }
 
 fun max(vararg ints: Int): Int {
-    return ints.max()!!
+    return ints.maxOrNull()!!
 }
 
 operator fun BigInteger.rem(m: Long): BigInteger = this.mod(BigInteger.valueOf(m))

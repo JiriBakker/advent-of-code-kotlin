@@ -68,10 +68,10 @@ fun day06a(coordinateLines: List<String>): Int? {
         }
     }
 
-    return coordinateAreas.filter { !it.isInfinite }.map { it.nrOfClaimedCells }.max()
+    return coordinateAreas.filter { !it.isInfinite }.map { it.nrOfClaimedCells }.maxOrNull()
 }
 
-private fun <T> List<T>.sumByWhile(selector: (T) -> Int, predicate: (Int) -> Boolean): Int {
+private fun <T> List<T>.sumOfWhile(selector: (T) -> Int, predicate: (Int) -> Boolean): Int {
     return this.fold(0) {
         sum, item ->
             val newSum = sum + selector(item)
@@ -92,7 +92,7 @@ fun day06b(coordinateLines: List<String>, limit: Int = 10000): Int {
 
     for (x in minX..maxX) {
         for (y in minY..maxY) {
-            val summedDistance = coordinateAreas.sumByWhile({ it.distanceTo(x, y) }) { it < limit }
+            val summedDistance = coordinateAreas.sumOfWhile({ it.distanceTo(x, y) }) { it < limit }
             if (summedDistance < limit) {
                 nrOfCellsWithinLimit++
             }

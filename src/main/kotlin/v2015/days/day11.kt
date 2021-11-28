@@ -10,9 +10,9 @@ private fun hasIncreasingStraight(password: List<Int>): Boolean {
     return false
 }
 
-private val disallowedChars = setOf('i'.toInt(), 'o'.toInt(), 'l'.toInt())
-private const val lowerA = 'a'.toInt()
-private const val lowerZ = 'z'.toInt()
+private val disallowedChars = setOf('i'.code, 'o'.code, 'l'.code)
+private const val lowerA = 'a'.code
+private const val lowerZ = 'z'.code
 
 private fun findPairsIndices(password: List<Int>): List<Int> {
     return password
@@ -56,7 +56,7 @@ private fun generateNextPassword(password: List<Int>): List<Int> {
     return nextPassword
 }
 
-private fun String.toInts(): List<Int> = this.map { it.toInt() }
+private fun String.toInts(): List<Int> = this.map { it.code }
 private fun List<Int>.intsToString(): String = this.map(Int::toChar).joinToString("")
 
 fun day11a(input: String): String {

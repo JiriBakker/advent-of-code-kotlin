@@ -2,7 +2,6 @@ package v2016.days.day17
 
 import util.priorityQueueBy
 import java.security.MessageDigest
-import java.util.PriorityQueue
 
 private fun md5Hash(string: String): String {
     return MessageDigest.getInstance("MD5").digest(string.toByteArray())
@@ -49,5 +48,5 @@ fun day17a(input: String): String {
 }
 
 fun day17b(input: String): Int {
-    return findPathsToVault(input).map { it.length }.max()!!
+    return findPathsToVault(input).map { it.length }.maxOrNull()!!
 }

@@ -22,13 +22,13 @@ private fun combineComponents(port: Int, availableComponents: List<Component>): 
 
 private fun constructBridges(components: List<Component>): List<Pair<List<Component>, Int>> {
     return combineComponents(0, components)
-        .map { bridge -> bridge to bridge.sumBy { component -> component.port1 + component.port2 } }
+        .map { bridge -> bridge to bridge.sumOf { component -> component.port1 + component.port2 } }
 }
 
 fun day24a(input: List<String>): Int {
     val components = parseComponents(input)
     return constructBridges(components)
-        .maxBy { it.second }!!
+        .maxByOrNull { it.second }!!
         .second
 }
 
@@ -36,10 +36,10 @@ fun day24b(input: List<String>): Int {
     val components = parseComponents(input)
     val bridgeStrengths = constructBridges(components)
 
-    val maxBridgeLength = bridgeStrengths.map { it.first.size }.max()!!
+    val maxBridgeLength = bridgeStrengths.map { it.first.size }.maxOrNull()!!
 
     return bridgeStrengths
         .filter { it.first.size == maxBridgeLength }
         .map { it.second }
-        .max()!!
+        .maxOrNull()!!
 }

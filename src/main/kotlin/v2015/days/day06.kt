@@ -39,7 +39,7 @@ fun day06a(input: List<String>): Int {
         { 1 }
     )
 
-    return grid.sumBy { row -> row.count { it == 1 } }
+    return grid.sumOf { row -> row.count { it == 1 } }
 }
 
 fun day06b(input: List<String>): Int {
@@ -50,5 +50,5 @@ fun day06b(input: List<String>): Int {
         { it + 1 }
     )
 
-    return grid.sumBy { row -> row.sum() }
+    return grid.sumOf { row -> row.sum() }
 }
