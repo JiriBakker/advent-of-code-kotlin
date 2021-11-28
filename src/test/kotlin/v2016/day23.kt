@@ -1,4 +1,4 @@
-package v2016.days.day23
+package v2016
 
 import org.junit.Assert.assertEquals
 import org.junit.Test

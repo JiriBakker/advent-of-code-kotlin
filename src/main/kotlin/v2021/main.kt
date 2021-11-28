@@ -1,6 +1,6 @@
 package v2021
 
-import util.executeSolution
+import util.autoExecuteSolutions
 
 fun main() {
     listOf(
@@ -55,5 +55,5 @@ fun main() {
         ::day25a,
         ::infiA,
         ::infiB
-    ).forEach { executeSolution(it, 2021) }
+    ).forEach { autoExecuteSolutions(it, 2021) }
 }

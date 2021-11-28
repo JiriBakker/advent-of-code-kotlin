@@ -1,14 +1,5 @@
 package v2020
 
-private fun printGrid(grid: List<List<Char>>) {
-    for (y in grid.indices) {
-        for (x in grid[y].indices) {
-            print(grid[y][x])
-        }
-        println()
-    }
-}
-
 private fun iterateGrid(
     grid: List<List<Char>>,
     useDeepSearch: Boolean = false,

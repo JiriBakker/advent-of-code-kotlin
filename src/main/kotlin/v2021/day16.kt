@@ -1,13 +1,13 @@
 package v2021
 
-import util.NotYetImplemented
+import util.DoNotAutoExecute
 
-@NotYetImplemented
+@DoNotAutoExecute
 fun day16a(input: List<String>): Int {
     return 0
 }
 
-@NotYetImplemented
+@DoNotAutoExecute
 fun day16b(input: List<String>): Int {
     return 0
 }
