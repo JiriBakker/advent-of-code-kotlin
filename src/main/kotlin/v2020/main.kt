@@ -1,21 +1,6 @@
 package v2020
 
-import util.readInputLines
-import kotlin.reflect.KFunction
-import kotlin.system.measureTimeMillis
-
-private fun time(func: () -> Unit) {
-    val millis = measureTimeMillis { func() }
-    println("(took $millis ms)\n")
-}
-
-private fun exec(solution: KFunction<*>) {
-    val input = readInputLines(solution.name.substring(0..4), 2020)
-    time {
-        println("${solution.name}")
-        println(solution.callBy(mapOf(solution.parameters.first() to input)).toString())
-    }
-}
+import util.executeSolution
 
 fun main() {
     listOf(
@@ -67,6 +52,8 @@ fun main() {
         ::day23b,
         ::day24a,
         ::day24b,
-        ::day25a
-    ).forEach(::exec)
+        ::day25a,
+        ::infiA,
+        ::infiB
+    ).forEach { executeSolution(it, 2020) }
 }

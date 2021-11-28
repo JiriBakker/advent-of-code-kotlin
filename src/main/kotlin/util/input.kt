@@ -3,7 +3,10 @@ package util
 import java.io.File
 
 fun readInputLines(day: String, year: Int): List<String> {
-    return File("input/$year/$day").readLines()
+    return File("input/$year/$day").let {
+        if (it.exists()) it.readLines()
+        else emptyList()
+    }
 }
 
 fun readInputLine(day: String, year: Int): String {
