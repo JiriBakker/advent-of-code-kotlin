@@ -2,10 +2,8 @@ package v2015
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2015.days.day11.day11a
-import v2015.days.day11.day11b
-import v2015.days.day11.isValidPassword
 import util.readInputLine
+import v2015.Day11Utils.isValidPassword
 
 class Day11aTests {
     @Test fun testExampleInput1() {
