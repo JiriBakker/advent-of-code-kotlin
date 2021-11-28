@@ -2,8 +2,6 @@ package v2015
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2015.days.day03.day03a
-import v2015.days.day03.day03b
 import util.readInputLine
 
 class Day03aTests {
