@@ -1,4 +1,4 @@
-package v2019.intCoder
+package v2019
 
 private enum class ParamMode {
     Position,

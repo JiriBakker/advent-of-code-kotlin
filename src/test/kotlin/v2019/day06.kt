@@ -2,8 +2,6 @@ package v2019
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2019.days.day06.day06a
-import v2019.days.day06.day06b
 import util.parseCsv
 import util.readInputLines
 

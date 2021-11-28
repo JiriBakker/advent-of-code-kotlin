@@ -2,8 +2,6 @@ package v2019
 
 import org.junit.Assert.assertEquals
 import org.junit.Test
-import v2019.extra.infiA
-import v2019.extra.infiB
 import util.readInputLines
 
 class InfiATests {

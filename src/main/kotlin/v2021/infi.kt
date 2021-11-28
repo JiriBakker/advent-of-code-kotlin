@@ -1,13 +1,13 @@
 package v2021
 
-import util.NotYetImplemented
+import util.DoNotAutoExecute
 
-@NotYetImplemented
+@DoNotAutoExecute
 fun infiA(): Long {
     return 0L
 }
 
-@NotYetImplemented
+@DoNotAutoExecute
 fun infiB(): Long {
     return 0L
 }

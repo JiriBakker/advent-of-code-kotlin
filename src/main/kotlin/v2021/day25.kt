@@ -1,8 +1,8 @@
 package v2021
 
-import util.NotYetImplemented
+import util.DoNotAutoExecute
 
-@NotYetImplemented
+@DoNotAutoExecute
 fun day25a(input: List<String>): Int {
     return 0
 }
