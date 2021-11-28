@@ -27,7 +27,7 @@ private fun walkPath(input: List<String>): Sequence<Char> {
             if (char == null || char == ' ') {
                 return@sequence
             }
-            yield(char!!)
+            yield(char)
             if (char == '+') {
                 val (nextPos, nextDirection) = listOf(
                     Pos(pos.x, pos.y - 1) to Direction.UP,

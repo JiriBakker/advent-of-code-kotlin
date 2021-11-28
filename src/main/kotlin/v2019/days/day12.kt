@@ -2,7 +2,7 @@ package v2019.days.day12
 
 import util.forEachCombinationPair
 import util.leastCommonMultiple
-import util.sumByLong
+import util.sumOfLong
 import kotlin.math.abs
 
 private enum class Axis { X, Y, Z }
@@ -22,8 +22,8 @@ private class Moon(private val axisStates: Map<Axis, State>) {
         }
     }
 
-    fun computeKineticEnergy(): Long = axisStates.values.sumByLong { abs(it.velocity) }
-    fun computePotentialEnergy(): Long = axisStates.values.sumByLong { abs(it.pos) }
+    fun computeKineticEnergy(): Long = axisStates.values.sumOfLong { abs(it.velocity) }
+    fun computePotentialEnergy(): Long = axisStates.values.sumOfLong { abs(it.pos) }
 
     fun equalsOnAxis(other: Moon, axis: Axis): Boolean = getState(axis) == other.getState(axis)
 
@@ -69,7 +69,7 @@ fun day12a(input: List<String>, nrOfSteps: Int = 1000): Long {
 
     repeat(nrOfSteps) { simulateStep(moons) }
 
-    return moons.sumByLong { it.computeKineticEnergy() * it.computePotentialEnergy() }
+    return moons.sumOfLong { it.computeKineticEnergy() * it.computePotentialEnergy() }
 }
 
 fun day12b(input: List<String>): Long {

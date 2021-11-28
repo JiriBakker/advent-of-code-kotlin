@@ -1,7 +1,7 @@
 package v2018.days.day01
 
 fun day01a(changes: List<String>): Int {
-    return changes.sumBy { it.toInt() }
+    return changes.sumOf { it.toInt() }
 }
 
 fun day01b(changes: List<String>): Int {

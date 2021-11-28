@@ -40,11 +40,11 @@ private fun followDirections(grid: Grid, directions: String, startIndex: Int, st
 fun day20a(directions: String): Int {
     val grid = mutableMapOf<Int, MutableMap<Int, Int>>()
     followDirections(grid, directions, 1, 0, 0, 0)
-    return grid.map { row -> row.value.values.max()!! }.max()!!
+    return grid.map { row -> row.value.values.maxOrNull()!! }.maxOrNull()!!
 }
 
 fun day20b(directions: String): Int {
     val grid = mutableMapOf<Int, MutableMap<Int, Int>>()
     followDirections(grid, directions, 1, 0, 0, 0)
-    return grid.values.sumBy { row -> row.values.count { it >= 1000 } }
+    return grid.values.sumOf { row -> row.values.count { it >= 1000 } }
 }

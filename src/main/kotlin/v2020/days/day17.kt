@@ -33,7 +33,7 @@ private class Space3D(input: List<String>) {
             slice.forEach { (y, row) ->
                 if (y < minY) minY = y
                 if (y > maxY) maxY = y
-                row.forEach { (x, cube) ->
+                row.forEach { (x, _) ->
                     if (x < minX) minX = x
                     if (x > maxX) maxX = x
                 }
@@ -105,7 +105,7 @@ private class Space3D(input: List<String>) {
     }
 
     fun countActive(): Int {
-        return cubes.values.sumBy { slice -> slice.values.sumBy { row -> row.count() } }
+        return cubes.values.sumOf { slice -> slice.values.sumOf { row -> row.count() } }
     }
 }
 
@@ -151,7 +151,7 @@ private class Space4D(input: List<String>) {
                 slice.forEach { (y, row) ->
                     if (y < minY) minY = y
                     if (y > maxY) maxY = y
-                    row.forEach { (x, cube) ->
+                    row.forEach { (x, _) ->
                         if (x < minX) minX = x
                         if (x > maxX) maxX = x
                     }
@@ -232,7 +232,7 @@ private class Space4D(input: List<String>) {
     }
 
     fun countActive(): Int {
-        return spaceTime.values.sumBy { space -> space.values.sumBy { slice -> slice.values.sumBy { row -> row.count() } } }
+        return spaceTime.values.sumOf { space -> space.values.sumOf { slice -> slice.values.sumOf { row -> row.count() } } }
     }
 }
 

@@ -5,25 +5,25 @@ import util.safeMod
 private fun hash(elements: IntArray, lengths: List<Int>, startIndex: Int = 0, skipSize: Int = 0): Pair<Int, Int> {
     fun wrap(index: Int) = index.safeMod(elements.size)
 
-    var startIndex = startIndex
-    var skipSize = skipSize
+    var curStartIndex = startIndex
+    var curSkipSize = skipSize
     lengths.forEach { length ->
         for (i in 0 until length / 2) {
-            val index1 = wrap(startIndex + i)
-            val index2 = wrap(startIndex + length - 1 - i)
+            val index1 = wrap(curStartIndex + i)
+            val index2 = wrap(curStartIndex + length - 1 - i)
             val oldValue = elements[index2]
             elements[index2] = elements[index1]
             elements[index1] = oldValue
         }
-        startIndex = wrap(startIndex + length + skipSize)
-        skipSize++
+        curStartIndex = wrap(curStartIndex + length + curSkipSize)
+        curSkipSize++
     }
 
-    return startIndex to skipSize
+    return curStartIndex to curSkipSize
 }
 
 fun knotHash(string: String, nrOfElements: Int = 256): String {
-    val lengths = string.map(Char::toInt).plus(listOf(17, 31, 73, 47, 23))
+    val lengths = string.map(Char::code).plus(listOf(17, 31, 73, 47, 23))
 
     val elements = (0 until nrOfElements).toList().toIntArray()
 

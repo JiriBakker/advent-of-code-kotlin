@@ -43,7 +43,7 @@ fun day15a(input: List<String>): Long {
     val ingredients = parseIngredients(input)
 
     return computeRecipeScores(ingredients)
-        .maxBy { it.first }
+        .maxByOrNull { it.first }
         .let { it!!.first }
 }
 
@@ -52,6 +52,6 @@ fun day15b(input: List<String>): Long {
 
     return computeRecipeScores(ingredients)
         .filter { it.second == 500L }
-        .maxBy { it.first }
+        .maxByOrNull { it.first }
         .let { it!!.first }
 }

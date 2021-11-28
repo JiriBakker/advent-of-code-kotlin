@@ -1,7 +1,5 @@
 package v2017.days.day20
 
-import util.pow
-import util.sqrt
 import kotlin.math.abs
 
 private fun parseParticles(input: List<String>): List<Particle> {
@@ -25,7 +23,7 @@ private data class Particle(val id: Int, val pos: Vec3, val vel: Vec3, val acc: 
 
 fun day20a(input: List<String>): Int {
     val particles = parseParticles(input)
-    return particles.minBy { abs(it.acc.x) + abs(it.acc.y) + abs(it.acc.z) }!!.id
+    return particles.minByOrNull { abs(it.acc.x) + abs(it.acc.y) + abs(it.acc.z) }!!.id
 }
 
 private fun findIntersectionTime(particle1: Particle, particle2: Particle): Long? {

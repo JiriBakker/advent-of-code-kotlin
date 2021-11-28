@@ -5,7 +5,7 @@ import java.util.Stack
 private fun computeReactedPolymerLength(polymerChars: List<Char>, letterToIgnore: Char? = null): Int {
     val leftBuffer = Stack<Char>()
     val rightBuffer = Stack<Char>()
-    rightBuffer.addAll(polymerChars.reversed().filter { it.toLowerCase() != letterToIgnore })
+    rightBuffer.addAll(polymerChars.reversed().filter { it.lowercaseChar() != letterToIgnore })
 
     while (rightBuffer.isNotEmpty()) {
         val next = rightBuffer.pop()
@@ -32,5 +32,5 @@ fun day05a(polymer: String): Int {
 
 fun day05b(polymer: String): Int {
     val polymerChars = polymer.toList()
-    return ('a'..'z').map { computeReactedPolymerLength(polymerChars, it) }.min()!!
+    return ('a'..'z').minOf { computeReactedPolymerLength(polymerChars, it) }
 }

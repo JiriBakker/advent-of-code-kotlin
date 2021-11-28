@@ -12,7 +12,7 @@ private fun getGrid(input: String): List<String> {
 
 fun day14a(input: String): Int {
     return getGrid(input)
-        .sumBy { row -> row.count { it == '1' } }
+        .sumOf { row -> row.count { it == '1' } }
 }
 
 fun day14b(input: String): Int {

@@ -71,7 +71,7 @@ private fun parse(inputLines: List<String>): List<Nanobot> {
 fun day23a(inputLines: List<String>): Int {
     val nanobots = parse(inputLines)
 
-    val nanobotWithLargestRadius = nanobots.maxBy { it.radius }!!
+    val nanobotWithLargestRadius = nanobots.maxByOrNull { it.radius }!!
 
     return nanobots.count { nanobotWithLargestRadius.isInRadius(it) }
 }
@@ -101,11 +101,11 @@ fun day23b(inputLines: List<String>): Int? {
                 .take(4)
     } while (curBoundingBoxes.none { it.width == 1 })
 
-    val maxNrInRange = curBoundingBoxes.map(::countInRadius).max()!!
+    val maxNrInRange = curBoundingBoxes.map(::countInRadius).maxOrNull()!!
     val origin = Pos(0, 0, 0)
 
     return curBoundingBoxes
         .filter { countInRadius(it) == maxNrInRange }
         .map { it.center.distanceTo(origin) }
-        .min()
+        .minOrNull()
 }

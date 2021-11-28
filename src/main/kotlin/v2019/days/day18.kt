@@ -1,7 +1,7 @@
 package v2019.days.day18
 
 import util.combine
-import util.sumByLong
+import util.sumOfLong
 import java.util.PriorityQueue
 import java.util.SortedMap
 import kotlin.math.min
@@ -46,7 +46,7 @@ fun day18a(input: List<String>): Long {
         }
 
         val cell = grid[y][x]
-        return cell != '#' && (!cell.isUpperCase() || from.keys.contains(cell.toLowerCase()))
+        return cell != '#' && (!cell.isUpperCase() || from.keys.contains(cell.lowercaseChar()))
     }
 
     fun addIfViable(x: Int, y: Int, from: PathState) {
@@ -113,8 +113,8 @@ private fun findPathsWithMaxKeys(x: Int, y: Int, grid: List<CharArray>): List<Pa
 
             if (cell.isLowerCase() && !from.keys.contains(cell)) {
                 val depsForCell = dependencies.getOrPut(cell, { mutableListOf() })
-                depsForCell.addAll(doors.keys.filter { !keys.keys.contains(it.toLowerCase()) })
-                if (depsForCell.contains(cell.toUpperCase())) {
+                depsForCell.addAll(doors.keys.filter { !keys.keys.contains(it.lowercaseChar()) })
+                if (depsForCell.contains(cell.uppercaseChar())) {
                     return
                 }
 
@@ -147,7 +147,7 @@ private fun findPathsWithMaxKeys(x: Int, y: Int, grid: List<CharArray>): List<Pa
         addIfViable(curState.x, curState.y - 1, curState)
     }
 
-    val maxKeys = paths.map { it.keys.size }.max() ?: 0
+    val maxKeys = paths.map { it.keys.size }.maxOrNull() ?: 0
     return paths.filter { it.keys.size == maxKeys }
 }
 
@@ -168,7 +168,7 @@ private fun hasDependencyCollisions(pathStates: List<PathState>): Boolean {
         pathStates.flatMap { state -> state.dependencies.entries.map { it.key to it.value } }.toMutableList()
 
     while (dependencies.isNotEmpty()) {
-        val resolvedDependencies = dependencies.filter { it.second.isEmpty() }.map { it.first.toUpperCase() }
+        val resolvedDependencies = dependencies.filter { it.second.isEmpty() }.map { it.first.uppercaseChar() }
         if (resolvedDependencies.isEmpty()) {
             return true
         }
@@ -185,7 +185,7 @@ private fun findMinimalValidSteps(pathStates: List<List<PathState>>): Long {
     offsetCombinations.forEach { offsets ->
         val statesCombination = offsets.mapIndexed { index, offset -> pathStates[index].getOrNull(offset) }
         if (statesCombination.all { it != null } && !hasDependencyCollisions(statesCombination.requireNoNulls())) {
-            optimal = min(optimal, statesCombination.requireNoNulls().sumByLong { it.steps })
+            optimal = min(optimal, statesCombination.requireNoNulls().sumOfLong { it.steps })
         }
     }
 

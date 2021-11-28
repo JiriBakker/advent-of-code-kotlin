@@ -55,7 +55,7 @@ fun day10a(input: List<String>): Int {
 
     collectLinesOfSight(asteroids)
 
-    return asteroids.map { it.getLinesOfSight().size }.max()!!
+    return asteroids.map { it.getLinesOfSight().size }.maxOrNull()!!
 }
 
 fun day10b(input: List<String>): Int {
@@ -63,7 +63,7 @@ fun day10b(input: List<String>): Int {
 
     collectLinesOfSight(asteroids)
 
-    val optimalAsteroid = asteroids.maxBy { it.getLinesOfSight().size }!!
+    val optimalAsteroid = asteroids.maxByOrNull { it.getLinesOfSight().size }!!
 
     val linesOfSight = optimalAsteroid.getLinesOfSight()
         .mapValues { ArrayDeque<LineOfSight>(it.value.sortedBy { los -> los.distance }) }

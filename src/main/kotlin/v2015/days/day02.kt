@@ -2,7 +2,7 @@ package v2015.days.day02
 
 import util.max
 import util.min
-import util.sumByLong
+import util.sumOfLong
 
 private data class Dimensions(val l: Int, val w: Int, val h: Int)
 
@@ -26,11 +26,11 @@ private fun computeRequiredRibbon(dimensions: Dimensions): Long {
 fun day02a(input: List<String>): Long {
     val dimensions = parseDimensions(input)
 
-    return dimensions.sumByLong(::computeRequiredPaper)
+    return dimensions.sumOfLong(::computeRequiredPaper)
 }
 
 fun day02b(input: List<String>): Long {
     val dimensions = parseDimensions(input)
 
-    return dimensions.sumByLong(::computeRequiredRibbon)
+    return dimensions.sumOfLong(::computeRequiredRibbon)
 }

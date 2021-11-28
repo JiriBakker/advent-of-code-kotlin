@@ -94,7 +94,7 @@ private class Battlefield private constructor(private val fighters: MutableList<
         private set
 
     fun sumHitPoints(): Int {
-        return fighters.sumBy { it.hitPoints }
+        return fighters.sumOf { it.hitPoints }
     }
 
     fun printBattlefield() {

@@ -13,9 +13,9 @@ private fun parseBossProperties(input: List<String>): Triple<Int, Int, Int> {
 private data class Gear(val name: String, val cost: Int, val damage: Int, val armor: Int)
 
 private data class GearCombination(val gear: List<Gear>) {
-    val cost = gear.sumBy { it.cost }
-    val damage = gear.sumBy { it.damage }
-    val armor = gear.sumBy { it.armor }
+    val cost = gear.sumOf { it.cost }
+    val damage = gear.sumOf { it.damage }
+    val armor = gear.sumOf { it.armor }
 }
 
 private val weapons = listOf(

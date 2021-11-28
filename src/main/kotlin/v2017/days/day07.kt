@@ -10,7 +10,7 @@ private class Program(val name: String) {
 
     fun getTotalWeight(): Int {
         if (totalWeight == null) {
-            totalWeight = weight!! + programsAbove.sumBy { it.getTotalWeight() }
+            totalWeight = weight!! + programsAbove.sumOf { it.getTotalWeight() }
         }
         return totalWeight!!
     }
@@ -71,7 +71,7 @@ fun day07b(input: List<String>): Int {
         val unbalancedAbove = program.getAbove().firstOrNull { !it.isBalanced() }
         if (unbalancedAbove == null) {
             val weightsAbove = program.getAbove().groupingBy { it.getTotalWeight() }
-            val (mostFrequentWeight, _) = weightsAbove.eachCount().maxBy { it.value }!!
+            val (mostFrequentWeight, _) = weightsAbove.eachCount().maxByOrNull { it.value }!!
             val programToAdjust = program.getAbove().first { it.getTotalWeight() != mostFrequentWeight }
             return programToAdjust.weight!! + (mostFrequentWeight - programToAdjust.getTotalWeight())
         }

@@ -15,15 +15,15 @@ private fun String.encode(): String =
             .replace("\"", "\\\"") + "\""
 
 fun day08a(input: List<String>): Int {
-    val charsInCode = input.sumBy { it.length }
-    val charsInMemory = input.map(String::decode).sumBy { it.length }
+    val charsInCode = input.sumOf { it.length }
+    val charsInMemory = input.map(String::decode).sumOf { it.length }
 
     return charsInCode - charsInMemory
 }
 
 fun day08b(input: List<String>): Int {
-    val charsInCode = input.sumBy { it.length }
-    val charsInMemory = input.map(String::encode).sumBy { it.length }
+    val charsInCode = input.sumOf { it.length }
+    val charsInMemory = input.map(String::encode).sumOf { it.length }
 
     return charsInMemory - charsInCode
 }

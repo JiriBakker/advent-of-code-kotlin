@@ -47,8 +47,8 @@ private fun printNodeGrid(nodes: List<Node>) {
     val grid = nodes.map { it.y to it }.groupBy { it.first }
         .mapValues { row -> row.value.map { it.second.x to it.second }.toMap() }
 
-    grid.forEach { (y, row) ->
-        row.forEach { (x, node) ->
+    grid.forEach { (_, row) ->
+        row.forEach { (_, node) ->
             print("${node.available.toString().padStart(3)}-${node.used.toString().padEnd(4)} ")
         }
         println()
@@ -76,8 +76,8 @@ fun day22b(input: List<String>): Int {
     // - Compute sum of steps as the final answer
 
     val emptyNode = nodes.first { it.used == 0 }
-    val topRightNode = nodes.filter { it.y == 0 }.maxBy { it.x }!!
-    val leftMostBlockingNode = nodes.filter { it.used > 400 }.minBy { it.x }!!
+    val topRightNode = nodes.filter { it.y == 0 }.maxByOrNull { it.x }!!
+    val leftMostBlockingNode = nodes.filter { it.used > 400 }.minByOrNull { it.x }!!
 
     val stepsFromEmptyToNextToBlockingNode =
         abs(emptyNode.x - (leftMostBlockingNode.x - 1)) + abs(emptyNode.y - leftMostBlockingNode.y)

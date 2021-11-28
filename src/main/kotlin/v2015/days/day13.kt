@@ -21,7 +21,7 @@ private fun findOptimalHappiness(seatings: Map<String, Map<String, Int>>): Int {
         names.zipWithNext().map { (name1, name2) ->
              getHappiness(name1, name2)
         }.sum() + getHappiness(names.first(), names.last())
-    }.max()!!
+    }.maxOrNull()!!
 }
 
 fun day13a(input: List<String>): Int {

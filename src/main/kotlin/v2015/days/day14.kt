@@ -23,7 +23,7 @@ private fun parseReindeers(input: List<String>): List<Reindeer> {
 
 fun day14a(input: List<String>, secondsUntilFinish: Int = 2503): Int {
     val reindeers = parseReindeers(input)
-    return reindeers.map { it.distanceAfter(secondsUntilFinish) }.max()!!
+    return reindeers.map { it.distanceAfter(secondsUntilFinish) }.maxOrNull()!!
 }
 
 fun day14b(input: List<String>, secondsUntilFinish: Int = 2503): Int {
@@ -33,11 +33,11 @@ fun day14b(input: List<String>, secondsUntilFinish: Int = 2503): Int {
     for (seconds in 1 .. secondsUntilFinish) {
         val reindeerDistances = reindeers.associate { it.name to it.distanceAfter(seconds) }
         reindeerDistances
-            .filter { it.value == reindeerDistances.values.max()!! }
+            .filter { it.value == reindeerDistances.values.maxOrNull()!! }
             .forEach {
                 scores[it.key] = scores.getOrDefault(it.key, 0) + 1
             }
     }
 
-    return scores.values.max()!!
+    return scores.values.maxOrNull()!!
 }

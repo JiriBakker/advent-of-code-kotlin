@@ -46,7 +46,7 @@ private fun parseGrid(input: List<String>): Map<Int, Map<Int, Tile>> {
 fun day24a(input: List<String>): Int {
     val grid = parseGrid(input)
 
-    return grid.values.sumBy { row -> row.size }
+    return grid.values.sumOf { row -> row.size }
 }
 
 fun day24b(input: List<String>): Int {
@@ -88,5 +88,5 @@ fun day24b(input: List<String>): Int {
         grid = nextGrid
     }
 
-    return grid.values.sumBy { row -> row.size }
+    return grid.values.sumOf { row -> row.size }
 }

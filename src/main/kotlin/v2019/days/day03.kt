@@ -70,7 +70,7 @@ fun day03a(input: List<String>): Int {
                 .map { y -> Pair(x, y.key) }
         }
         .map { intersection -> abs(intersection.first) + abs(intersection.second) }
-        .min()
+        .minOrNull()
         ?: throw Exception("No intersections found")
 }
 
@@ -85,7 +85,7 @@ fun day03b(input: List<String>): Int {
             }
                 .filterNotNull()
         }
-        .min()
+        .minOrNull()
         ?: throw Exception("No intersections found")
 }
 

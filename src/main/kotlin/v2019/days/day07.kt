@@ -15,7 +15,7 @@ fun day07a(input: String): Long {
             val inputs = ArrayDeque(listOf(phase, input2))
             generateProgramOutput(intCodes) { inputs.poll() }.first()
         }
-    }.max()!!
+    }.maxOrNull()!!
 }
 
 fun day07b(input: String): Long {
@@ -50,5 +50,5 @@ fun day07b(input: String): Long {
         }
 
         amplifierOutputs[(amplifierIndex + 4) % 5]!!
-    }.max()!!
+    }.maxOrNull()!!
 }

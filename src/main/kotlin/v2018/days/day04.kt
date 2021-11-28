@@ -48,7 +48,7 @@ private class Guard private constructor(val guardId: Int, val sleepIntervals: Li
         }
     }
 
-    val totalMinutesAsleep = sleepIntervals.sumBy { it.totalMinutes }
+    val totalMinutesAsleep = sleepIntervals.sumOf { it.totalMinutes }
 
     fun getTimesAsleepPerMinute(): Map<Int, Int> {
         if (sleepIntervals.isEmpty()) {
@@ -64,7 +64,7 @@ private class Guard private constructor(val guardId: Int, val sleepIntervals: Li
         return timesAsleepAtMinute
     }
 
-    val mostOftenAsleepAtMinute: Int? = getTimesAsleepPerMinute().maxBy { it.value }?.key
+    val mostOftenAsleepAtMinute: Int? = getTimesAsleepPerMinute().maxByOrNull { it.value }?.key
 }
 
 private data class SleepInterval(val startMinute: Int, val endMinute: Int) {
@@ -93,7 +93,7 @@ fun day04a(eventLines: List<String>): Int {
 
     val guardThatWasMostAsleep =
         guards
-            .maxBy { it.totalMinutesAsleep }!!
+            .maxByOrNull { it.totalMinutesAsleep }!!
 
     return guardThatWasMostAsleep.mostOftenAsleepAtMinute!! * guardThatWasMostAsleep.guardId
 }
@@ -103,7 +103,7 @@ fun day04b(eventLines: List<String>): Int {
 
     val guardThatWasMostAsleepOnASingleMinute =
         guards
-            .maxBy { guard -> guard.getTimesAsleepPerMinute().map { it.value }.max() ?: -1 }!!
+            .maxByOrNull { guard -> guard.getTimesAsleepPerMinute().map { it.value }.maxOrNull() ?: -1 }!!
 
     return guardThatWasMostAsleepOnASingleMinute.mostOftenAsleepAtMinute!! * guardThatWasMostAsleepOnASingleMinute.guardId
 }

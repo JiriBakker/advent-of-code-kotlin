@@ -3,7 +3,7 @@ package util
 import java.util.ArrayDeque
 import java.util.PriorityQueue
 
-inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
+inline fun <T> Iterable<T>.sumOfLong(selector: (T) -> Long): Long {
     var sum = 0L
     for (element in this) {
         sum += selector(element)
@@ -40,11 +40,11 @@ fun <T> Collection<T>.combine(maxSize: Int): List<List<T>> {
 }
 
 inline fun <T, TOut : Comparable<TOut>> List<T>.getBounds(selector: (T) -> TOut): Pair<TOut, TOut> {
-    return Pair(selector(this.minBy(selector)!!), selector(this.maxBy(selector)!!))
+    return selector(this.minByOrNull(selector)!!) to selector(this.maxByOrNull(selector)!!)
 }
 
 inline fun <T> List<T>.getBounds(minSelector: (T) -> Int, maxSelector: ((T) -> Int)): Pair<Int, Int> {
-    return Pair(minSelector(this.minBy(minSelector)!!), maxSelector(this.maxBy(maxSelector)!!))
+    return Pair(minSelector(this.minByOrNull(minSelector)!!), maxSelector(this.maxByOrNull(maxSelector)!!))
 }
 
 inline fun <T> List<T>.forEachCombinationPair(action: (T, T) -> Unit) {
@@ -88,7 +88,7 @@ fun <T> Collection<T>.allEqual(): Boolean {
     return this.zipWithNext().all { it.first == it.second }
 }
 
-fun <K,V> Map<K,V>.sumBy(valueSelector: (Map.Entry<K,V>) -> Int): Int {
+fun <K,V> Map<K,V>.sumOf(valueSelector: (Map.Entry<K,V>) -> Int): Int {
     return this.map(valueSelector).sum()
 }
 
@@ -100,11 +100,11 @@ fun <T> ArrayDeque<T>.popOrNull(): T? {
     return if (this.isNotEmpty()) this.pop() else null
 }
 
-inline operator fun <T> List<T>.component6(): T {
+operator fun <T> List<T>.component6(): T {
     return get(5)
 }
 
-inline operator fun <T> List<T>.component7(): T {
+operator fun <T> List<T>.component7(): T {
     return get(6)
 }
 

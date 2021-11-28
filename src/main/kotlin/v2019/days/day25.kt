@@ -13,12 +13,12 @@ fun day25a(input: String): Long {
         val inputQueue = ArrayDeque<Long>()
         generateProgramOutput(intCodes) {
             if (inputQueue.isEmpty()) {
-                readLine()?.forEach { inputQueue.add(it.toLong()) }
+                readLine()?.forEach { inputQueue.add(it.code.toLong()) }
                 inputQueue.add(NEWLINE)
             }
             inputQueue.poll()
         }.forEach {
-            print(it.toChar())
+            print(it.toInt().toChar())
         }
     }
 }

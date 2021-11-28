@@ -61,7 +61,7 @@ fun day09b(input: List<String>, preambleLength: Int = 25): Long {
             curSum > invalidNumber -> startIndex++
             curSum < invalidNumber -> endIndex++
             else -> {
-                return continguousSet.min()!! + continguousSet.max()!!
+                return continguousSet.minOrNull()!! + continguousSet.maxOrNull()!!
             }
         }
     }

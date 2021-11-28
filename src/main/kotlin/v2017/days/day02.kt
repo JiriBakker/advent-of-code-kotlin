@@ -10,7 +10,7 @@ private fun parseSpreadsheet(input: List<String>): List<List<Int>> {
 fun day02a(input: List<String>): Int {
     val spreadsheet = parseSpreadsheet(input)
 
-    return spreadsheet.sumBy { row ->
+    return spreadsheet.sumOf { row ->
         row.fold(Pair(Int.MAX_VALUE, 0)) { (min, max), value ->
             Pair(min(min, value), max(max, value))
         }.let { it.second -it.first}
@@ -29,5 +29,5 @@ private fun findCleanDivision(nrs: List<Int>): Int {
 
 fun day02b(input: List<String>): Int {
     val spreadsheet = parseSpreadsheet(input)
-    return spreadsheet.sumBy(::findCleanDivision)
+    return spreadsheet.sumOf(::findCleanDivision)
 }

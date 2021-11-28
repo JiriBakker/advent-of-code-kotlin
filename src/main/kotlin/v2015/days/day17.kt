@@ -32,7 +32,7 @@ fun day17b(input: List<String>, eggnog: Int = 150): Int {
 
     val combinations = findCombinations(containers, eggnog)
 
-    val minNrOfContainers = combinations.map { it.size }.min()!!
+    val minNrOfContainers = combinations.map { it.size }.minOrNull()!!
 
     return combinations.filter { it.size == minNrOfContainers }.size
 }

@@ -103,7 +103,7 @@ private fun selectTargets(unitGroups: List<UnitGroup>): Sequence<Pair<UnitGroup,
 
     fun getNextAttacker(): UnitGroup? {
         return potentialAttackers
-            .maxWith(
+            .maxWithOrNull(
                 compareBy<UnitGroup> { it.effectivePower }
                     .thenBy { it.initiative }
             )
@@ -113,10 +113,10 @@ private fun selectTargets(unitGroups: List<UnitGroup>): Sequence<Pair<UnitGroup,
         return potentialDefenders
             .filter { it.type != attacker.type }
             .filter { it.computeDamageForAttack(attacker) > 0 }
-            .maxWith(
+            .maxWithOrNull(
                 compareBy<UnitGroup> { it.computeDamageForAttack(attacker) }
-                .thenBy { it.effectivePower }
-                .thenBy { it.initiative }
+                    .thenBy { it.effectivePower }
+                    .thenBy { it.initiative }
             )
     }
 
@@ -162,10 +162,10 @@ fun day24a(inputLines: List<String>): Int {
 
     runBattle(unitGroups)
 
-    return unitGroups.sumBy { it.nrOfUnits }
+    return unitGroups.sumOf { it.nrOfUnits }
 }
 
-fun day24b(inputLines: List<String>): Int? {
+fun day24b(inputLines: List<String>): Int {
     var boost = 0
     while (true) {
         val unitGroups = parse(inputLines, boost).toMutableList()
@@ -173,7 +173,7 @@ fun day24b(inputLines: List<String>): Int? {
         runBattle(unitGroups)
 
         if (unitGroups.none { it.type == UnitGroupType.Infection }) {
-            return unitGroups.sumBy { it.nrOfUnits }
+            return unitGroups.sumOf { it.nrOfUnits }
         }
 
         boost++

@@ -11,14 +11,14 @@ fun day04a(input: List<String>): Int {
                     .groupingBy { it }
                     .eachCount()
                     .toList()
-                    .sortedByDescending { it.second * 1000 - it.first.toInt() }
+                    .sortedByDescending { it.second * 1000 - it.first.code }
                     .take(5)
                     .map { it.first }
                     .joinToString("")
 
             checksum == computedChecksum
         }
-        .sumBy { it.trimEnd(']').split("[").first().split("-").last().toInt() }
+        .sumOf { it.trimEnd(']').split("[").first().split("-").last().toInt() }
 }
 
 fun day04b(input: List<String>): Int {

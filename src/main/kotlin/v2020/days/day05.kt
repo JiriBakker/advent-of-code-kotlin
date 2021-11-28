@@ -10,7 +10,7 @@ private fun String.toSeatId(): Int {
 }
 
 fun day05a(input: List<String>): Int {
-    return input.map(String::toSeatId).max()!!
+    return input.map(String::toSeatId).maxOrNull()!!
 }
 
 fun day05b(input: List<String>): Int {

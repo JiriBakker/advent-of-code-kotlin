@@ -3,7 +3,7 @@ package v2017.days.day01
 import util.safeMod
 
 private fun sumWithOffset(digits: List<Int>, offset: Int): Int {
-    return digits.withIndex().sumBy { (index, digit) ->
+    return digits.withIndex().sumOf { (index, digit) ->
         if (digits[(index + offset).safeMod(digits.size)] == digit) digit
         else 0
     }

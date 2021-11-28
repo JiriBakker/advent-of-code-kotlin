@@ -173,5 +173,5 @@ fun day15b(input: String): Long {
             .forEach { neighbour -> toVisit.add(neighbour to distance + 1) }
     }
 
-    return distances.values.max()!!
+    return distances.values.maxOrNull()!!
 }
