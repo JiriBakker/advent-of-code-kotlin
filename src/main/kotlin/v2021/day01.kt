@@ -9,16 +9,17 @@ private fun <T> List<T>.zipWithOffset(offset: Int): Sequence<Pair<T,T>> {
     }
 }
 
+private fun List<Long>.countIncreases(offset: Int) =
+    zipWithOffset(offset).count { it.second > it.first }
+
 fun day01a(input: List<String>): Int {
     return input
         .map(String::toLong)
-        .zipWithOffset(1)
-        .count { it.second > it.first }
+        .countIncreases(1)
 }
 
 fun day01b(input: List<String>): Int {
     return input
         .map(String::toLong)
-        .zipWithOffset(3)
-        .count { it.second > it.first }
+        .countIncreases(3)
 }
