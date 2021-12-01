@@ -9,7 +9,7 @@ class InfiATests {
     @Test
     fun testExampleInput1() {
         assertEquals(18, infiA(listOf(
-            "35 onderdelen missen",
+            "46 onderdelen missen",
             "Zoink: 9 Oink, 5 Dink",
             "Floep: 2 Flap, 4 Dink",
             "Flap: 4 Oink, 3 Dink"
@@ -26,7 +26,7 @@ class InfiBTests {
     @Test
     fun testExampleInput1() {
         assertEquals("FZZ", infiB(listOf(
-            "35 onderdelen missen",
+            "46 onderdelen missen",
             "Zoink: 9 Oink, 5 Dink",
             "Floep: 2 Flap, 4 Dink",
             "Flap: 4 Oink, 3 Dink"
@@ -34,8 +34,8 @@ class InfiBTests {
     }
 
     @Test
-    @Ignore // (Apparently) not the correct answer :|
+    @Ignore // Too slow
     fun testActualInput() {
-        assertEquals("AAAAAABBBBBBDEEEEEPU", infiB(readInputLines("infi", 2021)))
+        assertEquals("BBBBDEHHHHLLLPPPPQQQ", infiB(readInputLines("infi", 2021)))
     }
 }
