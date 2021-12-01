@@ -12,14 +12,12 @@ private fun <T> List<T>.zipWithOffset(offset: Int): Sequence<Pair<T,T>> {
 private fun List<Long>.countIncreases(offset: Int) =
     zipWithOffset(offset).count { it.second > it.first }
 
-fun day01a(input: List<String>): Int {
-    return input
+fun day01a(input: List<String>) =
+    input
         .map(String::toLong)
         .countIncreases(1)
-}
 
-fun day01b(input: List<String>): Int {
-    return input
+fun day01b(input: List<String>) =
+    input
         .map(String::toLong)
         .countIncreases(3)
-}
