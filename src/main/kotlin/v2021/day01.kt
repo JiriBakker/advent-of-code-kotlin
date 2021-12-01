@@ -1,13 +1,24 @@
 package v2021
 
-import util.DoNotAutoExecute
-
-@DoNotAutoExecute
-fun day01a(input: List<String>): Int {
-    return 0
+private fun <T> List<T>.zipWithOffset(offset: Int): Sequence<Pair<T,T>> {
+    val list = this
+    return sequence {
+        for (i in offset until size) {
+            yield(list[i - offset] to list[i])
+        }
+    }
 }
 
-@DoNotAutoExecute
+fun day01a(input: List<String>): Int {
+    return input
+        .map(String::toLong)
+        .zipWithOffset(1)
+        .count { it.second > it.first }
+}
+
 fun day01b(input: List<String>): Int {
-    return 0
+    return input
+        .map(String::toLong)
+        .zipWithOffset(3)
+        .count { it.second > it.first }
 }
