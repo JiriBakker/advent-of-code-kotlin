@@ -1,5 +1,6 @@
 package v2021
 
+import util.DoNotAutoExecute
 import v2021.Infi.parse
 
 private object Infi {
@@ -46,16 +47,23 @@ fun infiA(input: List<String>): Long {
     return componentSums.maxByOrNull { it.value }!!.value
 }
 
+@DoNotAutoExecute
 fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
     val itemCompositions = input.parse()
     val maxParts = input[0].split(" ")[0].toLong()
 
+    val toys = itemCompositions.filter { item ->
+        itemCompositions.none { it.value.keys.contains(item.key) }
+    }
+
     val componentSums = getComponentSums(itemCompositions)
+
+
 
     val sortedSums =
         componentSums
             .entries
-            .filter { it.value > 1 } // TODO How to filter out 'non-toys'? Accu = 365 so `it.value > 365`?
+            .filter { toys.containsKey(it.key) }
             .associate { it.value to it.key }
             .toSortedMap(compareByDescending { it })
 
