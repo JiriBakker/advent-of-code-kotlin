@@ -2,6 +2,7 @@ package v2021
 
 import util.DoNotAutoExecute
 import util.filteredValues
+import util.max
 import util.sumOfLong
 
 private fun List<String>.parseItemCompositions() =
@@ -62,16 +63,17 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
             .filteredValues { isToy(it.key) }
             .sortedDescending() // Taking high first will speed up finding match
 
-    fun findMatchingCombo(maxLength: Int, remainingParts: Long): List<Long>? {
-        if (maxLength > 0) {
-            sortedSums.forEach { sum ->
-                if (sum > remainingParts) return@forEach
-                if (sum == remainingParts && maxLength == 1) return listOf(sum)
+    fun findMatchingCombo(maxLength: Int, remainingParts: Long, lowestSum: Long): List<Long>? {
+        if (maxLength == 0) return null
+        if (remainingParts < maxLength * lowestSum) return null
 
-                val result = findMatchingCombo(maxLength - 1, remainingParts - sum)
-                if (result != null) {
-                    return listOf(sum) + result
-                }
+        sortedSums.forEach { sum ->
+            if (sum > remainingParts) return@forEach
+            if (sum == remainingParts && maxLength == 1) return listOf(sum)
+
+            val result = findMatchingCombo(maxLength - 1, remainingParts - sum, lowestSum)
+            if (result != null) {
+                return listOf(sum) + result
             }
         }
 
@@ -79,7 +81,7 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
     }
 
     val match =
-        findMatchingCombo(nrOfPresentsPacked, maxParts)
+        findMatchingCombo(nrOfPresentsPacked, maxParts, sortedSums.last())
             ?: throw Error("No solution found")
 
     return match
