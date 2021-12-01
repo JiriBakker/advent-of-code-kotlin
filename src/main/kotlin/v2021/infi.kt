@@ -1,7 +1,6 @@
 package v2021
 
 import util.DoNotAutoExecute
-import util.combine
 import util.filteredValues
 import util.sumOfLong
 
@@ -17,35 +16,35 @@ private fun List<String>.parseItemCompositions() =
             key to items
         }
 
-private fun getComponentSums(itemCompositions: Map<String, Map<String, Long>>): Map<String, Long> {
-    val componentSums = mutableMapOf<String, Long>()
+private fun getItemSums(itemCompositions: Map<String, Map<String, Long>>): Map<String, Long> {
+    val itemSums = mutableMapOf<String, Long>()
 
-    fun getComponentSum(name: String): Long {
+    fun getItemSum(name: String): Long {
         if (!itemCompositions.containsKey(name)) {
             return 1
         }
-        if (!componentSums.containsKey(name)) {
-            componentSums[name] =
+        if (!itemSums.containsKey(name)) {
+            itemSums[name] =
                 itemCompositions[name]!!
                     .sumOfLong { (name, count) ->
-                        getComponentSum(name) * count
+                        getItemSum(name) * count
                     }
         }
 
-        return componentSums[name]!!
+        return itemSums[name]!!
     }
 
-    itemCompositions.keys.forEach(::getComponentSum)
+    itemCompositions.keys.forEach(::getItemSum)
 
-    return componentSums
+    return itemSums
 }
 
 fun infiA(input: List<String>): Long {
     val itemCompositions = input.parseItemCompositions()
 
-    val componentSums = getComponentSums(itemCompositions)
+    val itemSums = getItemSums(itemCompositions)
 
-    return componentSums.maxByOrNull { it.value }!!.value
+    return itemSums.maxByOrNull { it.value }!!.value
 }
 
 @DoNotAutoExecute
@@ -56,10 +55,10 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
     fun isToy(name: String) =
         itemCompositions.none { it.value.keys.contains(name) }
 
-    val componentSums = getComponentSums(itemCompositions)
+    val itemSums = getItemSums(itemCompositions)
 
     val sortedSums =
-        componentSums
+        itemSums
             .filteredValues { isToy(it.key) }
             .sortedDescending() // Taking high first will speed up finding match
 
@@ -84,7 +83,7 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
             ?: throw Error("No solution found")
 
     return match
-        .map { item -> componentSums.entries.first { it.value == item } }
+        .map { item -> itemSums.entries.first { it.value == item } }
         .map { it.key.first() }
         .sorted()
         .joinToString("")
