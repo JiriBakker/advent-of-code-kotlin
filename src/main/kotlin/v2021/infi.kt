@@ -1,35 +1,36 @@
 package v2021
 
 import util.DoNotAutoExecute
-import v2021.Infi.parse
+import util.combine
+import util.filteredValues
+import util.sumOfLong
 
-private object Infi {
-    fun List<String>.parse() =
-        this
-            .drop(1)
-            .associate { line ->
-                val (key, contents) = line.split(": ")
-                val items = contents.split(", ").associate {
-                    val (count, name) = it.split(" ")
-                    name to count.toLong()
-                }
-                key to items
+private fun List<String>.parseItemCompositions() =
+    this
+        .drop(1)
+        .associate { line ->
+            val (key, contents) = line.split(": ")
+            val items = contents.split(", ").associate {
+                val (count, name) = it.split(" ")
+                name to count.toLong()
             }
-}
+            key to items
+        }
 
 private fun getComponentSums(itemCompositions: Map<String, Map<String, Long>>): Map<String, Long> {
     val componentSums = mutableMapOf<String, Long>()
 
     fun getComponentSum(name: String): Long {
-        if (!itemCompositions.containsKey(name)) return 1
-        if (componentSums.containsKey(name)) return componentSums[name]!!
-
-        componentSums[name] =
-            itemCompositions[name]!!
-                .entries
-                .sumOf { (name, count) ->
-                    getComponentSum(name) * count
-                }
+        if (!itemCompositions.containsKey(name)) {
+            return 1
+        }
+        if (!componentSums.containsKey(name)) {
+            componentSums[name] =
+                itemCompositions[name]!!
+                    .sumOfLong { (name, count) ->
+                        getComponentSum(name) * count
+                    }
+        }
 
         return componentSums[name]!!
     }
@@ -40,7 +41,7 @@ private fun getComponentSums(itemCompositions: Map<String, Map<String, Long>>): 
 }
 
 fun infiA(input: List<String>): Long {
-    val itemCompositions = input.parse()
+    val itemCompositions = input.parseItemCompositions()
 
     val componentSums = getComponentSums(itemCompositions)
 
@@ -49,33 +50,28 @@ fun infiA(input: List<String>): Long {
 
 @DoNotAutoExecute
 fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
-    val itemCompositions = input.parse()
+    val itemCompositions = input.parseItemCompositions()
     val maxParts = input[0].split(" ")[0].toLong()
 
-    val toys = itemCompositions.filter { item ->
-        itemCompositions.none { it.value.keys.contains(item.key) }
-    }
+    fun isToy(name: String) =
+        itemCompositions.none { it.value.keys.contains(name) }
 
     val componentSums = getComponentSums(itemCompositions)
 
-
-
     val sortedSums =
         componentSums
-            .entries
-            .filter { toys.containsKey(it.key) }
-            .associate { it.value to it.key }
-            .toSortedMap(compareByDescending { it })
+            .filteredValues { isToy(it.key) }
+            .sortedDescending() // Taking high first will speed up finding match
 
     fun findMatchingCombo(maxLength: Int, remainingParts: Long): List<Long>? {
         if (maxLength > 0) {
-            sortedSums.keys.forEach { count ->
-                if (count > remainingParts) return@forEach
-                if (count == remainingParts && maxLength == 1) return listOf(count)
+            sortedSums.forEach { sum ->
+                if (sum > remainingParts) return@forEach
+                if (sum == remainingParts && maxLength == 1) return listOf(sum)
 
-                val result = findMatchingCombo(maxLength - 1, remainingParts - count)
+                val result = findMatchingCombo(maxLength - 1, remainingParts - sum)
                 if (result != null) {
-                    return listOf(count) + result
+                    return listOf(sum) + result
                 }
             }
         }
@@ -88,7 +84,8 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
             ?: throw Error("No solution found")
 
     return match
-        .map { sortedSums[it]!!.first() }
+        .map { item -> componentSums.entries.first { it.value == item } }
+        .map { it.key.first() }
         .sorted()
         .joinToString("")
 }

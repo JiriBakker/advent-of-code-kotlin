@@ -92,6 +92,13 @@ fun <K,V> Map<K,V>.sumOf(valueSelector: (Map.Entry<K,V>) -> Int): Int {
     return this.map(valueSelector).sum()
 }
 
+fun <K,V> Map<K,V>.sumOfLong(valueSelector: (Map.Entry<K,V>) -> Long): Long {
+    return this.map(valueSelector).sum()
+}
+
+fun <K,V> Map<K,V>.filteredValues(predicate: (Map.Entry<K,V>) -> Boolean) =
+    this.filter(predicate).map { it.value }
+
 fun <T> Iterator<T>.nextOrNull(): T? {
     return if (this.hasNext()) this.next() else null
 }
@@ -197,3 +204,4 @@ fun <T> Map<T, Int>.findKeyForMaxValue(): T? {
     }
     return maxKeys.singleOrNull()
 }
+
