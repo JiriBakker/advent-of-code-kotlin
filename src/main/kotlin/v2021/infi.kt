@@ -48,7 +48,6 @@ fun infiA(input: List<String>): Long {
     return itemSums.maxByOrNull { it.value }!!.value
 }
 
-@DoNotAutoExecute
 fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
     val itemCompositions = input.parseItemCompositions()
     val maxParts = input[0].split(" ")[0].toLong()
@@ -63,15 +62,21 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
             .filteredValues { isToy(it.key) }
             .sortedDescending() // Taking high first will speed up finding match
 
-    fun findMatchingCombo(maxLength: Int, remainingParts: Long): List<Long>? {
+    fun findMatchingCombo(maxLength: Int, remainingParts: Long, sums: List<Long>): List<Long>? {
         if (maxLength == 0) return null
         if (remainingParts < maxLength * sortedSums.last()) return null
 
-        sortedSums.forEach { sum ->
-            if (sum > remainingParts) return@forEach
+        sums.forEachIndexed { index, sum ->
+            if (sum > remainingParts) return@forEachIndexed
             if (sum == remainingParts && maxLength == 1) return listOf(sum)
 
-            val result = findMatchingCombo(maxLength - 1, remainingParts - sum)
+            val result =
+                findMatchingCombo(
+                    maxLength - 1,
+                    remainingParts - sum,
+                    sums.drop(index)
+                )
+
             if (result != null) {
                 return listOf(sum) + result
             }
@@ -81,7 +86,7 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
     }
 
     val match =
-        findMatchingCombo(nrOfPresentsPacked, maxParts)
+        findMatchingCombo(nrOfPresentsPacked, maxParts, sortedSums)
             ?: throw Error("No solution found")
 
     return match
