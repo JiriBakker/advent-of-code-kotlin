@@ -34,7 +34,6 @@ class InfiBTests {
     }
 
     @Test
-    @Ignore // Too slow (~30s)
     fun testActualInput() {
         assertEquals("BBBBDEHHHHLLLPPPPQQQ", infiB(readInputLines("infi", 2021)))
     }
