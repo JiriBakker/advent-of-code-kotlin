@@ -1,8 +1,6 @@
 package v2021
 
-import util.DoNotAutoExecute
 import util.filteredValues
-import util.max
 import util.sumOfLong
 
 private fun List<String>.parseItemCompositions() =
@@ -48,6 +46,33 @@ fun infiA(input: List<String>): Long {
     return itemSums.maxByOrNull { it.value }!!.value
 }
 
+private fun findMatchingCombo(
+    maxLength: Int,
+    remainingParts: Long,
+    sums: List<Long>
+): List<Long>? {
+    if (maxLength == 0) return null
+    if (remainingParts < maxLength * sums.last()) return null // Even if we only use the lowest sum we won't be able to find a match
+
+    sums.forEachIndexed { index, sum ->
+        if (sum > remainingParts) return@forEachIndexed
+        if (sum == remainingParts && maxLength == 1) return listOf(sum)
+
+        val result =
+            findMatchingCombo(
+                maxLength - 1,
+                remainingParts - sum,
+                sums.drop(index) // Reduce search space
+            )
+
+        if (result != null) {
+            return listOf(sum) + result
+        }
+    }
+
+    return null
+}
+
 fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
     val itemCompositions = input.parseItemCompositions()
     val maxParts = input[0].split(" ")[0].toLong()
@@ -62,35 +87,12 @@ fun infiB(input: List<String>, nrOfPresentsPacked: Int = 20): String {
             .filteredValues { isToy(it.key) }
             .sortedDescending() // Taking high first will speed up finding match
 
-    fun findMatchingCombo(maxLength: Int, remainingParts: Long, sums: List<Long>): List<Long>? {
-        if (maxLength == 0) return null
-        if (remainingParts < maxLength * sortedSums.last()) return null
-
-        sums.forEachIndexed { index, sum ->
-            if (sum > remainingParts) return@forEachIndexed
-            if (sum == remainingParts && maxLength == 1) return listOf(sum)
-
-            val result =
-                findMatchingCombo(
-                    maxLength - 1,
-                    remainingParts - sum,
-                    sums.drop(index)
-                )
-
-            if (result != null) {
-                return listOf(sum) + result
-            }
-        }
-
-        return null
-    }
-
     val match =
         findMatchingCombo(nrOfPresentsPacked, maxParts, sortedSums)
             ?: throw Error("No solution found")
 
     return match
-        .map { item -> itemSums.entries.first { it.value == item } }
+        .map { item -> itemSums.entries.first { it.value == item } } // Assumes sums are always unique (if not, there wouldn't be a single answer to this puzzle)
         .map { it.key.first() }
         .sorted()
         .joinToString("")
