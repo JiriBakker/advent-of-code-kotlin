@@ -16,7 +16,6 @@ fun day02a(input: List<String>): Int {
             "forward" -> x += amount
             "down" -> y += amount
             "up" -> y -= amount
-            else -> throw Error("Unknown direction: $direction")
         }
     }
     return x * y
@@ -27,20 +26,18 @@ fun day02b(input: List<String>): Int {
     var y = 0
     var aim = 0
 
-    input.forEach { movement ->
-        val (direction, amount) = movement.split(" ")
+    input.parseMovements().forEach { (direction, amount) ->
         when (direction) {
             "forward" -> {
-                x += amount.toInt()
-                y += aim * amount.toInt()
+                x += amount
+                y += aim * amount
             }
             "down" -> {
-                aim += amount.toInt()
+                aim += amount
             }
             "up" -> {
-                aim -= amount.toInt()
+                aim -= amount
             }
-            else -> throw Error("Unknown direction: $direction")
         }
     }
     return x * y
