@@ -1,17 +1,11 @@
 package v2021
 
 import util.toDecimal
+import util.transpose
 
-private fun List<String>.countOnes(): List<Int> {
-    val oneCounts = mutableListOf<Int>()
-    repeat(this[0].length) { oneCounts.add(0) }
-    forEach { line ->
-        line.forEachIndexed { index, char ->
-            if (char == '1') oneCounts[index] = oneCounts[index] + 1
-        }
-    }
-    return oneCounts
-}
+private fun List<String>.countOnes() =
+    transpose()
+        .map { column -> column.count { it == '1' } }
 
 fun day03a(input: List<String>): Long {
     val oneCounts = input.countOnes()
@@ -37,6 +31,7 @@ private fun getMostCommon(lines: List<String>) =
             if (it >= lines.size - it) '1'
             else '0'
         }
+        .toList()
 
 fun day03b(input: List<String>): Long {
     fun findRating(comparator: (Char, Char) -> Boolean): Long {
