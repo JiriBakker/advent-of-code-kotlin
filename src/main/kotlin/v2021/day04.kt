@@ -66,15 +66,15 @@ private fun drawNrs(
             }
     }
 
-    throw Error("No winning board")
+    throw Error("No winning bingo card")
 }
 
 private fun computeFinalScore(completedBingoCard: BingoCard, nrsDrawn: List<Int>) =
     completedBingoCard
         .sumOf { row ->
-            row.filter { nr ->
-                !nrsDrawn.contains(nr)
-            }.sum()
+            row
+                .filter { nr -> !nrsDrawn.contains(nr) } // TODO List.contains not super efficient
+                .sum()
         } * nrsDrawn.last()
 
 fun day04a(input: List<String>): Int {
