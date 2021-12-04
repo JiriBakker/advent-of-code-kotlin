@@ -90,12 +90,10 @@ fun day04b(input: List<String>): Int {
     val (nrsToDraw, bingoCards) = input.parse()
     val winningLines = bingoCards.getWinningLines()
 
-    val bingoCardsCompleted = mutableListOf<List<List<Int>>>()
+    val bingoCardsCompleted = mutableSetOf<List<List<Int>>>()
 
     return drawNrs(nrsToDraw, winningLines) { completedBingoCard, nrsDrawn ->
-        if (!bingoCardsCompleted.contains(completedBingoCard)) {
-            bingoCardsCompleted.add(completedBingoCard)
-        }
+        bingoCardsCompleted.add(completedBingoCard)
         if (bingoCardsCompleted.count() == bingoCards.count()) { // All bingo cards completed
             computeFinalScore(completedBingoCard, nrsDrawn)
         } else null
