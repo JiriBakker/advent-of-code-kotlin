@@ -29,17 +29,11 @@ private object Day04 {
 
 private fun List<BingoCard>.getWinningLines(): Map<Set<Int>, BingoCard> {
     return this.flatMap { bingoCard ->
-        val winningLinesForBingoCard =
-            sequence {
-                bingoCard.forEach { row ->
-                    yield(row.map { it }.toSet())
-                }
-                (0 .. 4).forEach { column ->
-                    yield(bingoCard.map { row ->row[column] }.toSet())
-                }
-            }.toList()
-
-        winningLinesForBingoCard.map { it to bingoCard }
+        buildList {
+            addAll(bingoCard.map { row -> row })
+            addAll((0 .. 4).map { column -> bingoCard.map { row -> row[column] } })
+        }
+            .map { it.toSet() to bingoCard }
     }.toMap()
 }
 
