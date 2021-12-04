@@ -18,37 +18,43 @@ fun day03a(input: List<String>): Long {
             }
             .toDecimal()
 
-    val gammaRate = getRate { a, b -> a >= b }
+    val gammaRate   = getRate { a, b -> a >= b }
     val epsilonRate = getRate { a, b -> a <= b }
 
     return gammaRate * epsilonRate
 }
 
-private fun getMostCommon(lines: List<String>) =
-    lines
-        .countOnes()
+private fun List<String>.getMostCommon() =
+    countOnes()
         .map {
-            if (it >= lines.size - it) '1'
+            if (it >= size - it) '1'
             else '0'
         }
         .toList()
+
+private fun List<String>.reduceCandidates(
+    column: Int,
+    comparator: (Char, Char) -> Boolean
+): List<String> {
+    val mostCommon = getMostCommon()
+    return filter {
+        comparator.invoke(mostCommon[column], it[column])
+    }
+}
 
 fun day03b(input: List<String>): Long {
     fun findRating(comparator: (Char, Char) -> Boolean): Long {
         var remaining = input
         var index = 0
         while (remaining.size > 1) {
-            val mostCommon = getMostCommon(remaining)
-            remaining = remaining.filter {
-                comparator.invoke(mostCommon[index], it[index])
-            }
+            remaining = remaining.reduceCandidates(index, comparator)
             index++
         }
         return remaining.first().toDecimal()
     }
 
     val oxygenRating = findRating { a, b -> a == b }
-    val co2Rating = findRating { a, b -> a != b }
+    val co2Rating    = findRating { a, b -> a != b }
 
     return oxygenRating * co2Rating
 }
