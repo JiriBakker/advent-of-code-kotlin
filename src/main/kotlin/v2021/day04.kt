@@ -30,7 +30,7 @@ private object Day04 {
 private fun List<BingoCard>.getWinningLines(): Map<Set<Int>, BingoCard> {
     return this.flatMap { bingoCard ->
         buildList {
-            addAll(bingoCard.map { row -> row })
+            addAll(bingoCard)
             addAll((0 .. 4).map { column -> bingoCard.map { row -> row[column] } })
         }
             .map { it.toSet() to bingoCard }
