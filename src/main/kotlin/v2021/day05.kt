@@ -50,10 +50,7 @@ private fun List<Line>.markPoints(): Map<Int, Map<Int, Int>> {
     val markedPoints = mutableMapOf<Int, MutableMap<Int, Int>>()
 
     fun markPoint(x: Int, y: Int) {
-        if (!markedPoints.containsKey(y)) {
-            markedPoints[y] = mutableMapOf()
-        }
-        val row = markedPoints[y]!!
+        val row = markedPoints.getOrPut(y) { mutableMapOf() }
         row[x] = row.getOrDefault(x, 0) + 1
     }
 
