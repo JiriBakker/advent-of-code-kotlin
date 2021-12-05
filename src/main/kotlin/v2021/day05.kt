@@ -1,6 +1,7 @@
 package v2021
 
 import util.max
+import util.normalize
 import util.sumOf
 import kotlin.math.abs
 
@@ -9,13 +10,14 @@ private class Line(val x1: Int, val y1: Int, val x2: Int, val y2: Int) {
     val isHorizontal = y1 == y2
 
     fun getPoints(): Sequence<Pair<Int, Int>> {
-        var x = x1
-        var y = y1
-        val xDelta = if (x1 > x2) -1 else if (x2 > x1) 1 else 0
-        val yDelta = if (y1 > y2) -1 else if (y2 > y1) 1 else 0
+        val xDelta = (x2 - x1).normalize()
+        val yDelta = (y2 - y1).normalize()
         val length = max(abs(x1 - x2), abs(y1 - y2)) + 1
 
         return sequence {
+            var x = x1
+            var y = y1
+
             repeat(length) {
                 yield(x to y)
                 x += xDelta
