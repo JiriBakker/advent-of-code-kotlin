@@ -1,38 +1,25 @@
 package v2021
 
 import util.max
-import util.min
 import util.sumOf
+import kotlin.math.abs
 
 private class Line(val x1: Int, val y1: Int, val x2: Int, val y2: Int) {
     val isVertical   = x1 == x2
     val isHorizontal = y1 == y2
 
     fun getPoints(): Sequence<Pair<Int, Int>> {
+        var x = x1
+        var y = y1
+        val xDelta = if (x1 > x2) -1 else if (x2 > x1) 1 else 0
+        val yDelta = if (y1 > y2) -1 else if (y2 > y1) 1 else 0
+        val length = max(abs(x1 - x2), abs(y1 - y2)) + 1
+
         return sequence {
-            if (isVertical) {
-                for (y in min(y1, y2) .. max(y1, y2)) {
-                    yield(x1 to y)
-                }
-            } else if (isHorizontal) {
-                for (x in min(x1, x2) .. max(x1, x2)) {
-                    yield(x to y1)
-                }
-            } else {
-                val xDelta = if (x1 > x2) -1 else 1
-                if (y1 < y2) {
-                    var x = x1
-                    for (y in y1 .. y2) {
-                        yield(x to y)
-                        x += xDelta
-                    }
-                } else {
-                    var x = x1
-                    for (y in y1 downTo y2) {
-                        yield(x to y)
-                        x += xDelta
-                    }
-                }
+            repeat(length) {
+                yield(x to y)
+                x += xDelta
+                y += yDelta
             }
         }
     }
