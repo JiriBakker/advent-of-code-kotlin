@@ -49,14 +49,18 @@ private fun List<String>.parseLines() =
 private fun List<Line>.markPoints(): Map<Int, Map<Int, Int>> {
     val markedPoints = mutableMapOf<Int, MutableMap<Int, Int>>()
 
+    fun markPoint(x: Int, y: Int) {
+        if (!markedPoints.containsKey(y)) {
+            markedPoints[y] = mutableMapOf()
+        }
+        val row = markedPoints[y]!!
+        row[x] = row.getOrDefault(x, 0) + 1
+    }
+
     forEach { line ->
         line.getPoints()
             .forEach { (x, y) ->
-                if (!markedPoints.containsKey(y)) {
-                    markedPoints[y] = mutableMapOf()
-                }
-                val row = markedPoints[y]!!
-                row[x] = row.getOrDefault(x, 0) + 1
+                markPoint(x, y)
             }
     }
 
