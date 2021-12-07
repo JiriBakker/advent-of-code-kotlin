@@ -7,28 +7,24 @@ import util.readInputLines
 
 class Day07aTests {
     @Test
-    @Ignore
     fun testExampleInput1() {
-        assertEquals(0, day07a(listOf()))
+        assertEquals(37, day07a(listOf("16,1,2,0,4,2,7,1,2,14")))
     }
 
     @Test
-    @Ignore
     fun testActualInput() {
-        assertEquals(0, day07a(readInputLines("day07", 2021)))
+        assertEquals(340987, day07a(readInputLines("day07", 2021)))
     }
 }
 
 class Day07bTests {
     @Test
-    @Ignore
     fun testExampleInput1() {
-        assertEquals(0, day07b(listOf()))
+        assertEquals(168, day07b(listOf("16,1,2,0,4,2,7,1,2,14")))
     }
 
     @Test
-    @Ignore
     fun testActualInput() {
-        assertEquals(0, day07b(readInputLines("day07", 2021)))
+        assertEquals(96987874, day07b(readInputLines("day07", 2021)))
     }
 }
