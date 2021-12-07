@@ -11,18 +11,17 @@ private fun List<Int>.countNrs(): Map<Int, Long> =
 private fun MutableMap<Int, Long>.shiftLeft() =
     (0 .. 7).forEach { this[it] = this.getOrDefault(it + 1, 0) }
 
-
-private fun countFish(initialTimeLeftPerFish: List<Int>, days: Int): Long {
-    val fishesPerTimeLeft = initialTimeLeftPerFish.countNrs().toMutableMap()
+private fun countFish(initial: List<Int>, days: Int): Long {
+    val buckets = initial.countNrs().toMutableMap()
 
     repeat(days) {
-        val created = fishesPerTimeLeft.getOrDefault(0, 0)
-        fishesPerTimeLeft.shiftLeft()
-        fishesPerTimeLeft[6] = fishesPerTimeLeft.getOrDefault(6, 0) + created
-        fishesPerTimeLeft[8] = created
+        val created = buckets.getOrDefault(0, 0)
+        buckets.shiftLeft()
+        buckets[6] = buckets.getOrDefault(6, 0) + created
+        buckets[8] = created
     }
 
-    return fishesPerTimeLeft.sumOfLong { it.value }
+    return buckets.sumOfLong { it.value }
 }
 
 fun day06a(input: List<String>) =

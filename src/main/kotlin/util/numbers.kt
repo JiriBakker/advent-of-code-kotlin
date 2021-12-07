@@ -79,3 +79,4 @@ fun Int.notEquals(other: Int): Boolean = this != other
 fun BigInteger.asBinaryString(length: Int = 32): String = this.toString(2).padStart(length, '0')
 
 fun String.toDecimal() = toLong(2)
+
