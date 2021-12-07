@@ -1,7 +1,6 @@
 package v2021
 
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Test
 import util.readInputLines
 
