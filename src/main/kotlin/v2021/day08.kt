@@ -16,10 +16,9 @@ private fun determineDigitSignals(signals: List<String>): Map<String, Int> {
             candidates.removeIf { it.length != value }
         }
 
-        fun matches(digit: Digit, count: Int) {
+        fun matches(other: Digit, nrOfMatchingSegments: Int) {
             candidates.removeIf { candidate ->
-                candidate.count {
-                    digit.letters.contains(it) } != count
+                candidate.count { other.letters.contains(it) } != nrOfMatchingSegments
             }
         }
 
