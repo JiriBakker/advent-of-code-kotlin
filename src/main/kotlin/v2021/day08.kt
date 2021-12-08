@@ -8,11 +8,12 @@ fun day08a(input: List<String>): Int {
 }
 
 private fun determineDigitSignals(signals: List<String>): Map<String, Int> {
+
     class Digit {
         private val candidates = signals.toMutableList()
 
-        fun length(l: Int) {
-            candidates.removeIf { it.length != l }
+        fun segments(value: Int) {
+            candidates.removeIf { it.length != value }
         }
 
         fun matches(digit: Digit, count: Int) {
@@ -27,42 +28,42 @@ private fun determineDigitSignals(signals: List<String>): Map<String, Int> {
 
     fun digit(lambda: Digit.() -> Unit) = Digit().apply(lambda)
 
-    val one   = digit { length(2) }
-    val four  = digit { length(4) }
-    val seven = digit { length(3) }
-    val eight = digit { length(7) }
+    val one   = digit { segments(2) }
+    val four  = digit { segments(4) }
+    val seven = digit { segments(3) }
+    val eight = digit { segments(7) }
 
     val zero = digit {
-        length(6)
+        segments(6)
         matches(four, 3)
         matches(seven, 3)
     }
 
     val two = digit {
-        length(5)
+        segments(5)
         matches(one, 1)
         matches(four, 2)
     }
 
     val three = digit {
-        length(5)
+        segments(5)
         matches(four, 3)
         matches(seven, 3)
     }
 
     val five = digit {
-        length(5)
+        segments(5)
         matches(one, 1)
         matches(four, 3)
     }
 
     val six = digit {
-        length(6)
+        segments(6)
         matches(one, 1)
     }
 
     val nine = digit {
-        length(6)
+        segments(6)
         matches(four, 4)
         matches(seven, 3)
     }
