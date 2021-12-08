@@ -89,9 +89,10 @@ fun day08b(input: List<String>): Int {
             val digitSignals = determineDigitSignals(signals.split(" "))
             val outputSignals = output.split(" ").map { it.sorted() }
 
-            digitSignals[outputSignals[0]]!! * 1000 +
-                digitSignals[outputSignals[1]]!! * 100 +
-                digitSignals[outputSignals[2]]!! * 10 +
-                digitSignals[outputSignals[3]]!!
+            outputSignals
+                .joinToString("") {
+                    digitSignals[it]!!.toString()
+                }
+                .toInt()
         }
 }
