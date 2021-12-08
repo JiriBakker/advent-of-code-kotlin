@@ -8,59 +8,76 @@ fun day08a(input: List<String>): Int {
 }
 
 private fun determineDigitSignals(signals: List<String>): Map<String, Int> {
-    fun String.countMatches(other: String) = count { other.contains(it) }
+    class Digit {
+        private val candidates = signals.toMutableList()
 
-    val one   = signals.first { it.length == 2 }
-    val four  = signals.first { it.length == 4 }
-    val seven = signals.first { it.length == 3 }
-    val eight = signals.first { it.length == 7 }
+        fun length(l: Int) {
+            candidates.removeIf { it.length != l }
+        }
 
-    val zero = signals.first { signal ->
-        signal.length == 6
-            && four.countMatches(signal)  == 3
-            && seven.countMatches(signal) == 3
+        fun matches(digit: Digit, count: Int) {
+            candidates.removeIf { candidate ->
+                candidate.count {
+                    digit.letters.contains(it) } != count
+            }
+        }
+
+        val letters get() = candidates.single().sorted()
     }
 
-    val two = signals.first { signal ->
-        signal.length == 5
-            && one.countMatches(signal)  == 1
-            && four.countMatches(signal) == 2
+    fun digit(lambda: Digit.() -> Unit) = Digit().apply(lambda)
+
+    val one   = digit { length(2) }
+    val four  = digit { length(4) }
+    val seven = digit { length(3) }
+    val eight = digit { length(7) }
+
+    val zero = digit {
+        length(6)
+        matches(four, 3)
+        matches(seven, 3)
     }
 
-    val three = signals.first { signal ->
-        signal.length == 5
-            && four.countMatches(signal)  == 3
-            && seven.countMatches(signal) == 3
+    val two = digit {
+        length(5)
+        matches(one, 1)
+        matches(four, 2)
     }
 
-    val five = signals.first { signal ->
-        signal.length == 5
-            && one.countMatches(signal)  == 1
-            && four.countMatches(signal) == 3
+    val three = digit {
+        length(5)
+        matches(four, 3)
+        matches(seven, 3)
     }
 
-    val six = signals.first { signal ->
-        signal.length == 6
-            && one.countMatches(signal) == 1
+    val five = digit {
+        length(5)
+        matches(one, 1)
+        matches(four, 3)
     }
 
-    val nine = signals.first { signal ->
-        signal.length == 6
-            && four.countMatches(signal)  == 4
-            && seven.countMatches(signal) == 3
+    val six = digit {
+        length(6)
+        matches(one, 1)
+    }
+
+    val nine = digit {
+        length(6)
+        matches(four, 4)
+        matches(seven, 3)
     }
 
     return mapOf(
-        zero.sorted()  to 0,
-        one.sorted()   to 1,
-        two.sorted()   to 2,
-        three.sorted() to 3,
-        four.sorted()  to 4,
-        five.sorted()  to 5,
-        six.sorted()   to 6,
-        seven.sorted() to 7,
-        eight.sorted() to 8,
-        nine.sorted()  to 9
+        zero.letters  to 0,
+        one.letters   to 1,
+        two.letters   to 2,
+        three.letters to 3,
+        four.letters  to 4,
+        five.letters  to 5,
+        six.letters   to 6,
+        seven.letters to 7,
+        eight.letters to 8,
+        nine.letters  to 9
     )
 }
 
