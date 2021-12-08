@@ -17,3 +17,5 @@ fun List<String>.countLetters(): Map<Char, Int> {
     }
     return counts
 }
+
+fun String.sorted() = toCharArray().sorted().toString()
