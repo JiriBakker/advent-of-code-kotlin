@@ -11,10 +11,9 @@ private fun determineDigitSignals(signals: List<String>): Map<String, Int> {
     fun String.countMatches(other: String) = count { other.contains(it) }
 
     val one   = signals.first { it.length == 2 }
-    val seven = signals.first { it.length == 3 }
     val four  = signals.first { it.length == 4 }
+    val seven = signals.first { it.length == 3 }
     val eight = signals.first { it.length == 7 }
-
 
     val zero = signals.first { signal ->
         signal.length == 6
