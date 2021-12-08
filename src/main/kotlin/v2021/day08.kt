@@ -15,49 +15,40 @@ private fun determineDigitSignals(signals: List<String>): Map<String, Int> {
     val four  = signals.first { it.length == 4 }
     val eight = signals.first { it.length == 7 }
 
+
+    val zero = signals.first { signal ->
+        signal.length == 6
+            && four.countMatches(signal)  == 3
+            && seven.countMatches(signal) == 3
+    }
+
+    val two = signals.first { signal ->
+        signal.length == 5
+            && one.countMatches(signal)  == 1
+            && four.countMatches(signal) == 2
+    }
+
+    val three = signals.first { signal ->
+        signal.length == 5
+            && four.countMatches(signal)  == 3
+            && seven.countMatches(signal) == 3
+    }
+
+    val five = signals.first { signal ->
+        signal.length == 5
+            && one.countMatches(signal)  == 1
+            && four.countMatches(signal) == 3
+    }
+
     val six = signals.first { signal ->
         signal.length == 6
             && one.countMatches(signal) == 1
     }
 
-    val zero = signals.first { signal ->
-        signal.length == 6
-            && one.countMatches(signal) == 2
-            && four.countMatches(signal) == 3
-            && seven.countMatches(signal) == 3
-    }
-
-
-    val three = signals.first { signal ->
-        signal.length == 5
-            && one.countMatches(signal) == 2
-            && four.countMatches(signal) == 3
-            && seven.countMatches(signal) == 3
-            && six.countMatches(signal) == 4
-    }
-
-    val five = signals.first { signal ->
-        signal.length == 5
-            && one.countMatches(signal) == 1
-            && four.countMatches(signal) == 3
-            && seven.countMatches(signal) == 2
-            && six.countMatches(signal) == 5
-    }
-
     val nine = signals.first { signal ->
         signal.length == 6
-            && one.countMatches(signal) == 2
-            && four.countMatches(signal) == 4
+            && four.countMatches(signal)  == 4
             && seven.countMatches(signal) == 3
-            && zero.countMatches(signal) == 5
-    }
-
-     val two = signals.first { signal ->
-        signal.length == 5
-            && one.count   { signal.contains(it) } == 1
-            && four.count  { signal.contains(it) } == 2
-            && seven.countMatches(signal) == 2
-            && six.count   { signal.contains(it) } == 4
     }
 
     return mapOf(
