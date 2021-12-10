@@ -28,23 +28,26 @@ private val incompleteCharScores =
 
 private class CorruptedInputException(val corruptedChar: Char) : Exception()
 
-private fun String.findIncompleteChars(): List<Char> {
-    val openChars = ArrayDeque<Char>()
+private fun Char.isOpeningChar() =
+    openingChars.contains(this)
 
-    fun String.validate(startPos: Int, nextValidClosingChar: Char): Int {
+private fun String.findIncompleteChars(): List<Char> {
+    val incompleteChars = ArrayDeque<Char>()
+
+    fun String.validate(startPos: Int = 0, expectedClosingChar: Char? = null): Int {
         var pos = startPos
         while (pos < this.length) {
             val char = this[pos]
             when {
-                openingChars.contains(char) -> {
-                    openChars.addFirst(this[pos])
+                char.isOpeningChar() -> {
+                    incompleteChars.addFirst(char)
                     pos = validate(pos + 1, opposingChars[char]!!)
                 }
-                char != nextValidClosingChar -> {
+                char != expectedClosingChar -> {
                     throw CorruptedInputException(char)
                 }
                 else -> {
-                    openChars.removeFirst()
+                    incompleteChars.removeFirst()
                     return pos + 1
                 }
             }
@@ -52,9 +55,9 @@ private fun String.findIncompleteChars(): List<Char> {
         return pos
     }
 
-    validate(0, ' ')
+    validate()
 
-    return openChars
+    return incompleteChars
 }
 
 fun day10a(input: List<String>): Int {
@@ -76,15 +79,16 @@ private fun <T : Comparable<T>> List<T>.getMiddle() =
     sorted()[size / 2]
 
 fun day10b(input: List<String>): Long {
-    val scores = input.mapNotNull { line ->
-        try {
-            line
-                .findIncompleteChars()
-                .computeIncompleteCharsScore()
-        } catch (e: CorruptedInputException) {
-            null
+    val scores =
+        input.mapNotNull { line ->
+            try {
+                line
+                    .findIncompleteChars()
+                    .computeIncompleteCharsScore()
+            } catch (e: CorruptedInputException) {
+                null
+            }
         }
-    }
 
     return scores.getMiddle()
 }
