@@ -14,14 +14,6 @@ private fun List<List<Int>>.getNeighbourPositions(x: Int, y: Int) =
         x >= 0 && x < this[0].size && y >= 0 && y < this.size
     }
 
-private fun List<MutableList<Int>>.resetFlashed() {
-    forEach { row ->
-        row.replaceAll {
-            if (it == -1) 0 else it
-        }
-    }
-}
-
 private fun List<MutableList<Int>>.iterate(): Sequence<Int> {
     val octopi = this
 
@@ -44,6 +36,14 @@ private fun List<MutableList<Int>>.iterate(): Sequence<Int> {
         }
     }
 
+    fun List<MutableList<Int>>.resetFlashed() {
+        forEach { row ->
+            row.replaceAll {
+                if (it == -1) 0 else it
+            }
+        }
+    }
+
     return sequence {
         while (true) {
             (octopi.indices).forEach { y ->
@@ -63,7 +63,10 @@ private fun List<MutableList<Int>>.iterate(): Sequence<Int> {
 fun day11a(input: List<String>): Int {
     val octopi = input.map { row -> row.map { it.toString().toInt() }.toMutableList() }
 
-    return octopi.iterate().take(100).sum()
+    return octopi
+        .iterate()
+        .take(100)
+        .sum()
 }
 
 fun day11b(input: List<String>): Int {
