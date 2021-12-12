@@ -2,27 +2,21 @@ package v2021
 
 private data class Node(val id: String) {
     val neighbours = mutableMapOf<String, Node>()
-
     val isSmallNode = id.all { it.isLowerCase() }
 }
 
-private fun Node.explore(pathSoFar: List<String>, doubleVisitsRemaining: Int = 0): List<List<String>> {
+private fun Node.explore(nodeIdsVisited: Set<String>, doubleVisitsRemaining: Int = 0): List<Set<String>> {
     return neighbours.flatMap { (id, node) ->
-        if (id == "end") {
-            listOf(pathSoFar.plus(id).toList())
-        } else if (id == "start") {
-            emptyList()
-        } else if (node.isSmallNode) {
-            val visitCount = pathSoFar.count { it == id }
-            if (visitCount == 0) {
-                node.explore(pathSoFar.plus(id), doubleVisitsRemaining)
-            } else if (visitCount == 1 && doubleVisitsRemaining > 0) {
-                node.explore(pathSoFar.plus(id), doubleVisitsRemaining - 1)
-            } else {
-                emptyList()
-            }
-        } else {
-            node.explore(pathSoFar.plus(id), doubleVisitsRemaining)
+        when {
+            id == "end" -> setOf(nodeIdsVisited.plus(id))
+            id == "start" -> emptyList()
+            node.isSmallNode ->
+                when {
+                    !nodeIdsVisited.contains(id) -> node.explore(nodeIdsVisited.plus(id), doubleVisitsRemaining)
+                    doubleVisitsRemaining > 0    -> node.explore(nodeIdsVisited, doubleVisitsRemaining - 1)
+                    else                         -> emptyList()
+                }
+            else -> node.explore(nodeIdsVisited.plus(id), doubleVisitsRemaining)
         }
     }
 }
@@ -44,7 +38,7 @@ fun day12a(input: List<String>): Int {
     val nodes = input.parseNodes()
 
     return nodes["start"]!!
-        .explore(listOf("start"))
+        .explore(setOf("start"))
         .count()
 }
 
@@ -52,6 +46,6 @@ fun day12b(input: List<String>): Int {
     val nodes = input.parseNodes()
 
     return nodes["start"]!!
-        .explore(listOf("start"), 1)
+        .explore(setOf("start"), doubleVisitsRemaining = 1)
         .count()
 }
