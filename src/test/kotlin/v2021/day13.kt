@@ -1,34 +1,55 @@
 package v2021
 
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Test
 import util.readInputLines
 
 class Day13aTests {
     @Test
-    @Ignore
     fun testExampleInput1() {
-        assertEquals(0, day13a(listOf()))
+        assertEquals(17, day13a(listOf(
+            "6,10",
+            "0,14",
+            "9,10",
+            "0,3",
+            "10,4",
+            "4,11",
+            "6,0",
+            "6,12",
+            "4,1",
+            "0,13",
+            "10,12",
+            "3,4",
+            "3,0",
+            "8,4",
+            "1,10",
+            "2,14",
+            "8,10",
+            "9,0",
+            "",
+            "fold along y=7",
+            "fold along x=5"
+        )))
     }
 
     @Test
-    @Ignore
     fun testActualInput() {
-        assertEquals(0, day13a(readInputLines("day13", 2021)))
+        assertEquals(655, day13a(readInputLines("day13", 2021)))
     }
 }
 
 class Day13bTests {
     @Test
-    @Ignore
-    fun testExampleInput1() {
-        assertEquals(0, day13b(listOf()))
-    }
-
-    @Test
-    @Ignore
     fun testActualInput() {
-        assertEquals(0, day13b(readInputLines("day13", 2021)))
+        assertEquals(
+            listOf(
+                "..##.###..####..##..#..#..##..#..#.###.",
+                "...#.#..#....#.#..#.#..#.#..#.#..#.#..#",
+                "...#.#..#...#..#....#..#.#..#.#..#.#..#",
+                "...#.###...#...#....#..#.####.#..#.###.",
+                "#..#.#....#....#..#.#..#.#..#.#..#.#.#.",
+                ".##..#....####..##...##..#..#..##..#..#"
+            ),
+            day13b(readInputLines("day13", 2021)))
     }
 }
