@@ -1,34 +1,67 @@
 package v2021
 
 import org.junit.Assert.assertEquals
-import org.junit.Ignore
 import org.junit.Test
 import util.readInputLines
 
 class Day14aTests {
     @Test
-    @Ignore
     fun testExampleInput1() {
-        assertEquals(0, day14a(listOf()))
+        assertEquals(1588, day14a(listOf(
+            "NNCB",
+            "",
+            "CH -> B",
+            "HH -> N",
+            "CB -> H",
+            "NH -> C",
+            "HB -> C",
+            "HC -> B",
+            "HN -> C",
+            "NN -> C",
+            "BH -> H",
+            "NC -> B",
+            "NB -> B",
+            "BN -> B",
+            "BB -> N",
+            "BC -> B",
+            "CC -> N",
+            "CN -> C"
+        )))
     }
 
     @Test
-    @Ignore
     fun testActualInput() {
-        assertEquals(0, day14a(readInputLines("day14", 2021)))
+        assertEquals(2988, day14a(readInputLines("day14", 2021)))
     }
 }
 
 class Day14bTests {
     @Test
-    @Ignore
     fun testExampleInput1() {
-        assertEquals(0, day14b(listOf()))
+        assertEquals(2188189693529, day14b(listOf(
+            "NNCB",
+            "",
+            "CH -> B",
+            "HH -> N",
+            "CB -> H",
+            "NH -> C",
+            "HB -> C",
+            "HC -> B",
+            "HN -> C",
+            "NN -> C",
+            "BH -> H",
+            "NC -> B",
+            "NB -> B",
+            "BN -> B",
+            "BB -> N",
+            "BC -> B",
+            "CC -> N",
+            "CN -> C"
+        )))
     }
 
     @Test
-    @Ignore
     fun testActualInput() {
-        assertEquals(0, day14b(readInputLines("day14", 2021)))
+        assertEquals(3572761917024, day14b(readInputLines("day14", 2021)))
     }
 }
