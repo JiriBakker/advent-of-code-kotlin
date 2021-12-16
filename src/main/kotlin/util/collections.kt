@@ -123,6 +123,10 @@ fun Collection<Long>.product(): Long {
     return this.fold(1L, { total, it -> total * it })
 }
 
+fun <T> Collection<T>.productOf(selector: (T) -> Long): Long {
+    return this.fold(1L) { total, it -> total * selector(it) }
+}
+
 fun <T> List<List<T>>.rotatedRight(): List<List<T>> {
     val height = this.size
     val width = this.first().size

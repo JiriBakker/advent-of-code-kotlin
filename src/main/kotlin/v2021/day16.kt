@@ -1,6 +1,7 @@
 package v2021
 
-import util.product
+import util.productOf
+import v2021.Packet.Companion.bitsToPacket
 
 private fun String.parseBits() =
     toCharArray().joinToString("") { it.toString().toInt(16).toString(2).padStart(4, '0') }
@@ -27,6 +28,9 @@ private data class Packet(
     val versionSum: Long get() = version + subPackets.sumOf { it.versionSum }
 
     companion object {
+        fun String.bitsToPacket() =
+            parse(this)
+
         fun parse(bits: String): Packet {
             val version = bits.getInt(0, 3)
             val typeId  = bits.getInt(3, 6)
@@ -80,20 +84,19 @@ private data class Packet(
     }
 }
 
-fun day16a(input: List<String>): Long {
-    val bits = input.first().parseBits()
-
-    val rootPacket = Packet.parse(bits)
-
-    return rootPacket.versionSum
-}
+fun day16a(input: List<String>) =
+    input
+        .first()
+        .parseBits()
+        .bitsToPacket()
+        .versionSum
 
 private fun Packet.computeValue(): Long {
     return when (typeId) {
-        0 -> subPackets.sumOf { it.computeValue() }
-        1 -> subPackets.map { it.computeValue() }.product()
-        2 -> subPackets.minOf { it.computeValue() }
-        3 -> subPackets.maxOf { it.computeValue() }
+        0 -> subPackets.sumOf     { it.computeValue() }
+        1 -> subPackets.productOf { it.computeValue() }
+        2 -> subPackets.minOf     { it.computeValue() }
+        3 -> subPackets.maxOf     { it.computeValue() }
         4 -> value!!
         5 ->
             if (subPackets[0].computeValue() > subPackets[1].computeValue()) 1
@@ -108,10 +111,9 @@ private fun Packet.computeValue(): Long {
     }
 }
 
-fun day16b(input: List<String>): Long {
-     val bits = input.first().parseBits()
-
-    val rootPacket = Packet.parse(bits)
-
-    return rootPacket.computeValue()
-}
+fun day16b(input: List<String>) =
+    input
+        .first()
+        .parseBits()
+        .bitsToPacket()
+        .computeValue()
