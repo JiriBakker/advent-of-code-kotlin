@@ -20,7 +20,7 @@ private fun String.getValueBits() =
 private data class Packet(
     val version: Int,
     val typeId: Int,
-    val length: Int,
+    val nrOfBits: Int,
     val value: Long? = null,
     val subPackets: List<Packet> = emptyList()
 ) {
@@ -43,40 +43,49 @@ private data class Packet(
                 return Packet(version, typeId, length, value = valueBits.toLong(2))
             }
 
+            fun String.parseSubPackets(isFinished: (List<Packet>) -> Boolean): List<Packet> {
+                var curIndex = 0
+                val subPackets = mutableListOf<Packet>()
+                while (!isFinished(subPackets)) {
+                    val packet = parse(drop(curIndex))
+                    subPackets.add(packet)
+                    curIndex += packet.nrOfBits
+                }
+                return subPackets
+            }
+
             when (val lengthTypeId = bits.getInt(6, 7)) {
                 0 -> {
-                    val subPacketsLength = bits.getInt(7, 22)
+                    val nrOfSubPacketBits = bits.getInt(7, 22)
 
-                    var curIndex = 22
                     val subPackets =
-                        buildList {
-                            while (curIndex < 22 + subPacketsLength) {
-                                val packet = parse(bits.drop(curIndex))
-                                add(packet)
-                                curIndex += packet.length
+                        bits.drop(22)
+                            .parseSubPackets { subPackets ->
+                                subPackets.sumOf { it.nrOfBits } == nrOfSubPacketBits
                             }
-                        }
 
-                    val totalLength = 22 + subPacketsLength
-
-                    return Packet(version, typeId, totalLength, subPackets = subPackets)
+                    return Packet(
+                        version,
+                        typeId,
+                        nrOfBits = 22 + nrOfSubPacketBits,
+                        subPackets = subPackets
+                    )
                 }
                 1 -> {
                     val nrOfSubPackets = bits.getInt(7, 18)
 
-                    var curIndex = 18
                     val subPackets =
-                        buildList {
-                            repeat(nrOfSubPackets) {
-                                val packet = parse(bits.drop(curIndex))
-                                add(packet)
-                                curIndex += packet.length
+                        bits.drop(18)
+                            .parseSubPackets { subPackets ->
+                                subPackets.count() == nrOfSubPackets
                             }
-                        }
 
-                    val totalLength = 18 + subPackets.sumOf { it.length }
-
-                    return Packet(version, typeId, totalLength, subPackets = subPackets)
+                    return Packet(
+                        version,
+                        typeId,
+                        nrOfBits = 18 + subPackets.sumOf { it.nrOfBits },
+                        subPackets = subPackets
+                    )
                 }
                 else -> throw Error("Unknown lenght type ID: $lengthTypeId")
             }
