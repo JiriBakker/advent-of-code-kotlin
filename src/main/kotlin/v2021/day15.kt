@@ -32,8 +32,11 @@ private fun List<List<Int>>.findShortestPathRiskLevel(): Int {
             if (x < maxX) x + 1 to y     else null,
             if (y > 0)    x     to y - 1 else null,
             if (y < maxY) x     to y + 1 else null
-        ).forEach { (neighbourX, neighbourY) ->
-            toCheck.add(Path(neighbourX, neighbourY, riskLevel + this[neighbourY][neighbourX]))
+        ).forEach { neighbour ->
+            if (!checked.contains(neighbour)) {
+                val (neighbourX, neighbourY) = neighbour
+                toCheck.add(Path(neighbourX, neighbourY, riskLevel + this[neighbourY][neighbourX]))
+            }
         }
     }
 
