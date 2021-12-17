@@ -1,24 +1,23 @@
 package v2021
 
 import util.max
-import kotlin.math.sqrt
 
-private class Target(val xMin: Int, val xMax: Int, val yMin: Int, val yMax: Int) {
+private class ProbeTarget(val minX: Int, val maxX: Int, val minY: Int, val maxY: Int) {
     fun isHit(x: Int, y:Int) =
-        x in xMin .. xMax && y in yMin .. yMax
+        x in minX .. maxX && y in minY .. maxY
 
-    fun hasMissed(x: Int, y: Int) =
-        x > xMax || y < yMin
+    fun isMissed(x: Int, y: Int) =
+        x > maxX || y < minY
 }
 
-private fun String.parseTarget(): Target {
+private fun String.parseTarget(): ProbeTarget {
     val segments = split(" ")
     val (xMin, xMax) = segments[2].trimEnd(',').trimStart('x', '=').split("..").map { it.toInt() }
     val (yMin, yMax) = segments[3].trimStart('y', '=').split("..").map { it.toInt() }
-    return Target(xMin, xMax, yMin, yMax)
+    return ProbeTarget(xMin, xMax, yMin, yMax)
 }
 
-private class ProbeLauncher(private val target: Target) {
+private class ProbeLauncher(private val probeTarget: ProbeTarget) {
     fun shoot(
         startVx: Int,
         startVy: Int,
@@ -30,71 +29,72 @@ private class ProbeLauncher(private val target: Target) {
         var vx = startVx
         var vy = startVy
 
-        var maxY = y
-        while (!target.hasMissed(x, y)) {
-            if (target.isHit(x, y)) {
-                onHit(maxY)
+        while (!probeTarget.isMissed(x, y)) {
+            if (probeTarget.isHit(x, y)) {
+                onHit(startVy)
                 return
             }
             x += vx
             y += vy
             vx = max(0, vx - 1)
             vy--
-
-            maxY = max(y, maxY)
         }
 
         onMiss(x)
     }
 }
 
-private fun findMaxY(input: List<String>): Int {
+private fun findMaxVY(input: List<String>): Int {
     val target = input.first().parseTarget()
     val probeLauncher = ProbeLauncher(target)
 
-    var overallMaxY: Int? = null
+    var overallMaxVy = 0
 
-    var startVx = target.xMin
-    var startVy = target.yMax
+    var startVx = target.minX
+    var startVy = target.maxY
 
-    repeat(1000) { // TODO I'm pretty sure this can be done more efficiently
+    var missCount = 0
+
+    while (missCount < 75) { // TODO Fix magic number
         probeLauncher.shoot(
             startVx,
             startVy,
-            onHit = { maxY ->
-                overallMaxY = maxY
+            onHit = { maxVy ->
+                overallMaxVy = max(overallMaxVy, maxVy)
                 startVy++
+                missCount = 0
             },
             onMiss = { x ->
-                if (x < target.xMin) {
+                if (x < target.minX) {
                     startVx++
-                } else if (x > target.xMax) {
+                } else if (x > target.maxX) {
                     startVx--
                 } else {
                     startVy++
                 }
+                missCount++
             }
         )
     }
 
-    return overallMaxY ?: 0
+    return overallMaxVy
 }
 
-fun day17a(input: List<String>) =
-    findMaxY(input)
+fun day17a(input: List<String>): Int {
+    val maxVy = findMaxVY(input)
+    return maxVy * (maxVy + 1) / 2
+}
 
 fun day17b(input: List<String>): Int {
-    val maxY = findMaxY(input)
+    val maxVy = findMaxVY(input)
 
     val target = input.first().parseTarget()
     val probeLauncher = ProbeLauncher(target)
 
     var hitCount = 0
 
-    val maxYSqrt = sqrt(maxY.toDouble()).toInt() * 2 // It's magic...
-
-    (0 .. target.xMax).map { startVx ->
-        (target.yMin .. maxYSqrt).map { startVy ->
+    (0 .. target.maxX).map { startVx ->
+        (target.minY .. maxVy).map { startVy ->
             probeLauncher.shoot(
                 startVx,
                 startVy,
