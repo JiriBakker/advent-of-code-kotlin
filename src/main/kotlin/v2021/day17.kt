@@ -6,7 +6,7 @@ private class ProbeTarget(val minX: Int, val maxX: Int, val minY: Int, val maxY:
     fun isHit(x: Int, y:Int) =
         x in minX .. maxX && y in minY .. maxY
 
-    fun isMissed(x: Int, y: Int) =
+    fun isMiss(x: Int, y: Int) =
         x > maxX || y < minY
 }
 
@@ -20,29 +20,32 @@ private fun String.parseTarget(): ProbeTarget {
 private class ProbeLauncher(private val probeTarget: ProbeTarget) {
     fun shoot(
         startVx: Int,
-        startVy: Int,
-        onHit: (Int) -> Unit,
-        onMiss: (Int) -> Unit
-    ) {
+        startVy: Int
+    ): ShotResult {
         var x = 0
         var y = 0
         var vx = startVx
         var vy = startVy
 
-        while (!probeTarget.isMissed(x, y)) {
+        while (true) {
             if (probeTarget.isHit(x, y)) {
-                onHit(startVy)
-                return
+                return Hit(startVy)
             }
+            if (probeTarget.isMiss(x, y)) {
+                return Miss(finalX = x)
+            }
+
             x += vx
             y += vy
             vx = max(0, vx - 1)
             vy--
         }
-
-        onMiss(x)
     }
 }
+
+private interface ShotResult
+private class Hit(val startVy: Int): ShotResult
+private class Miss(val finalX: Int): ShotResult
 
 private fun findMaxVY(input: List<String>): Int {
     val target = input.first().parseTarget()
@@ -56,28 +59,32 @@ private fun findMaxVY(input: List<String>): Int {
     var missCount = 0
 
     while (missCount < 75) { // TODO Fix magic number
-        probeLauncher.shoot(
-            startVx,
-            startVy,
-            onHit = { maxVy ->
-                overallMaxVy = max(overallMaxVy, maxVy)
+        val shotResult = probeLauncher.shoot(startVx, startVy)
+        when (shotResult) {
+            is Hit -> {
+                overallMaxVy = max(overallMaxVy, shotResult.startVy)
                 startVy++
                 missCount = 0
-            },
-            onMiss = { x ->
-                if (x < target.minX) {
+            }
+            is Miss -> {
+                if (shotResult.finalX < target.minX) {
                     startVx++
-                } else if (x > target.maxX) {
+                } else if (shotResult.finalX > target.maxX) {
                     startVx--
                 } else {
                     startVy++
                 }
                 missCount++
             }
-        )
+        }
     }
 
     return overallMaxVy
+}
+
+private fun findMaxVYWithSmartMath(input: List<String>): Int {
+    val target = input.first().parseTarget()
+    return target.minY * -1 - 1
 }
 
 fun day17a(input: List<String>): Int {
@@ -91,18 +98,13 @@ fun day17b(input: List<String>): Int {
     val target = input.first().parseTarget()
     val probeLauncher = ProbeLauncher(target)
 
-    var hitCount = 0
-
-    (0 .. target.maxX).map { startVx ->
-        (target.minY .. maxVy).map { startVy ->
-            probeLauncher.shoot(
-                startVx,
-                startVy,
-                onHit = { hitCount++ },
-                onMiss = { }
-            )
+    val hitCount =
+        (0 .. target.maxX).sumOf { startVx -> // TODO reduce search space further?
+            (target.minY .. maxVy).count { startVy ->
+                val shotResult = probeLauncher.shoot(startVx, startVy)
+                shotResult is Hit
+            }
         }
-    }
 
     return hitCount
 }
