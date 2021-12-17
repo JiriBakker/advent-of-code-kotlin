@@ -31,30 +31,31 @@ private data class Packet(
         fun String.bitsToPacket() =
             parse(this)
 
-        fun parse(bits: String): Packet {
+        fun String.parseSubPackets(isFinished: (List<Packet>) -> Boolean): List<Packet> {
+            var curIndex = 0
+            val subPackets = mutableListOf<Packet>()
+            while (!isFinished(subPackets)) {
+                val packet = parse(drop(curIndex))
+                subPackets.add(packet)
+                curIndex += packet.nrOfBits
+            }
+            return subPackets
+        }
+
+        private fun parse(bits: String): Packet {
             val version = bits.getInt(0, 3)
             val typeId  = bits.getInt(3, 6)
 
             if (typeId == 4) {
                 val valueBits = bits.getValueBits()
 
-                val length = 6 + valueBits.length + (valueBits.length / 4)
+                val nrOfBits = 6 + valueBits.length + (valueBits.length / 4)
 
-                return Packet(version, typeId, length, value = valueBits.toLong(2))
+                return Packet(version, typeId, nrOfBits, value = valueBits.toLong(2))
             }
 
-            fun String.parseSubPackets(isFinished: (List<Packet>) -> Boolean): List<Packet> {
-                var curIndex = 0
-                val subPackets = mutableListOf<Packet>()
-                while (!isFinished(subPackets)) {
-                    val packet = parse(drop(curIndex))
-                    subPackets.add(packet)
-                    curIndex += packet.nrOfBits
-                }
-                return subPackets
-            }
-
-            when (val lengthTypeId = bits.getInt(6, 7)) {
+            val lengthTypeId = bits.getInt(6, 7)
+            when (lengthTypeId) {
                 0 -> {
                     val nrOfSubPacketBits = bits.getInt(7, 22)
 
