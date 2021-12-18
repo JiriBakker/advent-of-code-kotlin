@@ -1,15 +1,6 @@
 package v2021
 
-private class SnailfishNumber(value: Long, depth: Int) {
-    var value: Long = value
-        private set
-
-    var depth: Int = depth
-        private set
-
-    operator fun component1() = value
-    operator fun component2() = depth
-}
+private data class SnailfishNumber(val value: Long, val depth: Int)
 
 private fun String.parseSnailfishNrs(): List<SnailfishNumber> {
     val numbers = mutableListOf<SnailfishNumber>()
@@ -45,34 +36,42 @@ private fun <T> MutableList<T>.insertAt(index: Int, element: T) {
     this[index] = element
 }
 
-private fun List<SnailfishNumber>.reduceNrs(): List<SnailfishNumber> {
-    val nextNrs = toMutableList()
+private fun MutableList<SnailfishNumber>.explode(index: Int) {
+    val (value, depth) = this[index]
+    if (index > 0) {
+        this[index - 1] = SnailfishNumber(this[index - 1].value + value, this[index - 1].depth)
+    }
+    if (index < size - 2) {
+        this[index + 2] = SnailfishNumber(this[index + 2].value + this[index + 1].value, this[index + 2].depth)
+    }
+    this[index + 1] = SnailfishNumber(0, depth - 1)
+    this.removeAt(index)
+}
+
+private fun MutableList<SnailfishNumber>.split(index: Int) {
+    val (value, depth) = this[index]
+
+    val halfRoundedDown = value / 2
+    val halfRoundedUp = value - halfRoundedDown
+
+    this.insertAt(index + 1, SnailfishNumber(halfRoundedUp, depth + 1))
+    this[index] = SnailfishNumber(halfRoundedDown, depth + 1)
+}
+
+private fun List<SnailfishNumber>.reduce(): List<SnailfishNumber> {
+    val nextNrs = this.toMutableList()
     while (true) {
         if (nextNrs.getMaxDepth() >= 5) {
             for (i in nextNrs.indices) {
-                val (value, depth) = nextNrs[i]
-                if (depth >= 5) {
-                    if (i > 0) {
-                        nextNrs[i-1] = SnailfishNumber(nextNrs[i-1].value + value, nextNrs[i-1].depth)
-                        if (i < nextNrs.size - 2) {
-                            nextNrs[i+2] = SnailfishNumber(nextNrs[i+2].value + nextNrs[i+1].value, nextNrs[i+2].depth)
-                        }
-                        nextNrs[i+1] = SnailfishNumber(0, depth - 1)
-                        nextNrs.removeAt(i)
-                    } else {
-                        nextNrs[i] = SnailfishNumber(0, depth - 1)
-                        nextNrs[i+2] = SnailfishNumber(nextNrs[i+2].value + nextNrs[i+1].value, nextNrs[i+2].depth)
-                        nextNrs.removeAt(i + 1)
-                    }
+                if (nextNrs[i].depth >= 5) {
+                    nextNrs.explode(i)
                     break
                 }
             }
         } else if (nextNrs.getMaxValue() >= 10) {
             for (i in nextNrs.indices) {
-                val (value, depth) = nextNrs[i]
-                if (value >= 10) {
-                    nextNrs.insertAt(i + 1, SnailfishNumber(value - (value / 2), depth + 1))
-                    nextNrs[i] = SnailfishNumber(value / 2, depth + 1)
+                if (nextNrs[i].value >= 10) {
+                    nextNrs.split(i)
                     break
                 }
             }
@@ -104,26 +103,26 @@ private fun List<SnailfishNumber>.computeMagnitude(): Long {
 
 fun day18a(input: List<String>) =
     input
-        .map { line -> line.parseSnailfishNrs().reduceNrs() }
+        .map { line -> line.parseSnailfishNrs().reduce() }
         .reduce { leftNrs, rightNrs ->
             val nextLeftNrs = leftNrs.increaseDepth()
             val nextRightNrs = rightNrs.increaseDepth()
             val nextNrs = nextLeftNrs.plus(nextRightNrs)
-            nextNrs.reduceNrs()
+            nextNrs.reduce()
         }
         .computeMagnitude()
 
 fun day18b(input: List<String>): Long {
-    val nrs = input.map { line -> line.parseSnailfishNrs().reduceNrs() }
+    val nrs = input.map { line -> line.parseSnailfishNrs().reduce() }
 
     val magnitudes =
         (0 until nrs.size - 1).flatMap { i ->
             (i + 1 until nrs.size).flatMap { i2 ->
-                val left = nrs[i].increaseDepth()
+                val left  = nrs[i].increaseDepth()
                 val right = nrs[i2].increaseDepth()
                 listOf(
-                    left.plus(right).reduceNrs().computeMagnitude(),
-                    right.plus(left).reduceNrs().computeMagnitude()
+                    left.plus(right).reduce().computeMagnitude(),
+                    right.plus(left).reduce().computeMagnitude()
                 )
             }
         }
