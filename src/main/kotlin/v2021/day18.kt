@@ -1,6 +1,8 @@
 package v2021
 
-private data class SnailfishNumber(val value: Long, val depth: Int)
+import util.insertAt
+
+private data class SnailfishNumber(var value: Long, var depth: Int)
 
 private fun String.parseSnailfishNrs(): List<SnailfishNumber> {
     val numbers = mutableListOf<SnailfishNumber>()
@@ -25,40 +27,34 @@ private fun List<SnailfishNumber>.increaseDepth() =
 private fun List<SnailfishNumber>.getMaxDepth() =
     maxOf { it.depth }
 
-private fun List<SnailfishNumber>.getMaxValue() =
-    maxOf { it.value }
-
 private fun List<SnailfishNumber>.hasToExplode() =
-    getMaxDepth() >= 5
+    any { it.depth >= 5 }
 
 private fun List<SnailfishNumber>.hasToSplit() =
-    getMaxValue() >= 10
+    any { it.value >= 10 }
 
-private fun <T> MutableList<T>.insertAt(index: Int, element: T) {
-    add(this[size - 1])
-    for (i in size - 2 downTo index + 1) {
-        this[i] = this[i - 1]
+private fun MutableList<SnailfishNumber>.increase(index: Int, amount: Long) {
+    if (index in indices) {
+        this[index] = SnailfishNumber(this[index].value + amount, this[index].depth)
     }
-    this[index] = element
 }
 
-private fun MutableList<SnailfishNumber>.explode() =
+private fun MutableList<SnailfishNumber>.empty(index: Int, depth: Int) {
+    this[index] = SnailfishNumber(0, depth)
+}
+
+private fun MutableList<SnailfishNumber>.explodeFirst() =
     this.indexOfFirst { it.depth >= 5 }
         .let { this.explode(it) }
 
 private fun MutableList<SnailfishNumber>.explode(index: Int) {
-    val (value, depth) = this[index]
-    if (index > 0) {
-        this[index - 1] = SnailfishNumber(this[index - 1].value + value, this[index - 1].depth)
-    }
-    if (index < size - 2) {
-        this[index + 2] = SnailfishNumber(this[index + 2].value + this[index + 1].value, this[index + 2].depth)
-    }
-    this[index + 1] = SnailfishNumber(0, depth - 1)
+    this.increase(index - 1, this[index].value)
+    this.increase(index + 2, this[index + 1].value)
+    this.empty(index + 1, this[index].depth - 1)
     this.removeAt(index)
 }
 
-private fun MutableList<SnailfishNumber>.split() =
+private fun MutableList<SnailfishNumber>.splitFirst() =
     this.indexOfFirst { it.value >= 10 }
         .let { this.split(it) }
 
@@ -66,18 +62,28 @@ private fun MutableList<SnailfishNumber>.split(index: Int) {
     val (value, depth) = this[index]
 
     val halfRoundedDown = value / 2
-    val halfRoundedUp = value - halfRoundedDown
+    val halfRoundedUp   = value - halfRoundedDown
 
-    this.insertAt(index + 1, SnailfishNumber(halfRoundedUp, depth + 1))
     this[index] = SnailfishNumber(halfRoundedDown, depth + 1)
+    this.insertAt(index + 1, SnailfishNumber(halfRoundedUp, depth + 1))
+}
+
+private fun MutableList<SnailfishNumber>.magnitudifyFirst(maxDepth: Int) =
+    this.indexOfFirst { it.depth == maxDepth }
+        .let { this.magnitudify(it) }
+
+private fun MutableList<SnailfishNumber>.magnitudify(index: Int) {
+    val (value, depth) = this[index]
+    this[index] = SnailfishNumber(value * 3 + this[index+1].value * 2, depth - 1)
+    this.removeAt(index + 1)
 }
 
 private fun List<SnailfishNumber>.reduce(): List<SnailfishNumber> {
     val nrs = this.toMutableList()
     while (true) {
         when {
-            nrs.hasToExplode() -> nrs.explode()
-            nrs.hasToSplit()   -> nrs.split()
+            nrs.hasToExplode() -> nrs.explodeFirst()
+            nrs.hasToSplit()   -> nrs.splitFirst()
             else               -> return nrs
         }
     }
@@ -91,14 +97,7 @@ private fun List<SnailfishNumber>.computeMagnitude(): Long {
             return nrs.sumOf { it.value }
         }
 
-        for (i in nrs.indices) {
-            val (value, depth) = nrs[i]
-            if (depth == maxDepth) {
-                nrs[i] = SnailfishNumber(value * 3 + nrs[i+1].value * 2, depth - 1)
-                nrs.removeAt(i + 1)
-                break
-            }
-        }
+        nrs.magnitudifyFirst(maxDepth)
     }
 }
 
@@ -128,5 +127,5 @@ fun day18b(input: List<String>): Long {
             }
         }
 
-    return magnitudes.maxOrNull()!!
+    return magnitudes.maxOf { it s}
 }

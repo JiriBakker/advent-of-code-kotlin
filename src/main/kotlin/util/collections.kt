@@ -209,3 +209,10 @@ fun <T> Map<T, Int>.findKeyForMaxValue(): T? {
     return maxKeys.singleOrNull()
 }
 
+fun <T> MutableList<T>.insertAt(index: Int, element: T) {
+    add(this[size - 1])
+    for (i in size - 2 downTo index + 1) {
+        this[i] = this[i - 1]
+    }
+    this[index] = element
+}
