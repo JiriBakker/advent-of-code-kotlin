@@ -127,5 +127,5 @@ fun day18b(input: List<String>): Long {
             }
         }
 
-    return magnitudes.maxOf { it s}
+    return magnitudes.maxOf { it }
 }
