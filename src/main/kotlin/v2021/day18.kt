@@ -28,6 +28,12 @@ private fun List<SnailfishNumber>.getMaxDepth() =
 private fun List<SnailfishNumber>.getMaxValue() =
     maxOf { it.value }
 
+private fun List<SnailfishNumber>.hasToExplode() =
+    getMaxDepth() >= 5
+
+private fun List<SnailfishNumber>.hasToSplit() =
+    getMaxValue() >= 10
+
 private fun <T> MutableList<T>.insertAt(index: Int, element: T) {
     add(this[size - 1])
     for (i in size - 2 downTo index + 1) {
@@ -35,6 +41,10 @@ private fun <T> MutableList<T>.insertAt(index: Int, element: T) {
     }
     this[index] = element
 }
+
+private fun MutableList<SnailfishNumber>.explode() =
+    this.indexOfFirst { it.depth >= 5 }
+        .let { this.explode(it) }
 
 private fun MutableList<SnailfishNumber>.explode(index: Int) {
     val (value, depth) = this[index]
@@ -48,6 +58,10 @@ private fun MutableList<SnailfishNumber>.explode(index: Int) {
     this.removeAt(index)
 }
 
+private fun MutableList<SnailfishNumber>.split() =
+    this.indexOfFirst { it.value >= 10 }
+        .let { this.split(it) }
+
 private fun MutableList<SnailfishNumber>.split(index: Int) {
     val (value, depth) = this[index]
 
@@ -59,27 +73,14 @@ private fun MutableList<SnailfishNumber>.split(index: Int) {
 }
 
 private fun List<SnailfishNumber>.reduce(): List<SnailfishNumber> {
-    val nextNrs = this.toMutableList()
+    val nrs = this.toMutableList()
     while (true) {
-        if (nextNrs.getMaxDepth() >= 5) {
-            for (i in nextNrs.indices) {
-                if (nextNrs[i].depth >= 5) {
-                    nextNrs.explode(i)
-                    break
-                }
-            }
-        } else if (nextNrs.getMaxValue() >= 10) {
-            for (i in nextNrs.indices) {
-                if (nextNrs[i].value >= 10) {
-                    nextNrs.split(i)
-                    break
-                }
-            }
-        } else {
-            break
+        when {
+            nrs.hasToExplode() -> nrs.explode()
+            nrs.hasToSplit()   -> nrs.split()
+            else               -> return nrs
         }
     }
-    return nextNrs
 }
 
 private fun List<SnailfishNumber>.computeMagnitude(): Long {
