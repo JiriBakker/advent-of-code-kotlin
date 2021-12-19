@@ -55,6 +55,24 @@ inline fun <T> List<T>.forEachCombinationPair(action: (T, T) -> Unit) {
     }
 }
 
+inline fun <T, U> List<T>.mapCombinationPairs(map: (T, T) -> U) =
+    (this.indices).flatMap { i1 ->
+        ((i1 + 1) until this.size).map { i2 ->
+            map(this[i1], this[i2])
+        }
+    }
+
+fun <T> List<T>.getCombinationPairs(): Sequence<Pair<T, T>> {
+    val list = this
+    return sequence {
+        list.indices.flatMap { i1 ->
+            ((i1 + 1) until list.size).map { i2 ->
+                yield(list[i1] to list[i2])
+            }
+        }
+    }
+}
+
 inline fun <T, U : Comparable<U>> List<T>.sortMappedByDescending(selector: (T) -> U): List<T> {
     return this
         .map { Pair(it, selector(it)) }

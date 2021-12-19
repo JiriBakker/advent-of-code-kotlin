@@ -1,10 +1,8 @@
 package v2021
 
-import util.DoNotAutoExecute
+import util.getCombinationPairs
 import util.splitByDoubleNewLine
 import kotlin.math.abs
-
-private data class Beacon(val x: Int, val y: Int, val z: Int)
 
 private data class Vec3(val x: Int, val y: Int, val z: Int) {
     operator fun minus(other: Vec3) =
@@ -17,22 +15,10 @@ private data class Vec3(val x: Int, val y: Int, val z: Int) {
         abs(x - other.x) + abs(y - other.y) + abs(z - other.z)
 }
 
-private data class Quad<T1,T2,T3,T4>(val first: T1, val second: T2, val third: T3, val fourth: T4)
+private data class BeaconDelta(val pos1: Vec3, val pos2: Vec3, val mapFunc: (Vec3) -> Vec3, val inverseMapFunc: (Vec3) -> Vec3)
 
-private data class Delta(val delta: Vec3, val pos1: Vec3, val pos2: Vec3, val mapFunc: (Vec3) -> Vec3, val inverseMapFunc: (Vec3) -> Vec3)
-
-private val deltaComparator: Comparator<Delta> = compareBy({ it.delta.x }, { it.delta.y }, { it.delta.z })
+private val beaconDeltaComparator: Comparator<BeaconDelta> = compareBy({ it.pos2.x - it.pos1.x }, { it.pos2.y - it.pos1.y }, { it.pos2.z - it.pos1.z })
 private val vec3Comparator: Comparator<Vec3> = compareBy({ it.x }, { it.y }, { it.z })
-
-
-// 90 degrees CW about x-axis: (x, y, z) -> (x, -z, y)
-// 90 degrees CCW about x-axis: (x, y, z) -> (x, z, -y)
-//
-// 90 degrees CW about y-axis: (x, y, z) -> (-z, y, x)
-// 90 degrees CCW about y-axis: (x, y, z) -> (z, y, -x)
-//
-// 90 degrees CW about z-axis: (x, y, z) -> (y, -x, z)
-// 90 degrees CCW about z-axis: (x, y, z) -> (-y, x, z)
 
 private fun Vec3.rotX()    = Vec3(x, -z, y)
 private fun Vec3.rotMinX() = Vec3(x, z, -y)
@@ -41,22 +27,15 @@ private fun Vec3.rotMinY() = Vec3(z, y, -x)
 private fun Vec3.rotZ()    = Vec3(y, -x, z)
 private fun Vec3.rotMinZ() = Vec3(-y, x, z)
 
-private class Scanner(val beacons: List<Vec3>) {
+private typealias RotateFunc = (Vec3) -> Vec3
 
-    val deltaSets: List<List<Delta>>
+private class Scanner(val beacons: List<Vec3>) {
+    val beaconDeltaSets: List<List<BeaconDelta>>
 
     init {
-        val baseDeltas =
-            beacons.flatMapIndexed { i, beacon ->
-                val (x1, y1, z1) = beacon
-                (i + 1 until beacons.size).map { i2 ->
-                    val beacon2 = beacons[i2]
-                    val (x2, y2, z2) = beacon2
-                    Triple(Vec3(x2 - x1, y2 - y1, z2 - z1), beacon, beacon2)
-                }
-            }
+        val beaconDistances = beacons.getCombinationPairs().toList()
 
-        deltaSets = listOf<Pair<(Vec3) -> Vec3, (Vec3) -> Vec3>>(
+        beaconDeltaSets = listOf<Pair<RotateFunc, RotateFunc>>(
             { delta: Vec3 -> delta } to { delta -> delta },
             { delta: Vec3 -> delta.rotX() } to { delta -> delta.rotMinX() },
             { delta: Vec3 -> delta.rotY() } to { delta -> delta.rotMinY() },
@@ -82,23 +61,30 @@ private class Scanner(val beacons: List<Vec3>) {
             { delta: Vec3 -> delta.rotX().rotY().rotX().rotX() } to { delta -> delta.rotMinX().rotMinX().rotMinY().rotMinX() },
             { delta: Vec3 -> delta.rotX().rotY().rotY().rotY() } to { delta -> delta.rotMinY().rotMinY().rotMinY().rotMinX() }
         )
-            .map { (mapFunc, inverseMapFunc) ->
-                baseDeltas
-                    .map { Delta(mapFunc(it.first), mapFunc(it.second), mapFunc(it.third), mapFunc, inverseMapFunc) }
-                    .sortedWith(deltaComparator)
+            .map { (rotationFunc, inverseRotationFunc) ->
+                beaconDistances
+                    .map { (beacon1, beacon2) ->
+                        BeaconDelta(
+                            rotationFunc(beacon1),
+                            rotationFunc(beacon2),
+                            rotationFunc,
+                            inverseRotationFunc
+                        )
+                    }
+                    .sortedWith(beaconDeltaComparator)
             }
 
     }
 
-    fun findOverlap(other: Scanner): List<Pair<Delta, Delta>>? {
-        this.deltaSets.forEach { deltas1 ->
-            other.deltaSets.forEach { deltas2 ->
-                val matches = mutableListOf<Pair<Delta, Delta>>()
+    fun findOverlap(other: Scanner): List<Pair<BeaconDelta, BeaconDelta>>? {
+        this.beaconDeltaSets.forEach { deltas1 ->
+            other.beaconDeltaSets.forEach { deltas2 ->
+                val matches = mutableListOf<Pair<BeaconDelta, BeaconDelta>>()
                 var index1 = 0
                 var index2 = 0
 
                 while (index1 < deltas1.size && index2 < deltas2.size) {
-                    val compareResult = deltaComparator.compare(deltas1[index1], deltas2[index2])
+                    val compareResult = beaconDeltaComparator.compare(deltas1[index1], deltas2[index2])
                     when {
                         compareResult < 0 -> index1++
                         compareResult > 0 -> index2++
@@ -113,8 +99,6 @@ private class Scanner(val beacons: List<Vec3>) {
                         return matches
                     }
                 }
-
-
             }
         }
 
@@ -135,72 +119,71 @@ private fun List<String>.parseScanners() =
             Scanner(beacons)
         }
 
-fun day19a(input: List<String>): Int {
-    val scanners = input.parseScanners()
+private fun <T,U> Pair<T,U>.flip() = second to first
 
-    val overlaps =
+private fun List<Scanner>.findScannerPositions(): Map<Int, Pair<Vec3, RotateFunc>> {
+    val scanners = this
+
+    val matches =
         scanners.withIndex().flatMap { (index1, scanner1) ->
-            (index1 + 1 until scanners.size).mapNotNull { index2 ->
+            (index1 + 1 until scanners.size).flatMap { index2 ->
                 val scanner2 = scanners[index2]
+
                 scanner1.findOverlap(scanner2)
-                    ?.let { overlap ->
-                        (index1 to index2) to
-                            overlap
-                                .first()
-                    }
+                    ?.let { overlaps ->
+                        val firstOverlap = overlaps.first()
+                        listOf(
+                            (index1 to index2) to firstOverlap,
+                            (index2 to index1) to firstOverlap.flip()
+                        )
+                    } ?: emptyList()
+
             }
         }
 
-    val translations = mutableMapOf<Int, Pair<Vec3, (Vec3) -> Vec3>>(
+    val scannerPositions = mutableMapOf<Int, Pair<Vec3, RotateFunc>>(
         0 to (Vec3(0, 0, 0) to { it })
     )
 
-    overlaps.filter { it.first.first == 0 }.forEach { overlap ->
-        val (delta1, delta2) = overlap.second
-        val inverseMapFunc = delta1.inverseMapFunc
-        val mapFunc = delta2.mapFunc
-        val pos1 = delta1.inverseMapFunc(delta1.pos1)
-        val pos2 = delta1.inverseMapFunc(delta2.pos1)
-        translations[overlap.first.second] = (pos1 - pos2) to { inverseMapFunc(mapFunc(it)) }
-    }
+    matches
+        .filter { it.first.first == 0 }
+        .forEach { overlap ->
+            val (delta1, delta2) = overlap.second
+            val inverseMapFunc = delta1.inverseMapFunc
+            val mapFunc = delta2.mapFunc
+            val pos1 = delta1.inverseMapFunc(delta1.pos1)
+            val pos2 = delta1.inverseMapFunc(delta2.pos1)
+            scannerPositions[overlap.first.second] = (pos1 - pos2) to { inverseMapFunc(mapFunc(it)) }
+        }
 
-    while (translations.size < scanners.size) {
-        overlaps.filter { it.first.first != 0 }
+    while (scannerPositions.size < scanners.size) {
+        matches
+            .filter { it.first.first != 0 }
             .forEach { overlap ->
-
-
-                if (translations.keys.contains(overlap.first.first) && !translations.keys.contains(overlap.first.second)) {
-                    val (t0Delta, t0MapFunc) = translations[overlap.first.first]!!
+                if (scannerPositions.keys.contains(overlap.first.first) && !scannerPositions.keys.contains(overlap.first.second)) {
+                    val (initialOffset, initialRotate) = scannerPositions[overlap.first.first]!!
 
                     val (delta1, delta2) = overlap.second
-                    val inverseMapFunc = delta1.inverseMapFunc
-                    val mapFunc = delta2.mapFunc
-                    val pos1 = t0MapFunc(delta1.inverseMapFunc(delta1.pos1))
-                    val pos2 = t0MapFunc(delta1.inverseMapFunc(delta2.pos1))
+                    val inverseRotate = delta1.inverseMapFunc
+                    val rotate = delta2.mapFunc
+                    val pos1 = initialRotate(inverseRotate(delta1.pos1))
+                    val pos2 = initialRotate(inverseRotate(delta2.pos1))
 
-                    val newMapFunc = { it: Vec3 -> t0MapFunc(inverseMapFunc(mapFunc(it))) }
+                    val scannerOffset = pos1 - pos2 + initialOffset
+                    val scannerRotation = { it: Vec3 -> initialRotate(inverseRotate(rotate(it))) }
 
-                    val vec2 = pos1 - pos2
-
-                    translations[overlap.first.second] = vec2 + t0Delta to newMapFunc
-                } else if (!translations.keys.contains(overlap.first.first) && translations.keys.contains(overlap.first.second)) {
-                    val (t0Delta, t0MapFunc) = translations[overlap.first.second]!!
-
-                    val (delta2, delta1) = overlap.second
-                    val inverseMapFunc = delta1.inverseMapFunc
-                    val mapFunc = delta2.mapFunc
-                    val pos1 = t0MapFunc(delta1.inverseMapFunc(delta1.pos1))
-                    val pos2 = t0MapFunc(delta1.inverseMapFunc(delta2.pos1))
-
-                    val newMapFunc = { it: Vec3 -> t0MapFunc(inverseMapFunc(mapFunc(it))) }
-
-                    val vec2 = pos1 - pos2
-
-                    translations[overlap.first.first] = vec2 + t0Delta to newMapFunc
+                    scannerPositions[overlap.first.second] = scannerOffset to scannerRotation
                 }
             }
     }
 
+    return scannerPositions
+}
+
+fun day19a(input: List<String>): Int {
+    val scanners = input.parseScanners()
+
+    val translations = scanners.findScannerPositions()
 
     val uniqueBeacons =
         scanners.flatMapIndexed { index, scanner ->
@@ -214,73 +197,13 @@ fun day19a(input: List<String>): Int {
     return uniqueBeacons.count()
 }
 
-@DoNotAutoExecute
 fun day19b(input: List<String>): Int {
     val scanners = input.parseScanners()
 
-    val overlaps =
-        scanners.withIndex().flatMap { (index1, scanner1) ->
-            (index1 + 1 until scanners.size).mapNotNull { index2 ->
-                val scanner2 = scanners[index2]
-                scanner1.findOverlap(scanner2)
-                    ?.let { overlap ->
-                        (index1 to index2) to
-                            overlap
-                                .first()
-                    }
-            }
-        }
+    val scannerPositions = scanners.findScannerPositions()
 
-    val translations = mutableMapOf<Int, Pair<Vec3, (Vec3) -> Vec3>>(
-        0 to (Vec3(0, 0, 0) to { it })
-    )
-
-    overlaps.filter { it.first.first == 0 }.forEach { overlap ->
-        val (delta1, delta2) = overlap.second
-        val inverseMapFunc = delta1.inverseMapFunc
-        val mapFunc = delta2.mapFunc
-        val pos1 = delta1.inverseMapFunc(delta1.pos1)
-        val pos2 = delta1.inverseMapFunc(delta2.pos1)
-        translations[overlap.first.second] = (pos1 - pos2) to { inverseMapFunc(mapFunc(it)) }
-    }
-
-    while (translations.size < scanners.size) {
-        overlaps.filter { it.first.first != 0 }
-            .forEach { overlap ->
-                if (translations.keys.contains(overlap.first.first) && !translations.keys.contains(overlap.first.second)) {
-                    val (t0Delta, t0MapFunc) = translations[overlap.first.first]!!
-
-                    val (delta1, delta2) = overlap.second
-                    val inverseMapFunc = delta1.inverseMapFunc
-                    val mapFunc = delta2.mapFunc
-                    val pos1 = t0MapFunc(delta1.inverseMapFunc(delta1.pos1))
-                    val pos2 = t0MapFunc(delta1.inverseMapFunc(delta2.pos1))
-
-                    val newMapFunc = { it: Vec3 -> t0MapFunc(inverseMapFunc(mapFunc(it))) }
-
-                    val vec2 = pos1 - pos2
-
-                    translations[overlap.first.second] = vec2 + t0Delta to newMapFunc
-                } else if (!translations.keys.contains(overlap.first.first) && translations.keys.contains(overlap.first.second)) {
-                    val (t0Delta, t0MapFunc) = translations[overlap.first.second]!!
-
-                    val (delta2, delta1) = overlap.second
-                    val inverseMapFunc = delta1.inverseMapFunc
-                    val mapFunc = delta2.mapFunc
-                    val pos1 = t0MapFunc(delta1.inverseMapFunc(delta1.pos1))
-                    val pos2 = t0MapFunc(delta1.inverseMapFunc(delta2.pos1))
-
-                    val newMapFunc = { it: Vec3 -> t0MapFunc(inverseMapFunc(mapFunc(it))) }
-
-                    val vec2 = pos1 - pos2
-
-                    translations[overlap.first.first] = vec2 + t0Delta to newMapFunc
-                }
-            }
-    }
-
-    return (translations.values).maxOf { (value1, _) ->
-        (translations.values).maxOf { (value2, _) ->
+    return (scannerPositions.values).maxOf { (value1, _) ->
+        (scannerPositions.values).maxOf { (value2, _) ->
             value1.manhattanDistanceTo(value2)
         }
     }

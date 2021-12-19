@@ -7,7 +7,7 @@ import util.readInputLines
 class Day19aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day19a(listOf(
+        assertEquals(79, day19a(listOf(
             "--- scanner 0 ---",
             "404,-588,-901",
             "528,-643,409",
