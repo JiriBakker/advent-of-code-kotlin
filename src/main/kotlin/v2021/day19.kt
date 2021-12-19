@@ -158,13 +158,13 @@ private fun List<Scanner>.findScannerProperties(): Map<Int, ScannerProperties> {
             scannerProperties[scannerOverlap.scanner2.id] = ScannerProperties(pos1 - pos2, { inverseMapFunc(mapFunc(it)) })
         }
 
-    fun hasScannerPosition(id: Int) = scannerProperties.keys.contains(id)
+    fun hasScannerProperties(id: Int) = scannerProperties.keys.contains(id)
 
     while (scannerProperties.size < this.size) {
         matches
             .filter { it.scanner1.id != 0 }
             .forEach { scannerOverlap ->
-                if (hasScannerPosition(scannerOverlap.scanner1.id) && !hasScannerPosition(scannerOverlap.scanner2.id)) {
+                if (hasScannerProperties(scannerOverlap.scanner1.id) && !hasScannerProperties(scannerOverlap.scanner2.id)) {
                     val (initialOffset, initialRotate) = scannerProperties[scannerOverlap.scanner1.id]!!
 
                     val (delta1, delta2) = scannerOverlap.overlap
