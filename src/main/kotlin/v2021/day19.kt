@@ -187,8 +187,8 @@ private fun List<Scanner>.findScannerProperties(): Map<Int, ScannerProperties> {
 private fun Scanner.rotateBeacons(rotateFunc: RotateFunc) =
     beacons.map(rotateFunc)
 
-private fun List<Vec3>.translateAll(delta: Vec3) =
-    map { it + delta }
+private fun List<Vec3>.translateAll(offset: Vec3) =
+    map { it + offset }
 
 fun day19a(input: List<String>): Int {
     val scanners = input.parseScanners()
@@ -197,8 +197,8 @@ fun day19a(input: List<String>): Int {
 
     return scanners
         .flatMap { scanner ->
-            val (delta, rotateFunc) = scannerProperties[scanner.id]!!
-            scanner.rotateBeacons(rotateFunc).translateAll(delta)
+            val (offset, rotateFunc) = scannerProperties[scanner.id]!!
+            scanner.rotateBeacons(rotateFunc).translateAll(offset)
         }
         .countDistinct()
 }
@@ -208,9 +208,9 @@ fun day19b(input: List<String>): Int {
 
     val scannerProperties = scanners.findScannerProperties()
 
-    return (scannerProperties.values).maxOf { (value1, _) ->
-        (scannerProperties.values).maxOf { (value2, _) ->
-            value1.manhattanDistanceTo(value2)
+    return (scannerProperties.values).maxOf { (offset1, _) ->
+        (scannerProperties.values).maxOf { (offset2, _) ->
+            offset1.manhattanDistanceTo(offset2)
         }
     }
 }
