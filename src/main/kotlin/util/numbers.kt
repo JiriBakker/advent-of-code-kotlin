@@ -60,7 +60,6 @@ fun max(vararg ints: Int): Int {
 fun max(vararg longs: Long): Long {
     return longs.maxOrNull()!!
 }
-
 operator fun BigInteger.rem(m: Long): BigInteger = this.mod(BigInteger.valueOf(m))
 operator fun BigInteger.times(other: Long): BigInteger = this.times(BigInteger.valueOf(other))
 operator fun BigInteger.times(other: Int): BigInteger = this.times(BigInteger.valueOf(other.toLong()))
