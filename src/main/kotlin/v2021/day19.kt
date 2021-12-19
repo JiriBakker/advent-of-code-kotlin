@@ -4,7 +4,6 @@ import util.countDistinct
 import util.flip
 import util.getCombinationPairs
 import util.mapCombinationPairs
-import util.mapCombinationPairsWithIndex
 import util.splitByDoubleNewLine
 import kotlin.math.abs
 
@@ -29,6 +28,8 @@ private fun Vec3.rotMinZ() = Vec3(-y, x, z)
 private data class BeaconDelta(val pos1: Vec3, val pos2: Vec3, val rotateFunc: (Vec3) -> Vec3, val invRotateFunc: (Vec3) -> Vec3)
 
 private data class ScannerOverlap(val scanner1: Scanner, val scanner2: Scanner, val overlap: Pair<BeaconDelta, BeaconDelta>)
+
+private data class ScannerProperties(val offset: Vec3, val rotateFunc: RotateFunc)
 
 private typealias RotateFunc = (Vec3) -> Vec3
 
@@ -130,7 +131,7 @@ private fun List<String>.parseScanners() =
         }
 
 
-private fun List<Scanner>.findScannerProperties(): Map<Int, Pair<Vec3, RotateFunc>> {
+private fun List<Scanner>.findScannerProperties(): Map<Int, ScannerProperties> {
     val matches =
         this.mapCombinationPairs { scanner1, scanner2 ->
             scanner1.findOverlap(scanner2)
@@ -142,8 +143,8 @@ private fun List<Scanner>.findScannerProperties(): Map<Int, Pair<Vec3, RotateFun
                 }
         }.filterNotNull().flatten()
 
-    val scannerPositions = mutableMapOf<Int, Pair<Vec3, RotateFunc>>(
-        0 to (Vec3(0, 0, 0) to { it })
+    val scannerProperties = mutableMapOf<Int, ScannerProperties>(
+        0 to ScannerProperties(Vec3(0, 0, 0), { it })
     )
 
     matches
@@ -154,17 +155,17 @@ private fun List<Scanner>.findScannerProperties(): Map<Int, Pair<Vec3, RotateFun
             val mapFunc = delta2.rotateFunc
             val pos1 = delta1.invRotateFunc(delta1.pos1)
             val pos2 = delta1.invRotateFunc(delta2.pos1)
-            scannerPositions[scannerOverlap.scanner2.id] = (pos1 - pos2) to { inverseMapFunc(mapFunc(it)) }
+            scannerProperties[scannerOverlap.scanner2.id] = ScannerProperties(pos1 - pos2, { inverseMapFunc(mapFunc(it)) })
         }
 
-    fun hasScannerPosition(index: Int) = scannerPositions.keys.contains(index)
+    fun hasScannerPosition(id: Int) = scannerProperties.keys.contains(id)
 
-    while (scannerPositions.size < this.size) {
+    while (scannerProperties.size < this.size) {
         matches
             .filter { it.scanner1.id != 0 }
             .forEach { scannerOverlap ->
                 if (hasScannerPosition(scannerOverlap.scanner1.id) && !hasScannerPosition(scannerOverlap.scanner2.id)) {
-                    val (initialOffset, initialRotate) = scannerPositions[scannerOverlap.scanner1.id]!!
+                    val (initialOffset, initialRotate) = scannerProperties[scannerOverlap.scanner1.id]!!
 
                     val (delta1, delta2) = scannerOverlap.overlap
                     val inverseRotate = delta1.invRotateFunc
@@ -173,14 +174,14 @@ private fun List<Scanner>.findScannerProperties(): Map<Int, Pair<Vec3, RotateFun
                     val pos2 = initialRotate(inverseRotate(delta2.pos1))
 
                     val scannerOffset = pos1 - pos2 + initialOffset
-                    val scannerRotation = { it: Vec3 -> initialRotate(inverseRotate(rotate(it))) }
+                    val scannerRotateFunc = { it: Vec3 -> initialRotate(inverseRotate(rotate(it))) }
 
-                    scannerPositions[scannerOverlap.scanner2.id] = scannerOffset to scannerRotation
+                    scannerProperties[scannerOverlap.scanner2.id] = ScannerProperties(scannerOffset, scannerRotateFunc)
                 }
             }
     }
 
-    return scannerPositions
+    return scannerProperties
 }
 
 private fun Scanner.rotateBeacons(rotateFunc: RotateFunc) =
@@ -195,8 +196,8 @@ fun day19a(input: List<String>): Int {
     val scannerProperties = scanners.findScannerProperties()
 
     return scanners
-        .flatMapIndexed { index, scanner ->
-            val (delta, rotateFunc) = scannerProperties[index]!!
+        .flatMap { scanner ->
+            val (delta, rotateFunc) = scannerProperties[scanner.id]!!
             scanner.rotateBeacons(rotateFunc).translateAll(delta)
         }
         .countDistinct()
