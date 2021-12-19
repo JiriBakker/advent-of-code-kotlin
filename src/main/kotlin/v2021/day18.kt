@@ -108,6 +108,7 @@ fun day18a(input: List<String>) =
             val nextLeftNrs = leftNrs.increaseDepth()
             val nextRightNrs = rightNrs.increaseDepth()
             val nextNrs = nextLeftNrs.plus(nextRightNrs)
+
             nextNrs.reduce()
         }
         .computeMagnitude()
@@ -120,6 +121,7 @@ fun day18b(input: List<String>): Long {
             (i + 1 until nrs.size).flatMap { i2 ->
                 val left  = nrs[i].increaseDepth()
                 val right = nrs[i2].increaseDepth()
+
                 listOf(
                     left.plus(right).reduce().computeMagnitude(),
                     right.plus(left).reduce().computeMagnitude()
