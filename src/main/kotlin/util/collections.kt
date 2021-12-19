@@ -62,6 +62,13 @@ inline fun <T, U> List<T>.mapCombinationPairs(map: (T, T) -> U) =
         }
     }
 
+inline fun <T, U> List<T>.mapCombinationPairsWithIndex(map: (Pair<Int,T>, Pair<Int,T>) -> U) =
+    (this.indices).flatMap { i1 ->
+        ((i1 + 1) until this.size).map { i2 ->
+            map(i1 to this[i1], i2 to this[i2])
+        }
+    }
+
 fun <T> List<T>.getCombinationPairs(): Sequence<Pair<T, T>> {
     val list = this
     return sequence {
@@ -234,3 +241,7 @@ fun <T> MutableList<T>.insertAt(index: Int, element: T) {
     }
     this[index] = element
 }
+
+fun <T,U> Pair<T,U>.flip() = second to first
+
+fun <T> Collection<T>.countDistinct() = distinct().count()
