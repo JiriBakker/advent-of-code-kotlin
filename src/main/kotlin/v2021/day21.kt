@@ -49,7 +49,10 @@ fun day21b(input: List<String>): Long {
     val players = input.mapIndexed { id, line -> Player(id, line.split(" ").last().toInt()) }
 
     fun play(playerAtTurn: Int, player1Score: Int, player1Pos: Int, player2Score: Int, player2Pos: Int): Pair<Long, Long> =
-        dimensionOdds.map { (steps, dimensions) ->
+        dimensionOdds
+            .entries
+            .fold(0L to 0L) { acc, dimensionOdds ->
+                val (steps, dimensions) = dimensionOdds
                 var nextPlayer1Pos = player1Pos
                 var nextPlayer2Pos = player2Pos
                 var nextPlayer1Score = player1Score
@@ -63,21 +66,22 @@ fun day21b(input: List<String>): Long {
                     nextPlayer2Score = player2Score + nextPlayer2Pos
                 }
 
-                when {
-                    nextPlayer1Score >= 21 -> dimensions to 0L
-                    nextPlayer2Score >= 21 -> 0L to dimensions
-                    else ->
-                        play(
-                            (playerAtTurn + 1) % 2,
-                            nextPlayer1Score,
-                            nextPlayer1Pos,
-                            nextPlayer2Score,
-                            nextPlayer2Pos
-                        ).times(dimensions)
-                }
-        }.reduce { acc, pair ->
-            (acc.first + pair.first) to (acc.second + pair.second)
-        }
+                val (first, second) =
+                    when {
+                        nextPlayer1Score >= 21 -> dimensions to 0L
+                        nextPlayer2Score >= 21 -> 0L to dimensions
+                        else ->
+                            play(
+                                (playerAtTurn + 1) % 2,
+                                nextPlayer1Score,
+                                nextPlayer1Pos,
+                                nextPlayer2Score,
+                                nextPlayer2Pos
+                            ).times(dimensions)
+                    }
+
+                (acc.first + first) to (acc.second + second)
+            }
 
     val result =
         play(
