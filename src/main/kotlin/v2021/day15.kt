@@ -1,6 +1,7 @@
 package v2021
 
 import util.priorityQueueBy
+import util.wrap
 
 private fun List<String>.parseRiskLevels() =
     map { row -> row.map { riskLevel -> riskLevel.toString().toInt() } }
@@ -48,8 +49,6 @@ fun day15a(input: List<String>) =
         .parseRiskLevels()
         .findShortestPathRiskLevel()
 
-private fun Int.wrap(max: Int) =
-    if (this > max) this - max else this
 
 private fun List<List<Int>>.extrapolate(times: Int): List<List<Int>> {
     val width = get(0).size
