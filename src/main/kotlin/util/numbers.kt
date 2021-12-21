@@ -83,3 +83,6 @@ fun BigInteger.asBinaryString(length: Int = 32): String = this.toString(2).padSt
 
 fun String.toDecimal() = toLong(2)
 
+fun Int.wrap(max: Int) =
+    (this - 1) % max + 1
+
