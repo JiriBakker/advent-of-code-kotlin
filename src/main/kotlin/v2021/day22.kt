@@ -7,7 +7,7 @@ import util.sumOfLong
 private typealias CuboidInstruction = Pair<Cuboid, Boolean>
 
 private fun IntRange.intersectsWith(other: IntRange) =
-    first in other.first .. other.last || last in other.first .. other.last || other.first in first .. last
+    first in other || last in other || other.first in this
 
 private fun IntRange.getIntersection(other: IntRange): IntRange =
     max(first, other.first) .. min(last, other.last)
@@ -43,7 +43,7 @@ private data class Cuboid(val xRange: IntRange, val yRange: IntRange, val zRange
     }
 }
 
-private fun List<String>.parseCuboids() =
+private fun List<String>.parseInstructions() =
     map { line ->
         val (isOn, coordinates) = line.split(" ")
         val axis = coordinates.split(",")
@@ -60,15 +60,14 @@ private fun List<CuboidInstruction>.applyInstructions() =
     fold(emptyList<Cuboid>()) { cuboids, (cuboid, isOn) ->
         cuboids.forEach { it.subtract(cuboid) }
 
-        if (isOn) {
-            cuboids.plus(cuboid)
-        } else {
-            cuboids
+        when (isOn) {
+            true -> cuboids.plus(cuboid)
+            false -> cuboids
         }
     }
 
 fun day22a(input: List<String>) =
-    input.parseCuboids()
+    input.parseInstructions()
         .filter { (cube) ->
             cube.xRange.first >= -50 && cube.xRange.last <= 50 &&
                 cube.yRange.first >= -50 && cube.yRange.last <= 50 &&
@@ -78,6 +77,6 @@ fun day22a(input: List<String>) =
         .sumOf { it.volume }
 
 fun day22b(input: List<String>) =
-    input.parseCuboids()
+    input.parseInstructions()
         .applyInstructions()
         .sumOf { it.volume }
