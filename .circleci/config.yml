@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-      - image: java:8
+      - image: eclipse-temurin:17-jammy
 
     steps:
       - checkout
