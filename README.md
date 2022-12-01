@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master.svg?style=shield)](https://circleci.com/gh/JiriBakker/advent-of-code-kotlin/tree/master)
 
-* 2022 - [Challenges](https://adventofcode.com/2021) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/src/main/kotlin/v2022)
+* 2022 - [Challenges](https://adventofcode.com/2022) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/src/main/kotlin/v2022)
 * 2021 - [Challenges](https://adventofcode.com/2021) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/src/main/kotlin/v2021)
 * 2020 - [Challenges](https://adventofcode.com/2020) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/src/main/kotlin/v2020)
 * 2019 - [Challenges](https://adventofcode.com/2019) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/src/main/kotlin/v2019)
