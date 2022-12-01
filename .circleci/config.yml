@@ -34,3 +34,7 @@ jobs:
       - run:
           name: Tests 2021
           command: ./gradlew test -Pyear=2021 -Plowmemory
+
+      - run:
+          name: Tests 2022
+          command: ./gradlew test -Pyear=2022 -Plowmemory
