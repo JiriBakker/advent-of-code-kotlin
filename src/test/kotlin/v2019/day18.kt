@@ -1,8 +1,8 @@
 package v2019
 
-import org.junit.Assert.assertEquals
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import util.readInputLines
 
 class Day18aTests {
@@ -54,7 +54,7 @@ class Day18aTests {
             "########################")))
     }
 
-    @Ignore // Too slow
+    @Disabled // Too slow
     @Test fun testActualInput() {
         assertEquals(3862, day18a(readInputLines("day18", 2019)))
     }

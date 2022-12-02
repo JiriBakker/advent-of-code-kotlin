@@ -1,7 +1,7 @@
 package v2017
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Test
 import util.readInputLine
 
 class Day16aTests {
