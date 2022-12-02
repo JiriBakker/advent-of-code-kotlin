@@ -1,12 +1,12 @@
 package v2016
 
-import org.junit.Assert.assertEquals
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import util.readInputLine
 
 class Day05aTests {
-    @Ignore // Too slow
+    @Disabled // Too slow
     @Test fun testExampleInput1() {
         assertEquals("18f47a30", day05a("abc"))
     }

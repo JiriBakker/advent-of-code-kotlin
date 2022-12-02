@@ -1,8 +1,8 @@
 package v2015
 
-import org.junit.Assert.assertEquals
-import org.junit.Ignore
-import org.junit.Test
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
+import org.junit.jupiter.api.Test
 import util.readInputLines
 
 class Day13aTests {
@@ -28,7 +28,7 @@ class Day13aTests {
 }
 
 class Day13bTests {
-    @Ignore // High memory load
+    @Disabled // High memory load
     @Test fun testActualInput() {
         assertEquals(640, day13b(readInputLines("day13", 2015)))
     }
