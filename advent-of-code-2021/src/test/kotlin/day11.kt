@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import util.readInputLines
 
@@ -22,7 +21,7 @@ class Day11aTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(1665, day11a(readInputLines("day11", 2021)))
+        assertEquals(1665, day11a(readInputLines("day11")))
     }
 }
 
@@ -45,6 +44,6 @@ class Day11bTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(235, day11b(readInputLines("day11", 2021)))
+        assertEquals(235, day11b(readInputLines("day11")))
     }
 }

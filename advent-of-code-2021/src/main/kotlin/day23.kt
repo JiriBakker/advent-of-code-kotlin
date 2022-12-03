@@ -165,7 +165,7 @@ private data class BurrowState(
                 ).flatten()
 
             return validMoves
-                .filter { pos -> !exploredPositions.contains(pos) && canMoveInto(pos) }
+                .filter { nextPos -> !exploredPositions.contains(nextPos) && canMoveInto(nextPos) }
                 .fold(cur) { acc, nextPos ->
                     val destinations = explore(nextPos, costSoFar + costs[amphipod]!!)
                     acc.plus(destinations)

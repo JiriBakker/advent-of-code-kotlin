@@ -24,12 +24,12 @@ class Day02aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(3306701, day02a(readInputLine("day02", 2019), listOf(Pair(1L, 12L), Pair(2L, 2L))))
+        assertEquals(3306701, day02a(readInputLine("day02"), listOf(Pair(1L, 12L), Pair(2L, 2L))))
     }
 }
 
 class Day02bTests {
     @Test fun testActualInput() {
-        assertEquals(7621, day02b(readInputLine("day02", 2019)))
+        assertEquals(7621, day02b(readInputLine("day02")))
     }
 }

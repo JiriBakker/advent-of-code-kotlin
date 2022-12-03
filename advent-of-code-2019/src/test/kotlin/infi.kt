@@ -12,12 +12,12 @@ class InfiATests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(7, infiA(readInputLines("infi", 2019)))
+        assertEquals(7, infiA(readInputLines("infi")))
     }
 }
 
 class InfiBTests {
     @Test fun testActualInput() {
-        assertEquals(58, infiB(readInputLines("infi", 2019)))
+        assertEquals(58, infiB(readInputLines("infi")))
     }
 }

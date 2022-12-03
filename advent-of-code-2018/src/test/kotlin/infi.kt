@@ -8,7 +8,7 @@ class InfiATests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(40, infiA(readInputLines("infi", 2018)))
+        assertEquals(40, infiA(readInputLines("infi")))
     }
 }
 
@@ -18,6 +18,6 @@ class InfiBTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(50, infiB(readInputLines("infi", 2018)))
+        assertEquals(50, infiB(readInputLines("infi")))
     }
 }

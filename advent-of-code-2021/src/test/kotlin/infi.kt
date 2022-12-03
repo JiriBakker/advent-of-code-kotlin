@@ -1,5 +1,4 @@
 import org.junit.jupiter.api.Assertions.assertEquals
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import util.readInputLines
 
@@ -16,7 +15,7 @@ class InfiATests {
 
     @Test
     fun testActualInput() {
-        assertEquals(128844, infiA(readInputLines("infi", 2021)))
+        assertEquals(128844, infiA(readInputLines("infi")))
     }
 }
 
@@ -33,6 +32,6 @@ class InfiBTests {
 
     @Test
     fun testActualInput() {
-        assertEquals("BBBBDEHHHHLLLPPPPQQQ", infiB(readInputLines("infi", 2021)))
+        assertEquals("BBBBDEHHHHLLLPPPPQQQ", infiB(readInputLines("infi")))
     }
 }

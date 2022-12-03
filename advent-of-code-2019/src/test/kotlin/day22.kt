@@ -39,16 +39,16 @@ class Day22aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(2604, day22a(readInputLines("day22", 2019)))
+        assertEquals(2604, day22a(readInputLines("day22")))
     }
 }
 
 class Day22bTests {
     @Test fun testActualInputForPartA() {
-        assertEquals(2019, day22b(readInputLines("day22", 2019), 10007, 2604, 1))
+        assertEquals(2019, day22b(readInputLines("day22"), 10007, 2604, 1))
     }
 
     @Test fun testActualInput() {
-        assertEquals(79608410258462, day22b(readInputLines("day22", 2019)))
+        assertEquals(79608410258462, day22b(readInputLines("day22")))
     }
 }

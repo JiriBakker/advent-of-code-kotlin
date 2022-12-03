@@ -36,11 +36,11 @@ class Day21aTests {
     }
 
     @Test fun testPartBInput() {
-        assertEquals("fbgdceah", day21a(readInputLines("day21", 2016), "egcdahbf"))
+        assertEquals("fbgdceah", day21a(readInputLines("day21"), "egcdahbf"))
     }
 
     @Test fun testActualInput() {
-        assertEquals("aefgbcdh", day21a(readInputLines("day21", 2016)))
+        assertEquals("aefgbcdh", day21a(readInputLines("day21")))
     }
 }
 
@@ -78,10 +78,10 @@ class Day21bTests {
     }
 
     @Test fun testPartAInput() {
-        assertEquals("abcdefgh", day21b(readInputLines("day21", 2016), "aefgbcdh"))
+        assertEquals("abcdefgh", day21b(readInputLines("day21"), "aefgbcdh"))
     }
 
     @Test fun testActualInput() {
-        assertEquals("egcdahbf", day21b(readInputLines("day21", 2016)))
+        assertEquals("egcdahbf", day21b(readInputLines("day21")))
     }
 }

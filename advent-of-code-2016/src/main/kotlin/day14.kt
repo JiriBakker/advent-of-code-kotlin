@@ -1,4 +1,3 @@
-import util.DoNotAutoExecute
 import java.security.MessageDigest
 import java.util.ArrayDeque
 
@@ -65,7 +64,6 @@ fun day14a(input: String): Int {
         .last()
 }
 
-@DoNotAutoExecute
 fun day14b(input: String): Int {
     return findValidKeyIndices(input, ::stretchedMd5Hash)
         .take(64)

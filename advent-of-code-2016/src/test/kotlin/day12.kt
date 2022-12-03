@@ -15,12 +15,12 @@ class Day12aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(318009, day12a(readInputLines("day12", 2016)))
+        assertEquals(318009, day12a(readInputLines("day12")))
     }
 }
 
 class Day12bTests {
     @Test fun testActualInput_highMemUsage() {
-        assertEquals(9227663, day12b(readInputLines("day12", 2016)))
+        assertEquals(9227663, day12b(readInputLines("day12")))
     }
 }

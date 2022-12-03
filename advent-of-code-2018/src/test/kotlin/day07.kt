@@ -66,7 +66,7 @@ class Day07aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals("CFMNLOAHRKPTWBJSYZVGUQXIDE", day07a(readInputLines("day07", 2018)))
+        assertEquals("CFMNLOAHRKPTWBJSYZVGUQXIDE", day07a(readInputLines("day07")))
     }
 }
 
@@ -87,6 +87,6 @@ class Day07bTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(971, day07b(readInputLines("day07", 2018)))
+        assertEquals(971, day07b(readInputLines("day07")))
     }
 }
