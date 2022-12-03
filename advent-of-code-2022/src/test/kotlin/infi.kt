@@ -18,10 +18,3 @@ class InfiATests {
         assertEquals(64, infiA(readInputLines("infi")))
     }
 }
-
-class InfiBTests {
-    @Test
-    fun testActualInput() {
-        assertEquals(64, infiB(readInputLines("infi")))
-    }
-}
