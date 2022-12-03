@@ -1,4 +1,4 @@
-import Infi.Perspective.*
+import Infi.Direction.*
 import Infi.followInstructions
 import Infi.print
 import kotlin.math.abs
@@ -33,36 +33,35 @@ object Infi {
         instructions: List<String>,
         visitedCallback: (Long, Long) -> Unit = {_,_->}
     ) {
-        var curPerspective = NORTH
+        var curDirection = NORTH
         var curX = 0L
         var curY = 0L
-
 
         instructions.forEach { line ->
             val (operation, amount) = line.split(" ")
 
             when (operation) {
                 "draai" ->
-                    curPerspective = curPerspective.rotate(amount.toInt())
+                    curDirection = curDirection.rotate(amount.toInt())
 
                 "loop" -> {
                     repeat(amount.toInt()) {
-                        curX += curPerspective.dx
-                        curY += curPerspective.dy
+                        curX += curDirection.dx
+                        curY += curDirection.dy
                         visitedCallback(curX, curY)
                     }
                 }
 
                 "spring" -> {
-                    curX += amount.toInt() * curPerspective.dx
-                    curY += amount.toInt() * curPerspective.dy
+                    curX += amount.toInt() * curDirection.dx
+                    curY += amount.toInt() * curDirection.dy
                     visitedCallback(curX, curY)
                 }
             }
         }
     }
 
-    enum class Perspective(val dx: Int, val dy: Int) {
+    enum class Direction(val dx: Int, val dy: Int) {
         NORTH(0, -1),
         NORTH_EAST(1, -1),
         EAST(1, 0),
@@ -72,7 +71,7 @@ object Infi {
         WEST(-1, 0),
         NORTH_WEST(-1, -1);
 
-        fun rotate(angle: Int): Perspective {
+        fun rotate(angle: Int): Direction {
             return if (angle == 0) {
                 this
             } else if (angle < 0) {
@@ -82,7 +81,7 @@ object Infi {
             }
         }
 
-        private fun rotateRight(angle: Int): Perspective {
+        private fun rotateRight(angle: Int): Direction {
             val next = when (this) {
                 NORTH -> NORTH_EAST
                 NORTH_EAST -> EAST
@@ -97,7 +96,7 @@ object Infi {
             return next.rotate(angle - 45)
         }
 
-        private fun rotateLeft(angle: Int): Perspective {
+        private fun rotateLeft(angle: Int): Direction {
             val next = when (this) {
                 NORTH -> NORTH_WEST
                 NORTH_EAST -> NORTH
