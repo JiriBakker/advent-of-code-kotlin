@@ -8,33 +8,33 @@ jobs:
       - checkout
 
       - run:
-          name: Tests 2015
-          command: ./gradlew test -Pyear=2015 -Plowmemory
-
-      - run:
-          name: Tests 2016
-          command: ./gradlew test -Pyear=2016 -Plowmemory
-
-      - run:
-          name: Tests 2017
-          command: ./gradlew test -Pyear=2017 -Plowmemory
-
-      - run:
-          name: Tests 2018
-          command: ./gradlew test -Pyear=2018 -Plowmemory
-
-      - run:
-          name: Tests 2019
-          command: ./gradlew test -Pyear=2019 -Plowmemory
-
-      - run:
-          name: Tests 2020
-          command: ./gradlew test -Pyear=2020 -Plowmemory
+          name: Tests 2022
+          command: ./gradlew :advent-of-code-2022:test -Plowmemory
 
       - run:
           name: Tests 2021
-          command: ./gradlew test -Pyear=2021 -Plowmemory
+          command: ./gradlew :advent-of-code-2021:test -Plowmemory
 
       - run:
-          name: Tests 2022
-          command: ./gradlew test -Pyear=2022 -Plowmemory
+          name: Tests 2020
+          command: ./gradlew :advent-of-code-2020:test -Plowmemory
+
+      - run:
+          name: Tests 2019
+          command: ./gradlew :advent-of-code-2019:test -Plowmemory
+
+      - run:
+          name: Tests 2018
+          command: ./gradlew :advent-of-code-2018:test -Plowmemory
+
+      - run:
+          name: Tests 2017
+          command: ./gradlew :advent-of-code-2017:test -Plowmemory
+
+      - run:
+          name: Tests 2016
+          command: ./gradlew :advent-of-code-2016:test -Plowmemory
+
+      - run:
+          name: Tests 2015
+          command: ./gradlew :advent-of-code-2015:test -Plowmemory

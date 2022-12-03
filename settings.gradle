@@ -8,4 +8,13 @@
  */
 
 rootProject.name = 'advent-of-code-kotlin'
+include 'advent-of-code-2022'
+include 'advent-of-code-util'
+include 'advent-of-code-2021'
+include 'advent-of-code-2020'
+include 'advent-of-code-2019'
+include 'advent-of-code-2018'
+include 'advent-of-code-2017'
+include 'advent-of-code-2016'
+include 'advent-of-code-2015'
 
