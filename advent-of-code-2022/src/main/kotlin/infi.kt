@@ -1,76 +1,67 @@
 import Infi.Perspective.*
+import Infi.followInstructions
 import Infi.print
 import kotlin.math.abs
 import kotlin.math.max
 import kotlin.math.min
 
 fun infiA(input: List<String>): Long {
-    var curPerspective = NORTH
     var curX = 0L
     var curY = 0L
 
-    input.forEach { line ->
-        val (instruction, amount) = line.split(" ")
-
-        when (instruction) {
-            "draai" ->
-                curPerspective = curPerspective.rotate(amount.toInt())
-
-            "loop" -> {
-                curX += amount.toInt() * curPerspective.dx
-                curY += amount.toInt() * curPerspective.dy
-            }
-
-            "spring" -> {
-                curX += amount.toInt() * curPerspective.dx
-                curY += amount.toInt() * curPerspective.dy
-            }
-        }
+    followInstructions(instructions = input) { x, y ->
+        curX = x
+        curY = y
     }
 
     return abs(curX) + abs(curY)
 }
 
-
-fun infiB(input: List<String>): Long {
-    var curPerspective = NORTH
-    var curX = 0L
-    var curY = 0L
-
+fun infiB(input: List<String>) {
     val grid = mutableMapOf<Long, MutableSet<Long>>()
-    fun setPos(x: Long, y: Long) {
+
+    followInstructions(instructions = input) { x, y ->
         grid.getOrPut(y) { mutableSetOf() }.add(x)
     }
 
-    input.forEach { line ->
-        val (instruction, amount) = line.split(" ")
+    grid.print()
+}
 
-        when (instruction) {
-            "draai" ->
-                curPerspective = curPerspective.rotate(amount.toInt())
+object Infi {
 
-            "loop" -> {
-                repeat(amount.toInt()) {
-                    curX += curPerspective.dx
-                    curY += curPerspective.dy
-                    setPos(curX, curY)
+    fun followInstructions(
+        instructions: List<String>,
+        visitedCallback: (Long, Long) -> Unit = {_,_->}
+    ) {
+        var curPerspective = NORTH
+        var curX = 0L
+        var curY = 0L
+
+
+        instructions.forEach { line ->
+            val (operation, amount) = line.split(" ")
+
+            when (operation) {
+                "draai" ->
+                    curPerspective = curPerspective.rotate(amount.toInt())
+
+                "loop" -> {
+                    repeat(amount.toInt()) {
+                        curX += curPerspective.dx
+                        curY += curPerspective.dy
+                        visitedCallback(curX, curY)
+                    }
                 }
-            }
 
-            "spring" -> {
-                curX += amount.toInt() * curPerspective.dx
-                curY += amount.toInt() * curPerspective.dy
-                setPos(curX, curY)
+                "spring" -> {
+                    curX += amount.toInt() * curPerspective.dx
+                    curY += amount.toInt() * curPerspective.dy
+                    visitedCallback(curX, curY)
+                }
             }
         }
     }
 
-    grid.print()
-
-    return abs(curX) + abs(curY)
-}
-
-object Infi {
     enum class Perspective(val dx: Int, val dy: Int) {
         NORTH(0, -1),
         NORTH_EAST(1, -1),
@@ -123,17 +114,22 @@ object Infi {
     }
 
     fun Map<Long, Set<Long>>.print() {
+        val minY = this.keys.min()
+        val maxY = this.keys.max()
+
         var minX = Long.MAX_VALUE
         var maxX = Long.MIN_VALUE
-        (this.keys.min() .. this.keys.max()).forEach { y ->
+        (minY .. maxY).forEach { y ->
             minX = min(minX, this[y]!!.min())
             maxX = max(maxX, this[y]!!.max())
         }
 
-        (this.keys.min() .. this.keys.max()).forEach { y ->
+        (minY .. maxY).forEach { y ->
             (minX .. maxX).forEach { x ->
-                if (this.containsKey(y) && this[y]!!.contains(x)) print("x")
-                else print(" ")
+                if (this[y]?.contains(x) == true)
+                    print("x")
+                else
+                    print(" ")
             }
             println()
         }
