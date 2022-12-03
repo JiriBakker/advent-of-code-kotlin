@@ -16,7 +16,7 @@ class Day09aTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(439, day09a(readInputLines("day09", 2021)))
+        assertEquals(439, day09a(readInputLines("day09")))
     }
 }
 
@@ -34,6 +34,6 @@ class Day09bTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(900900, day09b(readInputLines("day09", 2021)))
+        assertEquals(900900, day09b(readInputLines("day09")))
     }
 }

@@ -4,6 +4,6 @@ import util.readInputLines
 
 class Day25aTests {
     @Test fun testActualInput() {
-        assertEquals(180, day25a(readInputLines("day25", 2016)))
+        assertEquals(180, day25a(readInputLines("day25")))
     }
 }

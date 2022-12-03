@@ -1,9 +1,7 @@
-import util.DoNotAutoExecute
 import java.util.ArrayDeque
 
 private const val NEWLINE = 10L
 
-@DoNotAutoExecute
 fun day25a(input: String): Long {
     val intCodes = parseIntCodes(input)
 

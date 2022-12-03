@@ -4,7 +4,7 @@ import util.readInputLine
 
 class Day11aTests {
     @Test fun testActualInput() {
-        assertEquals(2883, day11a(readInputLine("day11", 2019)))
+        assertEquals(2883, day11a(readInputLine("day11")))
     }
 }
 
@@ -17,6 +17,6 @@ class Day11bTests {
             "█    █    ███  █    ███  █    █ ██  █  \n" +
             "█    █    █    █  █ █    █    █  █ █   \n" +
             "████ ████ █     ██  █    ████  ███ ████",
-            day11b(readInputLine("day11", 2019)))
+            day11b(readInputLine("day11")))
     }
 }

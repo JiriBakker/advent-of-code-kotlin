@@ -106,7 +106,12 @@ fun <T> Collection<T>.multiplyBy(valueSelector: (T) -> Int): Int {
 }
 
 fun <T> priorityQueueBy(valueSelector: (T) -> Comparable<*>): PriorityQueue<T> {
-    return PriorityQueue { a, b -> (valueSelector(a) as Comparable<Any>).compareTo(valueSelector(b)) }
+    return PriorityQueue { a, b ->
+        @Suppress("UNCHECKED_CAST")
+        (valueSelector(a) as? Comparable<Any>)
+            ?.compareTo(valueSelector(b))
+            ?: throw Exception("Unable to cast to Comparable<Any>")
+    }
 }
 
 fun <T> Collection<T>.allEqual(): Boolean {

@@ -30,13 +30,13 @@ class Day20aTests {
 
     @Disabled // Too slow
     @Test fun testActualInput() {
-        assertEquals(665280, day20a(readInputLine("day20", 2015)))
+        assertEquals(665280, day20a(readInputLine("day20")))
     }
 }
 
 class Day20bTests {
     @Disabled // Too slow
     @Test fun testActualInput() {
-        assertEquals(705600, day20b(readInputLine("day20", 2015)))
+        assertEquals(705600, day20b(readInputLine("day20")))
     }
 }

@@ -2,15 +2,15 @@ package util
 
 import java.io.File
 
-fun readInputLines(day: String, year: Int): List<String> {
+fun readInputLines(day: String): List<String> {
     return File("input/$day").let {
         if (it.exists()) it.readLines()
         else emptyList()
     }
 }
 
-fun readInputLine(day: String, year: Int): String {
-    return readInputLines(day, year).single()
+fun readInputLine(day: String): String {
+    return readInputLines(day).single()
 }
 
 fun parseCsv(exampleInput: String): List<String> {

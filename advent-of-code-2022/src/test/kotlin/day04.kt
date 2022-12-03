@@ -2,10 +2,10 @@ import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
 import util.readInputLines
 
-class Day03aTests {
+class Day04aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(157, day03a(listOf(
+        assertEquals(0, day04a(listOf(
             "vJrwpWtwJgWrhcsFMMfFFhFp",
             "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
             "PmmdzqPrVvPwwTWBwg",
@@ -16,14 +16,14 @@ class Day03aTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(7766, day03a(readInputLines("day03")))
+        assertEquals(0, day04a(readInputLines("day04")))
     }
 }
 
-class Day03bTests {
+class Day04bTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(70, day03b(listOf(
+        assertEquals(0, day04b(listOf(
             "vJrwpWtwJgWrhcsFMMfFFhFp",
             "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
             "PmmdzqPrVvPwwTWBwg",
@@ -34,6 +34,6 @@ class Day03bTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(2415, day03b(readInputLines("day03")))
+        assertEquals(0, day04b(readInputLines("day04")))
     }
 }

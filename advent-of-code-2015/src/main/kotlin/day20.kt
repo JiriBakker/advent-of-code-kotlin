@@ -1,5 +1,3 @@
-import util.DoNotAutoExecute
-
 private fun countDivisors(nr: Long): Long {
     var count = 0L
     for (i in nr / 2 downTo 2) {
@@ -54,14 +52,12 @@ private fun findLowestHouseNr(target: Long, maxHouses: Long = Long.MAX_VALUE): L
     error("Unable to find house with more than $target presents")
 }
 
-@DoNotAutoExecute
 fun day20a(input: String): Long {
     val target = input.toLong() / 10
 
     return findLowestHouseNr(target)
 }
 
-@DoNotAutoExecute
 fun day20b(input: String): Long {
     val target = input.toLong() / 11
 

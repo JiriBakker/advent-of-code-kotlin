@@ -63,7 +63,7 @@ class Day10aTests {
                 "#.......#...#....#..#...#..#....#.......#.......#.......#.....\n" +
                 "#....#..#....#..#....#..#...#...#.......#.......#.......#.....\n" +
                 ".####...#....#..#....#..#....#..######..######..#.......######\n",
-            day10a(readInputLines("day10", 2018))
+            day10a(readInputLines("day10"))
         )
     }
 }
@@ -109,7 +109,7 @@ class Day10bTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(10081, day10b(readInputLines("day10", 2018))
+        assertEquals(10081, day10b(readInputLines("day10"))
         )
     }
 }

@@ -21,14 +21,14 @@ class Day13aTests {
     }
 
     @Test fun testActualInput() {
-        assertEquals(664, day13a(readInputLines("day13", 2015)))
+        assertEquals(664, day13a(readInputLines("day13")))
     }
 }
 
 class Day13bTests {
     @Disabled // High memory load
     @Test fun testActualInput() {
-        assertEquals(640, day13b(readInputLines("day13", 2015)))
+        assertEquals(640, day13b(readInputLines("day13")))
     }
 }
 
