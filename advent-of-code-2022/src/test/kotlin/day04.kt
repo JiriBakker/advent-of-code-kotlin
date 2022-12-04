@@ -5,35 +5,35 @@ import util.readInputLines
 class Day04aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day04a(listOf(
-            "vJrwpWtwJgWrhcsFMMfFFhFp",
-            "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
-            "PmmdzqPrVvPwwTWBwg",
-            "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
-            "ttgJtRGJQctTZtZT",
-            "CrZsJsPPZsGzwwsLwLmpwMDw")))
+        assertEquals(2, day04a(listOf(
+            "2-4,6-8",
+            "2-3,4-5",
+            "5-7,7-9",
+            "2-8,3-7",
+            "6-6,4-6",
+            "2-6,4-8")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day04a(readInputLines("day04")))
+        assertEquals(536, day04a(readInputLines("day04")))
     }
 }
 
 class Day04bTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day04b(listOf(
-            "vJrwpWtwJgWrhcsFMMfFFhFp",
-            "jqHRNqRjqzjGDLGLrsFMfFZSrLrFZsSL",
-            "PmmdzqPrVvPwwTWBwg",
-            "wMqvLMZHhHMvwLHjbvcjnnSBnvTQFn",
-            "ttgJtRGJQctTZtZT",
-            "CrZsJsPPZsGzwwsLwLmpwMDw")))
+        assertEquals(4, day04b(listOf(
+            "2-4,6-8",
+            "2-3,4-5",
+            "5-7,7-9",
+            "2-8,3-7",
+            "6-6,4-6",
+            "2-6,4-8")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day04b(readInputLines("day04")))
+        assertEquals(845, day04b(readInputLines("day04")))
     }
 }
