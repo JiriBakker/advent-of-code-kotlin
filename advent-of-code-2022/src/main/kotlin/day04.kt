@@ -16,15 +16,19 @@ fun day04b(input: List<String>) =
     }
 
 private fun String.parseRanges(): Pair<IntRange, IntRange> {
-    val (firstSections, secondSections) = this.split(",")
-    return firstSections.toRange() to secondSections.toRange()
+    val (firstRange, secondRange) =
+        this.split(",").map(String::toRange)
+
+    return firstRange to secondRange
 }
 
 private fun String.toRange() =
-    this.split("-").map(String::toInt).let { it[0]..it[1] }
+    this.split("-")
+        .map(String::toInt)
+        .let { it[0] .. it[1] }
 
 private fun IntRange.fullyOverlaps(other: IntRange) =
     first <= other.first && last >= other.last
 
 private fun IntRange.partiallyOverlaps(other: IntRange) =
-    other.first in first..last || other.last in first..last
+    other.first in first .. last || other.last in first .. last
