@@ -3,10 +3,10 @@ import org.junit.jupiter.api.Test
 import util.readInputLines
 import util.trimInput
 
-class Day04aTests {
+class Day05aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(2, day04a(listOf(
+        assertEquals(0, day05a(listOf(
             "2-4,6-8",
             "2-3,4-5",
             "5-7,7-9",
@@ -17,14 +17,14 @@ class Day04aTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(536, day04a(readInputLines("day04")))
+        assertEquals(0, day05a(readInputLines("day05")))
     }
 }
 
-class Day04bTests {
+class Day05bTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(4, day04b(
+        assertEquals(0, day05b(
             """
                 2-4,6-8
                 2-3,4-5
@@ -37,6 +37,6 @@ class Day04bTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(845, day04b(readInputLines("day04")))
+        assertEquals(0, day05b(readInputLines("day05")))
     }
 }

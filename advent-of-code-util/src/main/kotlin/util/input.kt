@@ -36,3 +36,8 @@ fun List<String>.splitByDoubleNewLine(): List<List<String>> {
 
     return groups
 }
+
+fun String.trimInput() =
+    this.trim()
+        .split("\n")
+        .map { it.trim() }
