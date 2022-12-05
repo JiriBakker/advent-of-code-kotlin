@@ -6,39 +6,41 @@ import util.trimInput
 class Day05aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day05a(
-            """
-                2-4,6-8
-                2-3,4-5
-                5-7,7-9
-                2-8,3-7
-                6-6,4-6
-                2-6,4-8
-            """.trimInput()))
+        assertEquals("CMZ", day05a(listOf(
+            "    [D]    ",
+            "[N] [C]    ",
+            "[Z] [M] [P]",
+            " 1   2   3 ",
+            "",
+            "move 1 from 2 to 1",
+            "move 3 from 1 to 3",
+            "move 2 from 2 to 1",
+            "move 1 from 1 to 2")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day05a(readInputLines("day05")))
+        assertEquals("VCTFTJQCG", day05a(readInputLines("day05")))
     }
 }
 
 class Day05bTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day05b(
-            """
-                2-4,6-8
-                2-3,4-5
-                5-7,7-9
-                2-8,3-7
-                6-6,4-6
-                2-6,4-8
-            """.trimInput()))
+        assertEquals("MCD", day05b(listOf(
+            "    [D]    ",
+            "[N] [C]    ",
+            "[Z] [M] [P]",
+            " 1   2   3 ",
+            "",
+            "move 1 from 2 to 1",
+            "move 3 from 1 to 3",
+            "move 2 from 2 to 1",
+            "move 1 from 1 to 2")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day05b(readInputLines("day05")))
+        assertEquals("GCFGLDNJZ", day05b(readInputLines("day05")))
     }
 }
