@@ -38,6 +38,6 @@ fun List<String>.splitByDoubleNewLine(): List<List<String>> {
 }
 
 fun String.trimInput() =
-    this.trim()
-        .split("\n")
+    this.split("\n")
+        .dropWhile { it.isNotEmpty() }
         .map { it.trim() }
