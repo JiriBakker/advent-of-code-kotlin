@@ -2,6 +2,7 @@ package util
 
 import java.util.ArrayDeque
 import java.util.PriorityQueue
+import java.util.Stack
 
 inline fun <T> Iterable<T>.sumOfLong(selector: (T) -> Long): Long {
     var sum = 0L
@@ -250,3 +251,6 @@ fun <T> MutableList<T>.insertAt(index: Int, element: T) {
 fun <T,U> Pair<T,U>.flip() = second to first
 
 fun <T> Collection<T>.countDistinct() = distinct().count()
+
+fun <T> Stack<T>.popMultiple(amount: Int) =
+    (0 until amount).map { this.pop() }
