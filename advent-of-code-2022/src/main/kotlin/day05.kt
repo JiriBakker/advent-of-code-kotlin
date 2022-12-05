@@ -1,42 +1,40 @@
 import java.util.Stack
 
+import Day05.applyInstructions
 import Day05.getTopCrates
 import Day05.parse
+import util.popMultiple
+
+typealias CrateStack = Stack<Char>
 
 fun day05a(input: List<String>): String {
     val (stacks, instructions) = input.parse()
 
-    instructions.forEach { instruction ->
-        repeat(instruction.amount) {
-            stacks[instruction.to].add(stacks[instruction.from].pop())
-        }
-    }
-
-    return stacks.getTopCrates()
+    return stacks
+        .applyInstructions(instructions)
+        .getTopCrates()
 }
+
 
 fun day05b(input: List<String>): String {
     val (stacks, instructions) = input.parse()
 
-    instructions.forEach { instruction ->
-        val cratesToMove = (0 until instruction.amount).map { stacks[instruction.from].pop() }
-        stacks[instruction.to].addAll(cratesToMove.reversed())
-    }
-
-    return stacks.getTopCrates()
+    return stacks
+        .applyInstructions(instructions, maintainOrder = true)
+        .getTopCrates()
 }
 
 object Day05 {
 
     class Instruction(val amount: Int, val from: Int, val to: Int)
 
-    fun List<String>.parse(): Pair<List<Stack<Char>>, List<Instruction>> {
+    fun List<String>.parse(): Pair<List<CrateStack>, List<Instruction>> {
         val stackLines = this.takeWhile { it.trim().isNotEmpty() }
         val instructionLines = this.drop(stackLines.size + 1)
 
         val nrOfStacks = stackLines.last().trim().split("   ").size
 
-        val stacks = (0 until nrOfStacks).map { Stack<Char>() }
+        val stacks = (0 until nrOfStacks).map { CrateStack() }
 
         stackLines.reversed().forEach { line ->
             var stackNr = 0
@@ -65,7 +63,21 @@ object Day05 {
         return stacks to instructions
     }
 
-    fun List<Stack<Char>>.getTopCrates() =
+    fun List<CrateStack>.applyInstructions(instructions: List<Instruction>, maintainOrder: Boolean = false): List<CrateStack> {
+        instructions.forEach { instruction ->
+            val stackFrom = this[instruction.from]
+            val stackTo = this[instruction.to]
+            val cratesToMove = stackFrom.popMultiple(instruction.amount)
+            stackTo.addAll(
+                if (maintainOrder) cratesToMove.reversed()
+                else cratesToMove
+            )
+        }
+        return this
+    }
+
+    fun List<CrateStack>.getTopCrates() =
         map { it.pop() }.joinToString("")
+
 }
 
