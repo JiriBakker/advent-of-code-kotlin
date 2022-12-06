@@ -31,4 +31,4 @@ private fun IntRange.fullyOverlaps(other: IntRange) =
     first <= other.first && last >= other.last
 
 private fun IntRange.partiallyOverlaps(other: IntRange) =
-    other.first in first .. last || other.last in first .. last
+    other.first in this || other.last in this
