@@ -1,21 +1,28 @@
+import Day07.MAX_FILE_SIZE_AVAILABLE
 import Day07.parseDirectoryStructure
 
 fun day07a(input: List<String>): Long {
     val directories = input.parseDirectoryStructure()
 
-    return directories.values.filter { it.size <= 100000 }.sumOf { it.size }
+    return directories.values
+        .filter { it.size <= 100000 }
+        .sumOf { it.size }
 }
 
 fun day07b(input: List<String>): Long {
     val directories = input.parseDirectoryStructure()
 
-    val sizeToFree = directories["/"]!!.size - 40000000
-    val directorySizes = directories.values.map { it.size }.sorted()
+    val sizeToFree = directories["/"]!!.size - MAX_FILE_SIZE_AVAILABLE
 
-    return directorySizes.dropWhile { it < sizeToFree }.first()
+    return directories.values
+        .sortedBy { it.size }
+        .first { it.size >= sizeToFree }
+        .size
 }
 
 object Day07 {
+
+    const val MAX_FILE_SIZE_AVAILABLE = 40000000
 
     abstract class FilesystemNode(val name: String, val parent: Directory?) {
         abstract val size: Long
@@ -35,7 +42,7 @@ object Day07 {
             "/" to curDirectory
         )
 
-        fun findOrCreateDirectory(name: String): Directory {
+        fun findOrCreateSubdirectory(name: String): Directory {
             val path = curDirectory.path + name + "/"
             return directories.getOrPut(path) {
                 Directory(path, name, curDirectory)
@@ -44,33 +51,30 @@ object Day07 {
 
         var curLineIndex = 1
         while (curLineIndex < this.size) {
-            when (this[curLineIndex]) {
-                "\$ ls" -> {
+            when (this[curLineIndex].drop(2)) {
+                "ls" -> {
                     val lines = this.drop(curLineIndex + 1).takeWhile { !it.startsWith("\$")}
 
                     lines.forEach { line ->
                         if (line.startsWith("dir ")) {
-                            val directory = findOrCreateDirectory(line.drop(4))
-                            curDirectory.children[directory.name] = directory
+                            val subdirectory = findOrCreateSubdirectory(line.drop(4))
+                            curDirectory.children[subdirectory.name] = subdirectory
                         } else {
                             val (size, name) = line.split(" ")
                             curDirectory.children[name] = File(size.toLong(), name, curDirectory)
                         }
                     }
 
-                    curLineIndex += lines.size + 1
+                    curLineIndex += lines.size
                 }
 
-                "\$ cd .." -> {
+                "cd .." ->
                     curDirectory = curDirectory.parent!!
-                    curLineIndex++
-                }
 
-                else -> {
-                    curDirectory = findOrCreateDirectory(this[curLineIndex].drop(5))
-                    curLineIndex++
-                }
+                else ->
+                    curDirectory = findOrCreateSubdirectory(this[curLineIndex].drop(5))
             }
+            curLineIndex++
         }
 
         return directories
