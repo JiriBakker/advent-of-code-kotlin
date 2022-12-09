@@ -5,25 +5,33 @@ import util.readInputLines
 class Day08aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day08a(listOf(
-            "")))
+        assertEquals(21, day08a(listOf(
+            "30373",
+            "25512",
+            "65332",
+            "33549",
+            "35390")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day08a(readInputLines("day08")))
+        assertEquals(1538, day08a(readInputLines("day08")))
     }
 }
 
 class Day08bTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day08b(listOf(
-            "")))
+        assertEquals(8, day08b(listOf(
+            "30373",
+            "25512",
+            "65332",
+            "33549",
+            "35390")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day08b(readInputLines("day08")))
+        assertEquals(496125, day08b(readInputLines("day08")))
     }
 }
