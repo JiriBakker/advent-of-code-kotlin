@@ -1,129 +1,105 @@
 import util.splitByDoubleNewLine
-import Day11.Monkey
+import Day11.parseMonkeys
+import Day11.sumTopTwoInspectCounts
 import util.productOf
-import java.math.BigDecimal
+import java.math.BigInteger
 
 fun day11a(input: List<String>): Long {
-    val monkeys = mutableListOf<Monkey>()
-    input.splitByDoubleNewLine().forEach { lines ->
-        val startingItems = lines[1].drop(18).split(", ").map { it.trim().toBigDecimal() }
-        val operationParts = lines[2].drop(23).split(" ")
-        val operationOperator: (BigDecimal, BigDecimal) -> BigDecimal =
-            if (operationParts[0] == "*") BigDecimal::times
-            else BigDecimal::plus
-
-        val operation: (BigDecimal) -> BigDecimal =
-            if (operationParts[1] == "old") { old -> operationOperator.invoke(old, old) }
-            else { old -> operationOperator.invoke(old, operationParts[1].toBigDecimal()) }
-
-        val testDivisor = lines[3].drop(21).trim().toBigDecimal()
-        val test = { new: BigDecimal ->
-            val monkeyTrueIndex = lines[4].drop(29).trim().toInt()
-            val monkeyFalseIndex = lines[5].drop(30).trim().toInt()
-            val monkeyToThrowTo =
-                if (new.remainder(testDivisor).compareTo(BigDecimal.ZERO) == 0) monkeys[monkeyTrueIndex]
-                else monkeys[monkeyFalseIndex]
-
-            monkeyToThrowTo
-        }
-
-        monkeys.add(
-            Monkey(
-                startingItems,
-                operation,
-                test
-            )
-        )
-    }
+ val monkeys = input.parseMonkeys(BigInteger.valueOf(3))
 
     repeat(20) {
-        monkeys.forEach { it.inspectItems(BigDecimal.ONE) }
+        monkeys.forEach { it.inspectItems() }
     }
 
-    return monkeys.sortedByDescending { it.inspectCount }.take(2).productOf { it.inspectCount }
-
+    return monkeys.sumTopTwoInspectCounts()
 }
 
-fun day11b(input: List<String>): Long {val monkeys = mutableListOf<Monkey>()
-    var trimMaximum = BigDecimal.ONE
+fun day11b(input: List<String>): Long {
+    val monkeys = input.parseMonkeys(BigInteger.ONE)
 
-    input.splitByDoubleNewLine().forEach { lines ->
-        val startingItems = lines[1].drop(18).split(", ").map { it.trim().toBigDecimal() }
-        val operationParts = lines[2].drop(23).split(" ")
-        val operationOperator: (BigDecimal, BigDecimal) -> BigDecimal =
-            if (operationParts[0] == "*") BigDecimal::times
-            else BigDecimal::plus
-
-        val operation: (BigDecimal) -> BigDecimal =
-            if (operationParts[1] == "old") { old -> operationOperator.invoke(old, old) }
-            else { old -> operationOperator.invoke(old, operationParts[1].toBigDecimal()) }
-
-        val testDivisor = lines[3].drop(21).trim().toBigDecimal()
-
-        trimMaximum *= testDivisor
-
-        val test = { new: BigDecimal ->
-            val monkeyTrueIndex = lines[4].drop(29).trim().toInt()
-            val monkeyFalseIndex = lines[5].drop(30).trim().toInt()
-            val monkeyToThrowTo =
-                if (new.remainder(testDivisor).compareTo(BigDecimal.ZERO) == 0) monkeys[monkeyTrueIndex]
-                else monkeys[monkeyFalseIndex]
-
-            monkeyToThrowTo
-        }
-
-        monkeys.add(
-            Monkey(
-                startingItems,
-                operation,
-                test,
-                trimFunc = { worryLevel -> worryLevel.remainder(trimMaximum) }
-            )
-        )
+    repeat(10000) {
+        monkeys.forEach { it.inspectItems() }
     }
 
-    repeat(20) {
-        monkeys.forEach { it.inspectItems(trimMaximum) }
-    }
-    repeat(980) {
-        monkeys.forEach { it.inspectItems(trimMaximum) }
-    }
-    repeat(9000) {
-        monkeys.forEach { it.inspectItems(trimMaximum) }
-    }
-
-    return monkeys.sortedByDescending { it.inspectCount }.take(2).productOf { it.inspectCount }
-
+    return monkeys.sumTopTwoInspectCounts()
 }
 
 object Day11 {
+
+    fun List<String>.parseMonkeys(boredDivisor: BigInteger): List<Monkey> {
+        val monkeys = mutableListOf<Monkey>()
+
+        var divisorProduct = BigInteger.ONE
+        this.splitByDoubleNewLine().forEach { lines ->
+            val startingItems = lines[1].drop(18).split(", ").map { it.trim().toBigInteger() }
+            val operationParts = lines[2].drop(23).split(" ")
+            val operationOperator: (BigInteger, BigInteger) -> BigInteger =
+                if (operationParts[0] == "*") BigInteger::times
+                else BigInteger::plus
+
+            val operation: (BigInteger) -> BigInteger =
+                if (operationParts[1] == "old") { old -> operationOperator.invoke(old, old) }
+                else { old -> operationOperator.invoke(old, operationParts[1].toBigInteger()) }
+
+            val testDivisor = lines[3].drop(21).trim().toBigInteger()
+
+            divisorProduct *= testDivisor
+
+            val test = { new: BigInteger ->
+                val monkeyTrueIndex = lines[4].drop(29).trim().toInt()
+                val monkeyFalseIndex = lines[5].drop(30).trim().toInt()
+                val monkeyToThrowTo =
+                    if (new.remainder(testDivisor).compareTo(BigInteger.ZERO) == 0) monkeys[monkeyTrueIndex]
+                    else monkeys[monkeyFalseIndex]
+
+                monkeyToThrowTo
+            }
+
+            monkeys.add(
+                Monkey(
+                    startingItems,
+                    operation,
+                    test,
+                    boredDivisor,
+                    trimFunc = { worryLevel -> worryLevel % (divisorProduct * divisorProduct) }
+                )
+            )
+        }
+
+        return monkeys
+    }
+
     class Monkey(
-        startingItems: List<BigDecimal>,
-        val operationFunc: (BigDecimal) -> BigDecimal,
-        val testFunc: (BigDecimal) -> Monkey,
-        val trimFunc: (BigDecimal) -> BigDecimal = { it / BigDecimal.valueOf(3) }
+        startingItems: List<BigInteger>,
+        val operationFunc: (BigInteger) -> BigInteger,
+        val testFunc: (BigInteger) -> Monkey,
+        val boredDivisor: BigInteger,
+        val trimFunc: (BigInteger) -> BigInteger
     ) {
-        val items = startingItems.toMutableList()
+        private val items = startingItems.toMutableList()
 
         var inspectCount = 0L
 
-        fun catchItem(item: BigDecimal) {
+        private fun catchItem(item: BigInteger) {
             items.add(item)
         }
 
-        fun inspectItems(trimDivisor: BigDecimal) {
+        fun inspectItems() {
             items.forEach { item ->
                 val worryLevelAfterOperation = operationFunc(item)
-                 val trimmedWorryLevel =
-                     if (worryLevelAfterOperation > trimDivisor * trimDivisor) worryLevelAfterOperation.remainder(trimDivisor * trimDivisor)
-                    else worryLevelAfterOperation
-                val worryLevelAfterBored = trimFunc.invoke(trimmedWorryLevel)
-                val monkeyToThrowTo = testFunc(worryLevelAfterBored)
-                monkeyToThrowTo.catchItem(worryLevelAfterBored)
+                val boredWorryLevel = worryLevelAfterOperation / boredDivisor
+                val trimmedWorryLevel = trimFunc.invoke(boredWorryLevel)
+                val monkeyToThrowTo = testFunc(trimmedWorryLevel)
+                monkeyToThrowTo.catchItem(trimmedWorryLevel)
                 inspectCount++
             }
             items.clear()
         }
     }
+
+    fun List<Monkey>.sumTopTwoInspectCounts() =
+        this.sortedByDescending { it.inspectCount }
+            .take(2)
+            .productOf { it.inspectCount }
 
 }
