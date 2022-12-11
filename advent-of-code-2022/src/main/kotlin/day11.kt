@@ -1,28 +1,22 @@
 import util.splitByDoubleNewLine
 import Day11.parseMonkeys
-import Day11.sumTopTwoInspectCounts
+import Day11.runRounds
+import Day11.computeMonkeyBusiness
+import util.isDivisibleBy
 import util.productOf
 import java.math.BigInteger
 
-fun day11a(input: List<String>): Long {
- val monkeys = input.parseMonkeys(BigInteger.valueOf(3))
+fun day11a(input: List<String>) =
+    input
+        .parseMonkeys(BigInteger.valueOf(3))
+        .runRounds(20)
+        .computeMonkeyBusiness()
 
-    repeat(20) {
-        monkeys.forEach { it.inspectItems() }
-    }
-
-    return monkeys.sumTopTwoInspectCounts()
-}
-
-fun day11b(input: List<String>): Long {
-    val monkeys = input.parseMonkeys(BigInteger.ONE)
-
-    repeat(10000) {
-        monkeys.forEach { it.inspectItems() }
-    }
-
-    return monkeys.sumTopTwoInspectCounts()
-}
+fun day11b(input: List<String>) =
+    input
+        .parseMonkeys(BigInteger.valueOf(1))
+        .runRounds(10000)
+        .computeMonkeyBusiness()
 
 object Day11 {
 
@@ -49,7 +43,7 @@ object Day11 {
                 val monkeyTrueIndex = lines[4].drop(29).trim().toInt()
                 val monkeyFalseIndex = lines[5].drop(30).trim().toInt()
                 val monkeyToThrowTo =
-                    if (new.remainder(testDivisor).compareTo(BigInteger.ZERO) == 0) monkeys[monkeyTrueIndex]
+                    if (new.isDivisibleBy(testDivisor)) monkeys[monkeyTrueIndex]
                     else monkeys[monkeyFalseIndex]
 
                 monkeyToThrowTo
@@ -69,35 +63,44 @@ object Day11 {
         return monkeys
     }
 
+    fun List<Monkey>.runRounds(nrOfRounds: Int) =
+        this.apply {
+            repeat(nrOfRounds) {
+                this.forEach { it.inspectItems() }
+            }
+        }
+
     class Monkey(
         startingItems: List<BigInteger>,
-        val operationFunc: (BigInteger) -> BigInteger,
-        val testFunc: (BigInteger) -> Monkey,
-        val boredDivisor: BigInteger,
-        val trimFunc: (BigInteger) -> BigInteger
+        private val operationFunc: (BigInteger) -> BigInteger,
+        private val testFunc: (BigInteger) -> Monkey,
+        private val boredDivisor: BigInteger,
+        private val trimFunc: (BigInteger) -> BigInteger
     ) {
-        private val items = startingItems.toMutableList()
+        private val worryLevels = startingItems.toMutableList()
 
         var inspectCount = 0L
+            private set
 
-        private fun catchItem(item: BigInteger) {
-            items.add(item)
+        private fun catchItem(worryLevel: BigInteger) {
+            worryLevels.add(worryLevel)
         }
 
         fun inspectItems() {
-            items.forEach { item ->
-                val worryLevelAfterOperation = operationFunc(item)
+            worryLevels.forEach { worryLevel ->
+                val worryLevelAfterOperation = operationFunc(worryLevel)
                 val boredWorryLevel = worryLevelAfterOperation / boredDivisor
                 val trimmedWorryLevel = trimFunc.invoke(boredWorryLevel)
+
                 val monkeyToThrowTo = testFunc(trimmedWorryLevel)
                 monkeyToThrowTo.catchItem(trimmedWorryLevel)
                 inspectCount++
             }
-            items.clear()
+            worryLevels.clear()
         }
     }
 
-    fun List<Monkey>.sumTopTwoInspectCounts() =
+    fun List<Monkey>.computeMonkeyBusiness() =
         this.sortedByDescending { it.inspectCount }
             .take(2)
             .productOf { it.inspectCount }
