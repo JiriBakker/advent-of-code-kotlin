@@ -67,6 +67,7 @@ operator fun BigInteger.plus(other: Int): BigInteger = this.plus(BigInteger.valu
 operator fun Int.minus(other: BigInteger): BigInteger = BigInteger.valueOf(this.toLong()).minus(other)
 fun BigInteger.modPow(e: Long, m: Long): BigInteger = this.modPow(BigInteger.valueOf(e), BigInteger.valueOf(m))
 fun BigInteger.modInverse(m: Long): BigInteger = this.modInverse(BigInteger.valueOf(m))
+fun BigInteger.isDivisibleBy(other: BigInteger) = this.remainder(other).compareTo(BigInteger.ZERO) == 0
 fun Long.modInverse(m: Long): BigInteger = BigInteger.valueOf(this).modInverse(BigInteger.valueOf(m))
 fun Int.modInverse(m: Long): BigInteger = BigInteger.valueOf(this.toLong()).modInverse(BigInteger.valueOf(m))
 fun Long.pow(e: Long): Long = this.toDouble().pow(e.toDouble()).toLong()
