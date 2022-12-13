@@ -8,8 +8,8 @@ fun day13a(input: List<String>) =
             val packet2 = parsePacket(line2)
             packet1.compareTo(packet2)
         }
-        .mapIndexed { index, result ->
-            if (result < 0) index + 1
+        .mapIndexed { index, compareResult ->
+            if (compareResult < 0) index + 1
             else 0
         }
         .sum()
@@ -42,27 +42,34 @@ sealed class PacketInput {
 
     companion object {
         fun parsePacket(input: String): PacketInput {
-            fun parse(input: String): Pair<PacketInput, Int> {
+            var index = 0
+            fun parse(input: String): PacketInput {
                 val children = mutableListOf<PacketInput>()
-                var index = 0
                 while (index in input.indices) {
-                    if (input[index].isDigit()) {
-                        val nr = input.drop(index).takeWhile { it.isDigit() }
-                        children.add(SingleInteger(nr.toInt()))
-                        index += nr.length
-                    } else if (input[index] == '[') {
-                        val (nestedChildren, lengthParsed) = parse(input.drop(index + 1))
-                        children.add(nestedChildren)
-                        index += lengthParsed + 2
-                    } else if (input[index] == ']') {
-                        break
-                    } else {
-                        index++
+                    when (input[index]) {
+                        in '0'..'9' -> {
+                            val nr = input.drop(index).takeWhile { it.isDigit() }
+                            children.add(SingleInteger(nr.toInt()))
+                            index += nr.length
+                        }
+
+                        '[' -> {
+                            index++
+                            val nestedChildren = parse(input)
+                            children.add(nestedChildren)
+                        }
+
+                        ']' -> {
+                            index++
+                            break
+                        }
+
+                        else -> index++
                     }
                 }
-                return PacketInputList(children) to index
+                return PacketInputList(children)
             }
-            return parse(input.drop(1).dropLast(1)).first
+            return parse(input.drop(1).dropLast(1))
         }
     }
 }
@@ -70,12 +77,16 @@ sealed class PacketInput {
 class PacketInputList(val children: List<PacketInput>): PacketInput() {
      override operator fun compareTo(other: PacketInput): Int {
         return when (other) {
-            is SingleInteger -> this.compareTo(PacketInputList(listOf(other)))
-            is PacketInputList ->
+            is SingleInteger ->
+                this.compareTo(other.asList())
+
+            is PacketInputList -> {
                 this.children.zip(other.children)
+                    .asSequence()
                     .map { it.first.compareTo(it.second) }
                     .firstOrNull { it != 0 }
                         ?: this.children.size.compareTo(other.children.size)
+            }
         }
     }
 }
@@ -83,8 +94,13 @@ class PacketInputList(val children: List<PacketInput>): PacketInput() {
 class SingleInteger(val nr: Int) : PacketInput() {
     override operator fun compareTo(other: PacketInput): Int {
         return when (other) {
-            is SingleInteger -> this.nr.compareTo(other.nr)
-            is PacketInputList -> PacketInputList(listOf(this)).compareTo(other)
+            is SingleInteger ->
+                this.nr.compareTo(other.nr)
+
+            is PacketInputList ->
+                this.asList().compareTo(other)
         }
     }
+
+    fun asList() = PacketInputList(listOf(this))
 }
