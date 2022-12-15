@@ -25,9 +25,11 @@ fun day15b(input: List<String>, max: Long): BigInteger {
 
     sensors.forEach { sensor ->
         sensor.edgeCoordinates
-            .filter { (x, y) -> x in 0..max && y in 0..max }
             .forEach { (x, y) ->
-                if (sensors.none { it.isInRange(x, y) }) {
+                if (x in 0..max
+                    && y in 0..max
+                    && sensors.none { it.isInRange(x, y) }
+                ) {
                     return 4000000.toBigInteger() * x.toBigInteger() + y.toBigInteger()
                 }
             }
