@@ -24,10 +24,10 @@ fun day15b(input: List<String>, max: Long): BigInteger {
     val sensors = input.parseSensors()
 
     sensors.forEach { sensor ->
-        sensor.edgeCoordinates
+        // Unless the beacon is at the bottom right end, it will always have a sensor that 'touches' it with its top-left edge
+        sensor.topLeftEdgeCoordinates
             .forEach { (x, y) ->
-                if (x in 0..max
-                    && y in 0..max
+                if (x in 0..max && y in 0..max
                     && sensors.none { it.isInRange(x, y) }
                 ) {
                     return 4000000.toBigInteger() * x.toBigInteger() + y.toBigInteger()
@@ -53,36 +53,19 @@ object Day15 {
     class Sensor(val x: Long, val y: Long, val beaconX: Long, val beaconY: Long) {
         private val beaconFreeRange = abs(x - beaconX) + abs(y - beaconY)
 
-        private val minY = y - beaconFreeRange
-        private val maxY = y + beaconFreeRange
-
         val minX = x - beaconFreeRange
         val maxX = x + beaconFreeRange
 
         fun isInRange(otherX: Long, otherY: Long) =
             (abs(x - otherX) + abs(y - otherY)) <= beaconFreeRange
 
-        val edgeCoordinates get() =
+        val topLeftEdgeCoordinates get() =
             sequence {
                 var curX = minX - 1
-                (y downTo minY).forEach {
+
+                (y downTo y - beaconFreeRange).forEach {
                     yield(curX to it)
                     curX++
-                }
-
-                (minY..y).forEach {
-                    yield(curX to it)
-                    curX++
-                }
-
-                (y..maxY).forEach {
-                    yield(curX to it)
-                    curX--
-                }
-
-                (maxY downTo y).forEach {
-                    yield(curX to it)
-                    curX--
                 }
             }
 
