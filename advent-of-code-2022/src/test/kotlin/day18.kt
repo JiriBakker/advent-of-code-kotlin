@@ -5,25 +5,65 @@ import util.readInputLines
 class Day18aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day18a(listOf(
-            "")))
+        assertEquals(10, day18a(listOf(
+            "1,1,1",
+            "2,1,1")))
+    }
+
+    @Test
+    fun testExampleInput2() {
+        assertEquals(64, day18a(listOf(
+            "2,2,2",
+            "1,2,2",
+            "3,2,2",
+            "2,1,2",
+            "2,3,2",
+            "2,2,1",
+            "2,2,3",
+            "2,2,4",
+            "2,2,6",
+            "1,2,5",
+            "3,2,5",
+            "2,1,5",
+            "2,3,5")))
+    }
+
+    @Test
+    fun testCustomInput1() {
+        assertEquals(18, day18a(listOf(
+            "1,1,1",
+            "2,1,1",
+            "1,2,1",
+            "1,1,2")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day18a(readInputLines("day18")))
+        assertEquals(3448, day18a(readInputLines("day18")))
     }
 }
 
 class Day18bTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day18b(listOf(
-            "")))
+        assertEquals(58, day18b(listOf(
+            "2,2,2",
+            "1,2,2",
+            "3,2,2",
+            "2,1,2",
+            "2,3,2",
+            "2,2,1",
+            "2,2,3",
+            "2,2,4",
+            "2,2,6",
+            "1,2,5",
+            "3,2,5",
+            "2,1,5",
+            "2,3,5")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day18b(readInputLines("day18")))
+        assertEquals(2052, day18b(readInputLines("day18")))
     }
 }
