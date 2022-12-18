@@ -1,171 +1,80 @@
-import Day18.Cube
-import Day18.CubeSide.X_NEG
-import Day18.CubeSide.X_POS
-import Day18.CubeSide.Y_NEG
-import Day18.CubeSide.Y_POS
-import Day18.CubeSide.Z_NEG
-import Day18.CubeSide.Z_POS
-import Day18.parseCubes
-import Day18.updateCoveredSides
+import Day18.countNeighboursIn
+import Day18.countNeighboursNotIn
+import Day18.fillBoundingBox
+import Day18.parseLavaCubes
 
 fun day18a(input: List<String>): Int {
-    val cubes = input.parseCubes()
-    cubes.updateCoveredSides()
+    val lavaCubes = input.parseLavaCubes()
 
-    return cubes.sumOf { it.exposedSides.size }
+    return lavaCubes.countNeighboursNotIn(lavaCubes)
 }
 
 fun day18b(input: List<String>): Int {
-    val cubes = input.parseCubes()
-    cubes.updateCoveredSides()
+    val lavaCubes = input.parseLavaCubes()
 
-    val cubesInSpace = mutableMapOf<Int, MutableMap<Int, MutableMap<Int, Cube>>>()
-    cubes.forEach { cube ->
-        cubesInSpace
-            .getOrPut(cube.z) { mutableMapOf() }
-            .getOrPut(cube.y) { mutableMapOf() }
-            .put(cube.x, cube)
+    val fillerCubes = lavaCubes.fillBoundingBox()
 
-    }
-
-    fun isEmptyPosition(x: Int, y: Int, z: Int) =
-        cubesInSpace[z]?.get(y)?.containsKey(x) != true
-
-    val minX = cubes.minOf { it.x } - 1
-    val maxX = cubes.maxOf { it.x } + 1
-    val minY = cubes.minOf { it.y } - 1
-    val maxY = cubes.maxOf { it.y } + 1
-    val minZ = cubes.minOf { it.z } - 1
-    val maxZ = cubes.maxOf { it.z } + 1
-
-    val startFillCube = Cube(minX, minY, minZ)
-
-    val filledCubes = mutableSetOf<Cube>()
-
-    val toFill = ArrayDeque<Cube>()
-    toFill.add(startFillCube)
-
-    while (toFill.isNotEmpty()) {
-        val cube = toFill.removeFirst()
-
-        if (!filledCubes.add(cube)) {
-            continue
-        }
-
-        val (x, y, z) = cube
-
-        listOf(
-            Cube(x - 1, y, z),
-            Cube(x + 1, y, z),
-            Cube(x, y - 1, z),
-            Cube(x, y + 1, z),
-            Cube(x, y, z - 1),
-            Cube(x, y, z + 1)
-        )
-            .filter { (x, y, z) ->
-                x in minX..maxX
-                    && y in minY..maxY
-                    && z in minZ..maxZ
-                    && isEmptyPosition(x, y, z)
-            }
-            .forEach { toFill.add(it) }
-    }
-
-    filledCubes.updateCoveredSides()
-
-    val width  = maxX - minX + 1
-    val height = maxY - minY + 1
-    val depth  = maxZ - minZ + 1
-
-    val outerSurface = width*height*2 + width*depth*2 + height*depth*2
-
-    return filledCubes.sumOf { it.exposedSides.size } - outerSurface
+    return lavaCubes.countNeighboursIn(fillerCubes)
 }
 
 object Day18 {
 
-    fun List<String>.parseCubes() =
+    fun List<String>.parseLavaCubes() =
         this.map { line ->
             val (x, y, z) = line.split(",").map(String::toInt)
             Cube(x, y, z)
-        }
-
-    fun Collection<Cube>.updateCoveredSides() =
-        this.forEachIndexed { index, cube ->
-            this.drop(index + 1).forEach { otherCube ->
-                cube.checkTouching(otherCube)
-            }
-        }
+        }.toSet()
 
     data class Cube(val x: Int, val y: Int, val z: Int) {
-        private val coveredSides = mutableMapOf(
-            X_NEG to false,
-            X_POS to false,
-            Y_NEG to false,
-            Y_POS to false,
-            Z_NEG to false,
-            Z_POS to false
-        )
-
-        val exposedSides get() = coveredSides.filter { !it.value }.keys
-
-        fun checkTouching(other: Cube) {
-            when {
-                this.y == other.y && this.z == other.z -> {
-                    when (this.x) {
-                        other.x - 1 -> {
-                            this.coverSide(X_POS)
-                            other.coverSide(X_NEG)
-                        }
-
-                        other.x + 1 -> {
-                            this.coverSide(X_NEG)
-                            other.coverSide(X_POS)
-                        }
-                    }
-                }
-
-                this.x == other.x && this.z == other.z -> {
-                    when (this.y) {
-                        other.y - 1 -> {
-                            this.coverSide(Y_POS)
-                            other.coverSide(Y_NEG)
-                        }
-
-                        other.y + 1 -> {
-                            this.coverSide(Y_NEG)
-                            other.coverSide(Y_POS)
-                        }
-                    }
-                }
-
-                this.x == other.x && this.y == other.y -> {
-                    when (this.z) {
-                        other.z - 1 -> {
-                            this.coverSide(Z_POS)
-                            other.coverSide(Z_NEG)
-                        }
-
-                        other.z + 1 -> {
-                            this.coverSide(Z_NEG)
-                            other.coverSide(Z_POS)
-                        }
-                    }
-                }
-            }
-        }
-
-        private fun coverSide(side: CubeSide) {
-            coveredSides[side] = true
-        }
+        fun neighbours() =
+            listOf(
+                Cube(x - 1, y, z),
+                Cube(x + 1, y, z),
+                Cube(x, y - 1, z),
+                Cube(x, y + 1, z),
+                Cube(x, y, z - 1),
+                Cube(x, y, z + 1)
+            )
     }
 
-    enum class CubeSide {
-        X_NEG,
-        X_POS,
-        Y_NEG,
-        Y_POS,
-        Z_NEG,
-        Z_POS
+    fun Collection<Cube>.countNeighboursIn(cubes: Set<Cube>) =
+        sumOf { cube -> cube.neighbours().count { cubes.contains(it) } }
+
+    fun Collection<Cube>.countNeighboursNotIn(cubes: Set<Cube>) =
+        sumOf { cube -> cube.neighbours().count { !cubes.contains(it) } }
+
+    fun Collection<Cube>.fillBoundingBox(): Set<Cube> {
+        val minX = this.minOf { it.x } - 1
+        val maxX = this.maxOf { it.x } + 1
+        val minY = this.minOf { it.y } - 1
+        val maxY = this.maxOf { it.y } + 1
+        val minZ = this.minOf { it.z } - 1
+        val maxZ = this.maxOf { it.z } + 1
+
+        val fillerCubes = mutableSetOf<Cube>()
+        val toCheck = mutableListOf(Cube(minX, minY, minZ))
+
+        while (toCheck.isNotEmpty()) {
+            val fillerCube = toCheck.removeLast()
+
+            if (fillerCube.x !in minX .. maxX
+                || fillerCube.y !in minY .. maxY
+                || fillerCube.z !in minZ .. maxZ
+            ) {
+                continue
+            }
+
+            if (fillerCube in this) {
+                continue
+            }
+
+            if (!fillerCubes.add(fillerCube)) {
+                continue
+            }
+
+            toCheck.addAll(fillerCube.neighbours())
+        }
+
+        return fillerCubes
     }
 }
