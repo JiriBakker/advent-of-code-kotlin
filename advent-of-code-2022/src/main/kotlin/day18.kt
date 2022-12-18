@@ -5,198 +5,99 @@ import Day18.CubeSide.Y_NEG
 import Day18.CubeSide.Y_POS
 import Day18.CubeSide.Z_NEG
 import Day18.CubeSide.Z_POS
-import Day18.ExposedSide
 import Day18.parseCubes
+import Day18.updateCoveredSides
 
 fun day18a(input: List<String>): Int {
     val cubes = input.parseCubes()
+    cubes.updateCoveredSides()
 
     return cubes.sumOf { it.exposedSides.size }
 }
 
 fun day18b(input: List<String>): Int {
     val cubes = input.parseCubes()
+    cubes.updateCoveredSides()
 
-    val exposedSides = cubes.flatMap { cube ->
-        cube.exposedSides.map { side ->
-            ExposedSide(side, cube.x, cube.y, cube.z, cube)
-        }
+    val cubesInSpace = mutableMapOf<Int, MutableMap<Int, MutableMap<Int, Cube>>>()
+    cubes.forEach { cube ->
+        cubesInSpace
+            .getOrPut(cube.z) { mutableMapOf() }
+            .getOrPut(cube.y) { mutableMapOf() }
+            .put(cube.x, cube)
+
     }
 
-    val startSide = exposedSides.filter { it.side == X_NEG }.minBy { it.x }
+    fun isEmptyPosition(x: Int, y: Int, z: Int) =
+        cubesInSpace[z]?.get(y)?.containsKey(x) != true
 
-    val visited = mutableSetOf<ExposedSide>()
+    val minX = cubes.minOf { it.x } - 1
+    val maxX = cubes.maxOf { it.x } + 1
+    val minY = cubes.minOf { it.y } - 1
+    val maxY = cubes.maxOf { it.y } + 1
+    val minZ = cubes.minOf { it.z } - 1
+    val maxZ = cubes.maxOf { it.z } + 1
 
-    val toVisit = ArrayDeque<ExposedSide>()
-    toVisit.add(startSide)
+    val startFillCube = Cube(minX, minY, minZ)
 
-    while (toVisit.isNotEmpty()) {
-        val curSide = toVisit.removeFirst()
+    val filledCubes = mutableSetOf<Cube>()
 
-        if (!visited.add(curSide)) {
+    val toFill = ArrayDeque<Cube>()
+    toFill.add(startFillCube)
+
+    while (toFill.isNotEmpty()) {
+        val cube = toFill.removeFirst()
+
+        if (!filledCubes.add(cube)) {
             continue
         }
 
-        val (side, x, y, z, parentCube) = curSide
+        val (x, y, z) = cube
 
-        when (side) {
-            X_NEG -> {
-                listOfNotNull(
-                    exposedSides.firstOrNull { it.side == Y_NEG && it.x == x - 1 && it.y == y + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.x == x && it.y == y + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Y_POS && it.x == x - 1 && it.y == y - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.x == x && it.y == y - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_NEG && it.x == x - 1 && it.y == y && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.x == x && it.y == y && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_POS && it.x == x - 1 && it.y == y && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.x == x && it.y == y && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.cube == parentCube },
-                )
-                    .filter { !visited.contains(it) }
-                    .forEach { toVisit.add(it) }
+        listOf(
+            Cube(x - 1, y, z),
+            Cube(x + 1, y, z),
+            Cube(x, y - 1, z),
+            Cube(x, y + 1, z),
+            Cube(x, y, z - 1),
+            Cube(x, y, z + 1)
+        )
+            .filter { (x, y, z) ->
+                x in minX..maxX
+                    && y in minY..maxY
+                    && z in minZ..maxZ
+                    && isEmptyPosition(x, y, z)
             }
-
-            X_POS -> {
-                listOfNotNull(
-                    exposedSides.firstOrNull { it.side == Y_NEG && it.x == x + 1 && it.y == y + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.x == x && it.y == y + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Y_POS && it.x == x + 1 && it.y == y - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.x == x && it.y == y - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_NEG && it.x == x + 1 && it.y == y && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.x == x && it.y == y && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_POS && it.x == x + 1 && it.y == y && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.x == x && it.y == y && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.cube == parentCube },
-                )
-                    .filter { !visited.contains(it) }
-                    .forEach { toVisit.add(it) }
-            }
-
-            Y_NEG -> {
-                listOfNotNull(
-                    exposedSides.firstOrNull { it.side == X_NEG && it.y == y - 1 && it.x == x + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.y == y && it.x == x + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == X_POS && it.y == y - 1 && it.x == x - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.y == y && it.x == x - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_NEG && it.y == y - 1 && it.x == x && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.y == y && it.x == x && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_POS && it.y == y - 1 && it.x == x && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.y == y && it.x == x && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.cube == parentCube },
-                )
-                    .filter { !visited.contains(it) }
-                    .forEach { toVisit.add(it) }
-            }
-
-            Y_POS -> {
-                listOfNotNull(
-                    exposedSides.firstOrNull { it.side == X_NEG && it.y == y + 1 && it.x == x + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.y == y && it.x == x + 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == X_POS && it.y == y + 1 && it.x == x - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.y == y && it.x == x - 1 && it.z == z }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_NEG && it.y == y + 1 && it.x == x && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.y == y && it.x == x && it.z == z + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Z_POS && it.y == y + 1 && it.x == x && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.y == y && it.x == x && it.z == z - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.cube == parentCube },
-                )
-                    .filter { !visited.contains(it) }
-                    .forEach { toVisit.add(it) }
-            }
-
-            Z_NEG -> {
-                listOfNotNull(
-                    exposedSides.firstOrNull { it.side == X_NEG && it.z == z - 1 && it.x == x + 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.z == z && it.x == x + 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == X_POS && it.z == z - 1 && it.x == x - 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.z == z && it.x == x - 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Y_NEG && it.z == z - 1 && it.x == x && it.y == y + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.z == z && it.x == x && it.y == y + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Y_POS && it.z == z - 1 && it.x == x && it.y == y - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_NEG && it.z == z && it.x == x && it.y == y - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.cube == parentCube },
-                )
-                    .filter { !visited.contains(it) }
-                    .forEach { toVisit.add(it) }
-            }
-
-            Z_POS -> {
-                listOfNotNull(
-                    exposedSides.firstOrNull { it.side == X_NEG && it.z == z + 1 && it.x == x + 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.z == z && it.x == x + 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == X_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == X_POS && it.z == z + 1 && it.x == x - 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.z == z && it.x == x - 1 && it.y == y }
-                        ?: exposedSides.firstOrNull { it.side == X_NEG && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Y_NEG && it.z == z + 1 && it.x == x && it.y == y + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.z == z && it.x == x && it.y == y + 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_POS && it.cube == parentCube },
-
-                    exposedSides.firstOrNull { it.side == Y_POS && it.z == z + 1 && it.x == x && it.y == y - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Z_POS && it.z == z && it.x == x && it.y == y - 1 }
-                        ?: exposedSides.firstOrNull { it.side == Y_NEG && it.cube == parentCube },
-                )
-                    .filter { !visited.contains(it) }
-                    .forEach { toVisit.add(it) }
-            }
-        }
+            .forEach { toFill.add(it) }
     }
 
-    return visited.size
+    filledCubes.updateCoveredSides()
+
+    val width  = maxX - minX + 1
+    val height = maxY - minY + 1
+    val depth  = maxZ - minZ + 1
+
+    val outerSurface = width*height*2 + width*depth*2 + height*depth*2
+
+    return filledCubes.sumOf { it.exposedSides.size } - outerSurface
 }
 
 object Day18 {
 
-    fun List<String>.parseCubes(): List<Cube> {
-        val cubes =
-            this.map { line ->
-                val (x, y, z) = line.split(",").map(String::toInt)
-                Cube(x, y, z)
-            }
+    fun List<String>.parseCubes() =
+        this.map { line ->
+            val (x, y, z) = line.split(",").map(String::toInt)
+            Cube(x, y, z)
+        }
 
-        cubes.forEachIndexed { index, cube ->
-            cubes.drop(index + 1).forEach { otherCube ->
+    fun Collection<Cube>.updateCoveredSides() =
+        this.forEachIndexed { index, cube ->
+            this.drop(index + 1).forEach { otherCube ->
                 cube.checkTouching(otherCube)
             }
         }
 
-        return cubes
-    }
-
-    data class ExposedSide(val side: CubeSide, val x: Int, val y: Int, val z: Int, val cube: Cube)
-    class Cube(val x: Int, val y: Int, val z: Int) {
+    data class Cube(val x: Int, val y: Int, val z: Int) {
         private val coveredSides = mutableMapOf(
             X_NEG to false,
             X_POS to false,
