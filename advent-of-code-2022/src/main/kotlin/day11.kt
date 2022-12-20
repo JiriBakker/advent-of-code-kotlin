@@ -3,7 +3,7 @@ import Day11.parseMonkeys
 import Day11.runRounds
 import Day11.computeMonkeyBusiness
 import util.isDivisibleBy
-import util.productOf
+import util.productOfLong
 import java.math.BigInteger
 
 fun day11a(input: List<String>) =
@@ -103,6 +103,6 @@ object Day11 {
     fun List<Monkey>.computeMonkeyBusiness() =
         this.sortedByDescending { it.inspectCount }
             .take(2)
-            .productOf { it.inspectCount }
+            .productOfLong { it.inspectCount }
 
 }

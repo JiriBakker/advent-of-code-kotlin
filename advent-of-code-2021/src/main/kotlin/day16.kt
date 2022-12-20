@@ -1,4 +1,4 @@
-import util.productOf
+import util.productOfLong
 import Packet.Companion.bitsToPacket
 
 private fun String.parseBits() =
@@ -102,7 +102,7 @@ fun day16a(input: List<String>) =
 private fun Packet.computeValue(): Long {
     return when (typeId) {
         0 -> subPackets.sumOf     { it.computeValue() }
-        1 -> subPackets.productOf { it.computeValue() }
+        1 -> subPackets.productOfLong { it.computeValue() }
         2 -> subPackets.minOf     { it.computeValue() }
         3 -> subPackets.maxOf     { it.computeValue() }
         4 -> value!!

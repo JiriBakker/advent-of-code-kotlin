@@ -154,9 +154,14 @@ fun Collection<Long>.product(): Long {
     return this.fold(1L, { total, it -> total * it })
 }
 
-fun <T> Collection<T>.productOf(selector: (T) -> Long): Long {
+fun <T> Collection<T>.productOfLong(selector: (T) -> Long): Long {
     return this.fold(1L) { total, it -> total * selector(it) }
 }
+
+fun <T> Collection<T>.productOf(selector: (T) -> Int): Int {
+    return this.fold(1) { total, it -> total * selector(it) }
+}
+
 
 fun <T> List<List<T>>.rotatedRight(): List<List<T>> {
     val height = this.size
