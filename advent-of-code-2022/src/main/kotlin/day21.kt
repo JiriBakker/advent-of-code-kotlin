@@ -56,10 +56,10 @@ object Day21 {
                             }
                         }
 
-                    val monkey1 = monkeys[parts[1]]!!.shout()
-                    val monkey2 = monkeys[parts[3]]!!.shout()
-
                     Monkey(name) {
+                        val monkey1 = monkeys[parts[1]]!!.shout()
+                        val monkey2 = monkeys[parts[3]]!!.shout()
+
                         ComputedShout(
                             operation.invoke(monkey1, monkey2),
                             monkey1,
