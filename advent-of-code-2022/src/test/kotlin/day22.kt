@@ -5,25 +5,32 @@ import util.readInputLines
 class Day22aTests {
     @Test
     fun testExampleInput1() {
-        assertEquals(0, day22a(listOf(
-            "")))
+        assertEquals(6032, day22a(listOf(
+            "        ...#",
+            "        .#..",
+            "        #...",
+            "        ....",
+            "...#.......#",
+            "........#...",
+            "..#....#....",
+            "..........#.",
+            "        ...#....",
+            "        .....#..",
+            "        .#......",
+            "        ......#.",
+            "",
+            "10R5L5R10L4R5L5")))
     }
 
     @Test
     fun testActualInput() {
-        assertEquals(0, day22a(readInputLines("day22")))
+        assertEquals(65368, day22a(readInputLines("day22")))
     }
 }
 
 class Day22bTests {
     @Test
-    fun testExampleInput1() {
-        assertEquals(0, day22b(listOf(
-            "")))
-    }
-
-    @Test
     fun testActualInput() {
-        assertEquals(0, day22b(readInputLines("day22")))
+        assertEquals(156166, day22b(readInputLines("day22")))
     }
 }
