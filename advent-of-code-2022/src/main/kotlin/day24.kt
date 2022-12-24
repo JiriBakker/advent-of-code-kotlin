@@ -1,172 +1,82 @@
+import Day24.findShortestPathTime
 import Day24.parseGrid
-import Day24.State
 import util.manhattanDistance
 import java.util.PriorityQueue
 
 fun day24a(input: List<String>): Int {
     val grid = input.parseGrid()
 
-    val width = grid[0]!!.size
-    val height = grid.size
+    val targetX = grid[0]!!.size - 1
+    val targetY = grid.size
 
-    val targetX = width - 1
-    val targetY = height
-
-    fun Day24.Cell.hasBlizzardAt(time: Int) =
-        this.xOffsets.any { offset -> (time - offset) % width == 0 } ||
-            this.yOffsets.any { offset -> (time - offset) % height == 0 }
-
-    val toCheck = PriorityQueue<State> { a, b ->
-        when (a.time.compareTo(b.time)) {
-            1 -> 1
-            -1 -> -1
-            else -> manhattanDistance(a.x, a.y, targetX, targetY).compareTo(manhattanDistance(b.x, b.y, targetX, targetY))
-        }
-    }
-    toCheck.add(State(0, -1, 0, null))
-
-    fun addToCheck(x: Int, y: Int, time: Int, prev: State) {
-        if (x in 0 until width
-            && (
-                (y in 0 until height && !grid[y]!![x]!!.hasBlizzardAt(time))
-                || (x == targetX && y == targetY)
-                || (x == 0 && y == -1)
-            )
-        ) {
-            toCheck.add(State(x, y, time, prev))
-        }
-    }
-
-    val checked = mutableSetOf<String>()
-
-    while (toCheck.isNotEmpty()) {
-        val cur = toCheck.poll()
-
-        if (!checked.add(cur.hash())) {
-            continue
-        }
-
-        if (cur.x == targetX && cur.y == targetY) {
-            return cur.time
-        }
-
-        addToCheck(cur.x - 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x + 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y - 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y + 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y, cur.time + 1, cur)
-    }
-
-    throw Exception("No path found")
+    return grid.findShortestPathTime(0, -1, 0, targetX, targetY)
 }
 
 fun day24b(input: List<String>): Int {
     val grid = input.parseGrid()
 
-    val width = grid[0]!!.size
-    val height = grid.size
+    val targetX = grid[0]!!.size - 1
+    val targetY = grid.size
 
-    var targetX = width - 1
-    var targetY = height
-
-    fun Day24.Cell.hasBlizzardAt(time: Int) =
-        this.xOffsets.any { offset -> (time - offset) % width == 0 } ||
-            this.yOffsets.any { offset -> (time - offset) % height == 0 }
-
-    val toCheck = PriorityQueue<State> { a, b ->
-        when (a.time.compareTo(b.time)) {
-            1 -> 1
-            -1 -> -1
-            else -> manhattanDistance(a.x, a.y, targetX, targetY).compareTo(manhattanDistance(b.x, b.y, targetX, targetY))
-        }
-    }
-    toCheck.add(State(0, -1, 0, null))
-
-    fun addToCheck(x: Int, y: Int, time: Int, prev: State) {
-        if (x in 0 until width
-            && (
-                (y in 0 until height && !grid[y]!![x]!!.hasBlizzardAt(time))
-                || (x == targetX && y == targetY)
-                || (x == 0 && y == -1)
-            )
-        ) {
-            toCheck.add(State(x, y, time, prev))
-        }
-    }
-
-
-    val checked = mutableSetOf<String>()
-
-    while (toCheck.isNotEmpty()) {
-        val cur = toCheck.poll()
-
-        if (!checked.add(cur.hash())) {
-            continue
-        }
-
-        if (cur.x == targetX && cur.y == targetY) {
-            toCheck.clear()
-            toCheck.add(cur)
-            checked.clear()
-            break
-        }
-
-        addToCheck(cur.x - 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x + 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y - 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y + 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y, cur.time + 1, cur)
-    }
-
-    while (toCheck.isNotEmpty()) {
-        val cur = toCheck.poll()
-
-        if (!checked.add(cur.hash())) {
-            continue
-        }
-
-        if (cur.x == 0 && cur.y == -1) {
-            toCheck.clear()
-            toCheck.add(cur)
-            checked.clear()
-            break
-        }
-
-        addToCheck(cur.x - 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x + 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y - 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y + 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y, cur.time + 1, cur)
-    }
-
-    targetX = width - 1
-    targetY = height
-
-    while (toCheck.isNotEmpty()) {
-        val cur = toCheck.poll()
-
-        if (!checked.add(cur.hash())) {
-            continue
-        }
-
-        if (cur.x == targetX && cur.y == targetY) {
-            return cur.time
-        }
-
-        addToCheck(cur.x - 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x + 1, cur.y, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y - 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y + 1, cur.time + 1, cur)
-        addToCheck(cur.x, cur.y, cur.time + 1, cur)
-    }
-
-    throw Exception("No path found")
+    val firstPathTime = grid.findShortestPathTime(0, -1, 0, targetX, targetY)
+    val secondPathTime = grid.findShortestPathTime(targetX, targetY, firstPathTime, 0, -1)
+    return grid.findShortestPathTime(0, -1, secondPathTime, targetX, targetY)
 }
 
 object Day24 {
 
-    data class State(val x: Int, val y: Int, val time: Int, val prev: State?) {
+    data class State(val x: Int, val y: Int, val time: Int) {
         fun hash() = "$x,$y,$time"
+    }
+
+    fun Map<Int, Map<Int, Cell>>.findShortestPathTime(startX: Int, startY: Int, startTime: Int, targetX: Int, targetY: Int): Int {
+        val width = this[0]!!.size
+        val height = this.size
+
+        fun Cell.hasBlizzardAt(time: Int) =
+            this.xOffsets.any { offset -> (time - offset) % width == 0 } ||
+                this.yOffsets.any { offset -> (time - offset) % height == 0 }
+
+        val toCheck = ArrayDeque<State>()
+        toCheck.add(State(startX, startY, startTime))
+
+        fun addToCheck(x: Int, y: Int, time: Int) {
+            val inXBounds = x in 0 until width
+            val inYBounds = y in 0 until height
+            val isStart = x == startX && y == startY
+            val isTarget = x == targetX && y == targetY
+
+            if (inXBounds &&
+                    (isStart
+                        || isTarget
+                        || (inYBounds && !this[y]!![x]!!.hasBlizzardAt(time))
+                    )
+            ) {
+                toCheck.add(State(x, y, time))
+            }
+        }
+
+        val checked = mutableSetOf<String>()
+
+        while (toCheck.isNotEmpty()) {
+            val cur = toCheck.removeFirst()
+
+            if (!checked.add(cur.hash())) {
+                continue
+            }
+
+            if (cur.x == targetX && cur.y == targetY) {
+                return cur.time
+            }
+
+            addToCheck(cur.x - 1, cur.y, cur.time + 1)
+            addToCheck(cur.x + 1, cur.y, cur.time + 1)
+            addToCheck(cur.x, cur.y - 1, cur.time + 1)
+            addToCheck(cur.x, cur.y + 1, cur.time + 1)
+            addToCheck(cur.x, cur.y, cur.time + 1)
+        }
+
+        throw Exception("No path found")
     }
 
     fun List<String>.parseGrid(): Map<Int, Map<Int, Cell>> {
@@ -226,7 +136,5 @@ object Day24 {
 
     }
 
-    class Cell(val x: Int, val y: Int, val xOffsets: Set<Int>, val yOffsets: Set<Int>) {
-
-    }
+    class Cell(val x: Int, val y: Int, val xOffsets: Set<Int>, val yOffsets: Set<Int>)
 }
