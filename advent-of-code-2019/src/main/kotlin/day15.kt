@@ -1,4 +1,4 @@
-import util.manhattanDistance
+import util.manhattanDistanceLong
 import java.util.PriorityQueue
 import kotlin.math.min
 
@@ -125,7 +125,7 @@ fun day15a(input: String): Long {
 
     val oxygenSystem = grid.cellsOfType(OXYGEN).first()
 
-    fun distanceToTarget(pos: Pos) = manhattanDistance(pos.x, pos.y, oxygenSystem.x, oxygenSystem.y)
+    fun distanceToTarget(pos: Pos) = manhattanDistanceLong(pos.x, pos.y, oxygenSystem.x, oxygenSystem.y)
 
     val checked = mutableMapOf<Pos, Long>()
     fun stepsToReachFound(pos: Pos) = checked[pos] ?: Long.MAX_VALUE
