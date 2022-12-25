@@ -93,3 +93,6 @@ fun String.isInt() = this.toIntOrNull() != null
 fun Int.wrap(max: Int) =
     (this - 1) % max + 1
 
+fun Int.pow(exp: Int) =
+    this.toDouble().pow(exp.toDouble()).toInt()
+
