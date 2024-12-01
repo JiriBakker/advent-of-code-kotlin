@@ -3,7 +3,8 @@ import kotlin.math.abs
 fun day01a(input: List<String>): Int {
     val (list1, list2) = parseInput(input)
 
-    return list1.sorted().zip(list2.sorted()).sumOf { (a, b) -> abs(a - b) }
+    return list1.sorted().zip(list2.sorted())
+        .sumOf { (a, b) -> abs(a - b) }
 }
 
 fun day01b(input: List<String>): Int {
