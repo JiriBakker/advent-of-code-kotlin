@@ -259,3 +259,7 @@ fun <T> Collection<T>.countDistinct() = distinct().count()
 
 fun <T> Stack<T>.popMultiple(amount: Int) =
     (0 until amount).map { this.pop() }
+
+fun <T> List<T>.toPair() =
+    this[0] to this[1]
+
