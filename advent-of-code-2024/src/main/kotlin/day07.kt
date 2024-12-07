@@ -42,11 +42,11 @@ private fun hasValidOperatorCombination(
 
     for (op in operators) {
         if (hasValidOperatorCombination(
-                numbers,
-                curIndex + 1,
-                op(valueSoFar, numbers[curIndex]),
-                testValue,
-                operators
+            numbers,
+            curIndex + 1,
+            op(valueSoFar, numbers[curIndex]),
+            testValue,
+            operators
         )) {
             return true
         }
