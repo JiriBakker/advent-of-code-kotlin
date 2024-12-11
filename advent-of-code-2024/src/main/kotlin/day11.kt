@@ -7,10 +7,10 @@ fun day11b(input: List<String>) =
     input[0].countStonesAfterBlinks(75)
 
 private fun String.countStonesAfterBlinks(blinks: Int): Long {
-    val stones = this.split(" ").map {it.toLong() }
+    val stones = this.split(" ")
 
-    val cache = mutableMapOf<Pair<Long, Int>, Long>()
-    fun countChildStones(nr: Long, blinksRemaining: Int): Long {
+    val cache = mutableMapOf<Pair<String, Int>, Long>()
+    fun countChildStones(nr: String, blinksRemaining: Int): Long {
         if (blinksRemaining == 0) {
             return 1
         }
@@ -20,14 +20,14 @@ private fun String.countStonesAfterBlinks(blinks: Int): Long {
         }
 
         val nextStoneNrs =
-            if (nr == 0L) {
-                listOf(1L)
-            } else if (nr.toString().length % 2 == 0) {
-                val nr1 = nr.toString().substring(0, nr.toString().length / 2).toLong()
-                val nr2 = nr.toString().substring(nr.toString().length / 2).toLong()
+            if (nr.toLong() == 0L) {
+                listOf("1")
+            } else if (nr.length % 2 == 0) {
+                val nr1 = nr.substring(0, nr.length / 2)
+                val nr2 = nr.substring(nr.length / 2).toLong().toString()
                 listOf(nr1, nr2)
             } else {
-                listOf(nr * 2024L)
+                listOf((nr.toLong() * 2024L).toString())
             }
 
         return nextStoneNrs.sumOfLong { nextNr ->
