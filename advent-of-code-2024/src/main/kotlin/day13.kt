@@ -23,10 +23,11 @@ private class ClawMachine(
         // Find line intersection of dxA*a + dxB*b = prizeX and dyA*a + dyB*b = prizeY
         val determinant = dxA * dyB - dxB * dyA
         if (determinant == 0L) {
+            // Parallel lines
             null
         } else {
             val determinantX = prizeX * dyB - dxB * prizeY
-            val determinantY: Long = dxA * prizeY - prizeX * dyA
+            val determinantY = dxA * prizeY - prizeX * dyA
 
             val a = determinantX / determinant
             val b = determinantY / determinant
@@ -34,6 +35,7 @@ private class ClawMachine(
             if (dxA * a + dxB * b == prizeX && dyA * a + dyB * b == prizeY) {
                 a * 3 + b
             } else {
+                // Intersection is not on a (rounded) coordinate, so no solution
                 null
             }
         }
