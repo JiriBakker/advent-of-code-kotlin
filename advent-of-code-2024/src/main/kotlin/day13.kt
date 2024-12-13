@@ -45,9 +45,7 @@ private class ClawMachine(
 private fun List<String>.parseClawMachines(prizeOffset: Long = 0L) =
     this.chunked(4)
         .map { lines ->
-            val buttonA = lines[0]
-            val buttonB = lines[1]
-            val prize = lines[2]
+            val (buttonA, buttonB, prize) = lines
 
             val dxA = buttonA.split(" ")[2].substring(2).trimEnd(',').toLong()
             val dyA = buttonA.split(" ")[3].substring(2).toLong()
