@@ -1,4 +1,4 @@
-fun day15a(input: List<String>): Long {
+fun day15a(input: List<String>): Int {
     val grid = input.takeWhile(String::isNotEmpty).map { line -> line.replace('O', '[').toCharArray() }
 
     val moves = input.drop(grid.size + 1).joinToString("")
@@ -13,9 +13,8 @@ fun day15a(input: List<String>): Long {
         .computeGpsCoordinatesSum()
 }
 
-fun day15b(input: List<String>): Long {
+fun day15b(input: List<String>): Int {
     val grid = input.takeWhile(String::isNotEmpty).widen().map(String::toCharArray)
-
 
     val moves = input.drop(grid.size + 1).joinToString("")
 
@@ -43,17 +42,16 @@ private fun List<String>.widen() =
         }.joinToString("")
     }
 
-private fun List<CharArray>.findBoxes(width: Int = 2): List<Box> {
-    val boxes = mutableListOf<Box>()
-    for (y in this.indices) {
-        for (x in this[y].indices) {
+private fun List<CharArray>.findBoxes(width: Int = 2) =
+    this.indices.flatMap { y ->
+        this[y].indices.mapNotNull { x ->
             if (this[y][x] == '[') {
-                boxes.add(Box(x, x + (width - 1), y))
+                Box(x, x + (width - 1), y)
+            } else {
+                null
             }
         }
     }
-    return boxes
-}
 
 private fun List<CharArray>.findStartPosition(): Pair<Int, Int> {
     for (y in indices) {
@@ -105,13 +103,13 @@ private fun List<CharArray>.applyMoves(startX: Int, startY: Int, moves: String, 
         this[box.y][box.leftX] = '.'
         this[box.y][box.rightX] = '.'
         this[box.y + dy][box.rightX + dx] = ']'
-        this[box.y + dy][box.leftX + dx] = '['
+        this[box.y + dy][box.leftX + dx] = '[' // Order is important: '[' after ']' to avoid '[' getting overwritten ('[' is used for GPS coordinates)
         box.y += dy
         box.leftX += dx
         box.rightX += dx
     }
 
-    fun move(dx: Int, dy: Int) {
+    fun attemptMove(dx: Int, dy: Int) {
         if (this[curY + dy][curX + dx] == '#') {
             return
         }
@@ -129,26 +127,25 @@ private fun List<CharArray>.applyMoves(startX: Int, startY: Int, moves: String, 
         }
     }
 
-    for (move in moves) {
+    moves.forEach { move ->
         when (move) {
-            '^' -> move(0, -1)
-            'v' -> move(0, 1)
-            '<' -> move(-1, 0)
-            '>' -> move(1, 0)
+            '^' -> attemptMove(0, -1)
+            'v' -> attemptMove(0, 1)
+            '<' -> attemptMove(-1, 0)
+            '>' -> attemptMove(1, 0)
         }
     }
 
     return this
 }
 
-private fun List<CharArray>.computeGpsCoordinatesSum(): Long {
-    var sum = 0L
-    for (y in this.indices) {
-        for (x in this[y].indices) {
+private fun List<CharArray>.computeGpsCoordinatesSum() =
+    this.indices.sumOf { y ->
+        this[y].indices.sumOf { x ->
             if (this[y][x] == '[') {
-                sum += x + y*100
+                x + y * 100
+            } else {
+                0
             }
         }
     }
-    return sum
-}
