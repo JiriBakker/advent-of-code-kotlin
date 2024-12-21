@@ -1,39 +1,30 @@
-fun day21a(input: List<String>): Long {
+fun day21a(input: List<String>) =
+    input.findShortestPathComplexity(2)
+
+fun day21b(input: List<String>) =
+    input.findShortestPathComplexity(25)
+
+private fun List<String>.findShortestPathComplexity(keypadCount: Int): Long {
     var complexity = 0L
 
-    for (code in input) {
-        val results1 = apply(code, numericKeypadLookup)
-
-        val shortestLength = results1.minOf {
-            findLength('A', it, directionalKeypadLookup, 2)
-        }
+    for (code in this) {
+        val shortestLength =
+            findShortsPathThroughNumericPad(code)
+                .minOf {
+                    findShortestPathLengthThroughKeypads('A', it, keypadCount)
+                }
 
         complexity += shortestLength * code.take(3).toLong()
     }
     return complexity
 }
 
-fun day21b(input: List<String>): Long {
-    var complexity = 0L
-
-    for (code in input) {
-        val results1 = apply(code, numericKeypadLookup)
-
-        val shortestLength = results1.minOf {
-            findLength('A', it, directionalKeypadLookup, 25)
-        }
-
-        complexity += shortestLength * code.take(3).toLong()
-    }
-    return complexity
-}
-
-private fun apply(code: String, lookup: Map<Char, Map<Char, List<String>>>): List<String> {
+private fun findShortsPathThroughNumericPad(code: String): List<String> {
     var outputs = mutableListOf("")
 
     var curKey = 'A'
     for (char in code) {
-        val moves = lookup[curKey]!![char]!!
+        val moves = numericKeypadLookup[curKey]!![char]!!
         val newOutputs = mutableListOf<String>()
         for (output in outputs) {
             for (move in moves) {
@@ -47,13 +38,12 @@ private fun apply(code: String, lookup: Map<Char, Map<Char, List<String>>>): Lis
     return outputs
 }
 
-private val lengthCache = mutableMapOf<Triple<Char, String, Int>, Long>()
-private val lengthCache2 = mutableMapOf<Triple<Char, Char, Int>, Long>()
+private val lengthCache = mutableMapOf<Pair<String, Int>, Long>()
 
-private fun findLength(start: Char, chars: String, lookup: Map<Char, Map<Char, List<String>>>, depth: Int): Long {
-    // if (lengthCache.containsKey(Triple(start, chars, depth))) {
-    //     return lengthCache[Triple(start, chars, depth)]!!
-    // }
+private fun findShortestPathLengthThroughKeypads(start: Char, chars: String, depth: Int): Long {
+    if (lengthCache.containsKey(chars to depth)) {
+        return lengthCache[chars to depth]!!
+    }
 
     if (depth == 0) {
         return chars.length.toLong()
@@ -62,29 +52,19 @@ private fun findLength(start: Char, chars: String, lookup: Map<Char, Map<Char, L
     var totalLength = 0L
     var curChar = start
     for (char in chars) {
-        if (lengthCache2.containsKey(Triple(curChar, char, depth))) {
-            totalLength += lengthCache2[Triple(curChar, char, depth)]!!
-            curChar = char
-            continue
-        }
-
-        val options = lookup[curChar]!![char]!!
         val minValue =
-            options
+            directionalKeypadLookup[curChar]!![char]!!
                 .minOf { option ->
-                    findLength('A', option + 'A', lookup, depth - 1)
+                    findShortestPathLengthThroughKeypads('A', option + 'A', depth - 1)
                 }
-
-        lengthCache2[Triple(curChar, char, depth)] = minValue
 
         totalLength += minValue
         curChar = char
     }
 
+    lengthCache[chars to depth] = totalLength
     return totalLength
 }
-
-
 
 
 private val numericKeypadLookup = mapOf(
