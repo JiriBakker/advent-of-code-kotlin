@@ -25,7 +25,7 @@ fun day24b(input: List<String>): String {
                         // We cannot have an XOR rule where none of the rule inputs or dest are inputs or outputs (x, y, or z)
                         yield(dest)
                     } else if (rules.hasOrRulesWithDestAsInput(dest)) {
-                        // We cannot have an OR rule with dest as input
+                        // We cannot have an XOR rule if there are also OR rules with dest as input
                         yield(dest)
                     }
                 }
