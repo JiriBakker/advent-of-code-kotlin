@@ -8,6 +8,10 @@ jobs:
       - checkout
 
       - run:
+          name: Tests 2025
+          command: ./gradlew :advent-of-code-2025:test -Plowmemory
+
+      - run:
           name: Tests 2024
           command: ./gradlew :advent-of-code-2024:test -Plowmemory
 

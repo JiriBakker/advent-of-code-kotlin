@@ -1,0 +1,49 @@
+import org.gradle.api.tasks.testing.logging.TestExceptionFormat
+import org.gradle.api.tasks.testing.logging.TestLogEvent
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.jetbrains.kotlin:kotlin-test'
+}
+
+test {
+    outputs.upToDateWhen { false }
+
+    useJUnitPlatform()
+
+    filter {
+        if (project.hasProperty("lowMemory")) {
+            println "LOW MEMORY MODE, skipping tests ending in '_highMemUsage'"
+            excludeTestsMatching "*_highMemUsage"
+        }
+    }
+
+    testLogging {
+        showStandardStreams = true
+
+        // Log each test result
+        events TestLogEvent.FAILED,
+                TestLogEvent.PASSED,
+                TestLogEvent.SKIPPED,
+                TestLogEvent.STANDARD_OUT
+
+        exceptionFormat TestExceptionFormat.FULL
+        showExceptions true
+        showCauses true
+        showStackTraces true
+
+        // Print summary
+        afterSuite { desc, result ->
+            if (!desc.parent) { // will match the outermost suite
+                println "\nTest results: ${result.resultType} (${result.testCount} tests run, ${result.successfulTestCount} succeeded, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
+            }
+        }
+    }
+}
+
+kotlin {
+    jvmToolchain(19)
+}

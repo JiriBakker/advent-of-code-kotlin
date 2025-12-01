@@ -41,7 +41,7 @@ class Day22bTests {
     }
 
     @Test
-    fun testActualInput() {
+    fun testActualInput_highMemUsage() {
         assertEquals(2250, day22b(readInputLines("day22")))
     }
 }

@@ -62,7 +62,7 @@ private fun List<CharArray>.findPath(maxLength: Int = Int.MAX_VALUE): PathState?
         }
 
         if (x == endX && y == endY) {
-            println("Found path with length ${state.length}")
+//            println("Found path with length ${state.length}")
             return state
         }
 

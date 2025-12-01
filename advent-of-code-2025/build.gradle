@@ -1,55 +1,8 @@
-buildscript {
-    ext.kotlin_version = '2.1.0'
-
-    dependencies {
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-    }
-}
-
 plugins {
-    id 'application'
-    id 'org.jetbrains.kotlin.jvm' version "$kotlin_version"
-}
-
-repositories {
-    mavenCentral()
+    id 'org.jetbrains.kotlin.jvm' version '2.2.20'
+    id("advent-of-code-build")
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.1'
-    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
-    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
-
     implementation project(':advent-of-code-util')
 }
-
-test {
-    useJUnitPlatform()
-
-    filter {
-        if (project.hasProperty("lowMemory")) {
-            excludeTestsMatching "*_highMemUsage"
-        }
-    }
-
-    testLogging {
-        showStandardStreams = true
-
-        afterSuite { desc, result ->
-            if (!desc.parent) { // will match the outermost suite
-                println "\nTest results: ${result.resultType} (${result.testCount} tests run, ${result.successfulTestCount} succeeded, ${result.failedTestCount} failed, ${result.skippedTestCount} skipped)"
-            }
-        }
-    }
-}
-compileKotlin {
-    kotlinOptions {
-        jvmTarget = "19"
-    }
-}
-compileTestKotlin {
-    kotlinOptions {
-        jvmTarget = "19"
-    }
-}
-
