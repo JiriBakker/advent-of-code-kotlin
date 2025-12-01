@@ -1,5 +1,5 @@
 buildscript {
-    ext.kotlin_version = '1.8.22'
+    ext.kotlin_version = '2.1.0'
 
     dependencies {
         classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
@@ -16,7 +16,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter:5.8.0'
+    testImplementation 'org.junit.jupiter:junit-jupiter:6.0.1'
     implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlin_version"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 
@@ -44,12 +44,12 @@ test {
 }
 compileKotlin {
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "19"
     }
 }
 compileTestKotlin {
     kotlinOptions {
-        jvmTarget = "17"
+        jvmTarget = "19"
     }
 }
 
