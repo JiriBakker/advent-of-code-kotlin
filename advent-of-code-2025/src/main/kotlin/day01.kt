@@ -1,32 +1,28 @@
-fun day01a(input: List<String>): Int {
-    var zeroCounts = 0
-    var dial = 50
-    for (rotation in input) {
-        val sign = if (rotation.startsWith("R")) 1 else -1
-        dial += sign * rotation.drop(1).toInt()
-        while (dial !in 0..99) {
-            dial = (dial + 100) % 100
-        }
-        if (dial == 0) zeroCounts++
-    }
-    return zeroCounts
-}
+fun day01a(input: List<String>) =
+    countZeroes(input)
 
-fun day01b(input: List<String>): Int {
+fun day01b(input: List<String>) =
+    countZeroes(input, countIntermediate = true)
+
+private fun countZeroes(input: List<String>, countIntermediate: Boolean = false): Int {
+    // Not super efficient because we iterate for each tick, but an easier implementation to comprehend
     var zeroCounts = 0
     var dial = 50
+
     for (instruction in input) {
-        var rotation = instruction.drop(1).toInt()
-        val sign = if (instruction.startsWith("R")) 1 else -1
+        val nrOfTicks = instruction.drop(1).toInt()
+        val direction = if (instruction[0] == 'R') 1 else -1
 
-        while (rotation > 0) {
-            dial += sign
-            if (dial == -1) dial = 99
-            if (dial == 100) dial = 0
-            if (dial == 0) zeroCounts++
+        repeat(nrOfTicks) {
+            dial += direction
 
-            rotation -= 1
+            if (dial < 0) dial += 100
+            if (dial > 99) dial -= 100
+
+            if (countIntermediate && dial == 0) zeroCounts++
         }
+
+        if (!countIntermediate && dial == 0) zeroCounts++
     }
     return zeroCounts
 }
