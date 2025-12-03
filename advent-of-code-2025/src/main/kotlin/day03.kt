@@ -2,15 +2,16 @@ import util.sumOfLong
 import kotlin.collections.map
 import kotlin.text.map
 
-fun day03a(input: List<String>): Long {
-    val batteryBanks = parseInput(input)
-    return batteryBanks.sumOfLong { findLargestJoltage(it, nrOfDigits = 2)}
-}
+fun day03a(input: List<String>) =
+    parseInput(input)
+        .findLargestTotalJoltage(nrOfDigits = 2)
 
-fun day03b(input: List<String>): Long {
-    val batteryBanks = parseInput(input)
-    return batteryBanks.sumOfLong { findLargestJoltage(it, nrOfDigits = 12)}
-}
+fun day03b(input: List<String>) =
+    parseInput(input)
+        .findLargestTotalJoltage(nrOfDigits = 12)
+
+private fun List<List<Int>>.findLargestTotalJoltage(nrOfDigits: Int) =
+    this.sumOfLong { findLargestJoltage(it, nrOfDigits) }
 
 private fun findLargestJoltage(batteryBank: List<Int>, nrOfDigits: Int): Long {
     val digits = mutableListOf<Int>()
@@ -20,17 +21,15 @@ private fun findLargestJoltage(batteryBank: List<Int>, nrOfDigits: Int): Long {
         digits.add(remainingBank[indexOfMax])
         remainingBank = remainingBank.drop(indexOfMax + 1)
     }
-    return digits.joinToString("").toLong()
+    return digits.combineDigitsToNumber()
 }
 
+private fun List<Int>.combineDigitsToNumber() =
+    this.joinToString("").toLong()
+
 private fun findFirstIndexOfMax(batteryBank: List<Int>, margin: Int): Int {
-    var indexOfMax = 0
-    for (i in 1 until batteryBank.size - margin) {
-        if (batteryBank[i] > batteryBank[indexOfMax]) {
-            indexOfMax = i
-        }
-    }
-    return indexOfMax
+    val searchSpace = batteryBank.subList(0, batteryBank.size - margin)
+    return searchSpace.indexOfFirst { it == searchSpace.max() }
 }
 
 private fun parseInput(input: List<String>) =
