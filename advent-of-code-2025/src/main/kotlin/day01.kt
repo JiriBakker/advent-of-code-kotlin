@@ -1,12 +1,12 @@
 import kotlin.math.abs
 
 fun day01a(input: List<String>) =
-    countZeroes(input)
+    countZeroes(input, countIntermediate = false)
 
 fun day01b(input: List<String>) =
     countZeroes(input, countIntermediate = true)
 
-private fun countZeroes(input: List<String>, countIntermediate: Boolean = false): Int {
+private fun countZeroes(input: List<String>, countIntermediate: Boolean): Int {
     var zeroCounts = 0
     var dial = 50
 
@@ -38,7 +38,7 @@ private fun countZeroes(input: List<String>, countIntermediate: Boolean = false)
     return zeroCounts
 }
 
-private fun countZeroesInefficient(input: List<String>, countIntermediate: Boolean = false): Int {
+private fun countZeroesInefficient(input: List<String>, countIntermediate: Boolean): Int {
     // Not super efficient because we iterate for each tick, but an easier implementation to comprehend
     var zeroCounts = 0
     var dial = 50

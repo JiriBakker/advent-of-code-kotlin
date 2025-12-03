@@ -3,7 +3,7 @@ import util.sumOfLong
 
 fun day02a(input: String): Long {
     val ranges = parseInput(input)
-    return computeInvalidSum(ranges)
+    return computeInvalidSum(ranges, maxRepeats = 2)
 }
 
 fun day02b(input: String): Long {
@@ -11,7 +11,7 @@ fun day02b(input: String): Long {
     return computeInvalidSum(ranges, maxRepeats = 7)
 }
 
-private fun computeInvalidSum(ranges: List<List<String>>, maxRepeats: Int = 2): Long {
+private fun computeInvalidSum(ranges: List<List<String>>, maxRepeats: Int): Long {
     return ranges.sumOfLong { range ->
         val (start, end) = range.map(String::toLong)
 
