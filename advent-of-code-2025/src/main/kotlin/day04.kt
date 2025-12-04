@@ -7,18 +7,19 @@ fun day04a(input: List<String>): Int {
 fun day04b(input: List<String>): Int {
     var grid = input
     var prevPaperCount = Int.MAX_VALUE
-    var curPaperCount = prevPaperCount
+    var curPaperCount: Int
 
     while (true) {
         grid = grid.removePaper()
 
         curPaperCount = grid.countPaper()
-        if (prevPaperCount == curPaperCount) break
+
+        if (prevPaperCount == curPaperCount) {
+            return input.countPaper() - curPaperCount
+        }
 
         prevPaperCount = curPaperCount
     }
-
-    return input.countPaper() - curPaperCount
 }
 
 private fun List<String>.removePaper(): List<String> {
@@ -40,6 +41,7 @@ private fun List<String>.removePaper(): List<String> {
                 .count { it }
 
             if (neighbourPaperCount < 4) '.' else '@'
+
         }.joinToString("")
     }
 }
