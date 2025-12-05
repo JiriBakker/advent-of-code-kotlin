@@ -45,11 +45,13 @@ private fun List<LongRange>.consolidate(): List<LongRange> {
         (0 until ranges.size - 1)
             .forEach { i ->
                 if (curRange.last >= ranges[i + 1].first - 1) {
+                    // Ranges overlap, so combine them
                     curRange = LongRange(
                         curRange.first,
                         max(ranges[i + 1].last, curRange.last) // Consider cases where first range fully overlaps second range
                     )
                 } else {
+                    // Gap between ranges, so finalize previous, and continue with next range
                     nextRanges.add(curRange)
                     curRange = ranges[i + 1]
                 }
@@ -66,4 +68,4 @@ private fun List<LongRange>.consolidate(): List<LongRange> {
 }
 
 private fun List<LongRange>.countIngredients() =
-    sumOfLong { it.last - it.first + 1 } // Calculate length of (inclusive) ranges, and sum it
+    sumOfLong { it.last - it.first + 1 } // Calculate length of (inclusive) ranges, and sum them together
