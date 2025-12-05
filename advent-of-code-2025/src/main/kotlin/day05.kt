@@ -3,8 +3,8 @@ import kotlin.collections.map
 import kotlin.math.max
 
 fun day05a(input: List<String>): Int {
-    val ranges = input.takeWhile { it.isNotBlank() }.map { it.split("-") }.map { LongRange(it[0].toLong(), it[1].toLong()) }
-    val ingredients = input.dropWhile { it.isNotBlank() }.drop(1).map(String::toLong)
+    val ranges = parseRanges(input)
+    val ingredients = parseIngredients(input)
 
     return ingredients.count { ingredient ->
         ranges.any { range ->
@@ -14,28 +14,45 @@ fun day05a(input: List<String>): Int {
 }
 
 fun day05b(input: List<String>): Long {
-    var ranges = input.takeWhile { it.isNotBlank() }.map { it.split("-") }.map { LongRange(it[0].toLong(), it[1].toLong()) }.sortedWith(compareBy({ it.first }, { it.last }))
+    val ranges = parseRanges(input).sortRanges()
+    return ranges.consolidate().countIngredients()
+}
 
-    do {
-        var madeChanges = false
+private fun parseIngredients(input: List<String>) =
+    input.dropWhile { it.isNotBlank() }.drop(1).map(String::toLong)
+
+private fun parseRanges(input: List<String>) =
+    input.takeWhile { it.isNotBlank() }.map { it.split("-") }.map { LongRange(it[0].toLong(), it[1].toLong()) }
+
+private fun List<LongRange>.sortRanges() =
+    sortedWith(compareBy({ it.first }, { it.last }))
+
+private fun List<LongRange>.consolidate(): List<LongRange> {
+    var ranges = this
+
+    while (true) {
         val nextRanges = mutableListOf<LongRange>()
-
         var curRange = ranges.first()
 
-        var i = 0
-        while (i < ranges.size - 1) {
-            if (curRange.last >= ranges[i + 1].first - 1) {
-                curRange = LongRange(curRange.first, max(ranges[i + 1].last, curRange.last))
-                madeChanges = true
-            } else {
-                nextRanges.add(curRange)
-                curRange = ranges[i + 1]
+        (0 until ranges.size - 1)
+            .forEach { i ->
+                if (curRange.last >= ranges[i + 1].first - 1) {
+                    curRange = LongRange(curRange.first, max(ranges[i + 1].last, curRange.last))
+                } else {
+                    nextRanges.add(curRange)
+                    curRange = ranges[i + 1]
+                }
             }
-            i++
-        }
-        nextRanges.add(curRange)
-        ranges = nextRanges
-    } while (madeChanges)
 
-    return ranges.sumOfLong { it.last - it.first + 1 }
+        nextRanges.add(curRange)
+
+        if (ranges.size == nextRanges.size) break
+
+        ranges = nextRanges
+    }
+
+    return ranges
 }
+
+private fun List<LongRange>.countIngredients() =
+    sumOfLong { it.last - it.first + 1 }
