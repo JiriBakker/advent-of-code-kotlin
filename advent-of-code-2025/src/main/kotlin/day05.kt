@@ -31,9 +31,11 @@ private fun parseRanges(input: List<String>) =
         .map { LongRange(it[0].toLong(), it[1].toLong()) }
 
 private fun List<LongRange>.sortRanges() =
+    // Sort by start of range, and if equal, then sort by end
     sortedWith(compareBy({ it.first }, { it.last }))
 
 private fun List<LongRange>.consolidate(): List<LongRange> {
+    // Combine ranges that (partially) overlap to end up with only non-overlapping ranges
     var ranges = this
 
     while (true) {
@@ -43,16 +45,19 @@ private fun List<LongRange>.consolidate(): List<LongRange> {
         (0 until ranges.size - 1)
             .forEach { i ->
                 if (curRange.last >= ranges[i + 1].first - 1) {
-                    curRange = LongRange(curRange.first, max(ranges[i + 1].last, curRange.last))
+                    curRange = LongRange(
+                        curRange.first,
+                        max(ranges[i + 1].last, curRange.last) // Consider cases where first range fully overlaps second range
+                    )
                 } else {
                     nextRanges.add(curRange)
                     curRange = ranges[i + 1]
                 }
             }
 
-        nextRanges.add(curRange)
+        nextRanges.add(curRange) // Don't forget to store last range
 
-        if (ranges.size == nextRanges.size) break
+        if (ranges.size == nextRanges.size) break // No changes this loop, so we can stop iterating
 
         ranges = nextRanges
     }
@@ -61,4 +66,4 @@ private fun List<LongRange>.consolidate(): List<LongRange> {
 }
 
 private fun List<LongRange>.countIngredients() =
-    sumOfLong { it.last - it.first + 1 }
+    sumOfLong { it.last - it.first + 1 } // Calculate length of (inclusive) ranges, and sum it
