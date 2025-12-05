@@ -19,10 +19,16 @@ fun day05b(input: List<String>): Long {
 }
 
 private fun parseIngredients(input: List<String>) =
-    input.dropWhile { it.isNotBlank() }.drop(1).map(String::toLong)
+    input
+        .dropWhile { it.isNotBlank() }
+        .drop(1)
+        .map(String::toLong)
 
 private fun parseRanges(input: List<String>) =
-    input.takeWhile { it.isNotBlank() }.map { it.split("-") }.map { LongRange(it[0].toLong(), it[1].toLong()) }
+    input
+        .takeWhile { it.isNotBlank() }
+        .map { it.split("-") }
+        .map { LongRange(it[0].toLong(), it[1].toLong()) }
 
 private fun List<LongRange>.sortRanges() =
     sortedWith(compareBy({ it.first }, { it.last }))
