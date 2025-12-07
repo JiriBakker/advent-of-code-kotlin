@@ -32,7 +32,7 @@ fun day07b(input: List<String>): Long {
     val pathCounts = mutableMapOf<Pair<Int, Int>, Long>()
 
     for (x in input[input.lastIndex].indices) {
-        // Start at each bottom position
+        // Start at each bottom position to move upwards
         toVisit.add(x to input.lastIndex - 1)
         pathCounts[x to input.lastIndex] = 1
     }
@@ -43,9 +43,9 @@ fun day07b(input: List<String>): Long {
         val (curX, curY) = toVisit.removeFirst()
         val pathCount = pathCounts[(curX) to (curY + 1)]!!
 
-        if (!visited.add(curX to curY)      // Already visited
-            || curY !in input.indices       // Out of bounds
-            || curX !in input[curY].indices // Out of bounds
+        if (!visited.add(curX to curY)      // Already visited, can skip
+            || curY !in input.indices       // Out of vertical bounds
+            || curX !in input[curY].indices // Out of horizontal bounds
             || input[curY][curX] == '^') {  // If we hit a splitter from below, it is not a valid path, so skip
             continue
         }
