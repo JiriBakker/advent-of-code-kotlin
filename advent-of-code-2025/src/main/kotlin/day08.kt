@@ -26,7 +26,7 @@ private data class JunctionBox(
 fun day08a(input: List<String>, nrOfConnections: Int): Int {
     val junctionBoxes = parseJunctionBoxes(input)
 
-    val (_, circuits) = connectJunctionBoxes(junctionBoxes, nrOfConnections)
+    val (circuits, _) = connectJunctionBoxes(junctionBoxes, nrOfConnections)
 
     return circuits.values.map { it.size }.sortedDescending().take(3).reduce(Int::times)
 }
@@ -34,22 +34,25 @@ fun day08a(input: List<String>, nrOfConnections: Int): Int {
 fun day08b(input: List<String>): Long {
     val junctionBoxes = parseJunctionBoxes(input)
 
-    val (lastConnection, _) = connectJunctionBoxes(junctionBoxes)
+    val (_, lastConnection) = connectJunctionBoxes(junctionBoxes)
 
     return lastConnection.first.x.toLong() * lastConnection.second.x.toLong()
 }
 
-private fun connectJunctionBoxes(junctionBoxes: List<JunctionBox>, nrOfConnections: Int = Int.MAX_VALUE): Pair<Pair<JunctionBox, JunctionBox>, Map<Int, List<JunctionBox>>> {
+private fun connectJunctionBoxes(junctionBoxes: List<JunctionBox>, nrOfConnections: Int = Int.MAX_VALUE): Pair<Map<Int, List<JunctionBox>>, Pair<JunctionBox, JunctionBox>> {
     val distances = mutableMapOf<Pair<JunctionBox, JunctionBox>, Double>()
     for (i in junctionBoxes.indices) {
         for (j in i + 1 until junctionBoxes.size) {
+            // Compute all possible connection distances
             val distance = junctionBoxes[i].distanceTo(junctionBoxes[j])
             distances[junctionBoxes[i] to junctionBoxes[j]] = distance
         }
     }
 
     val sortedDistances = distances.toList().sortedBy { (_, distance) -> distance }
+
     val circuits = junctionBoxes.associate { it.circuit to listOf(it) }.toMutableMap()
+
     var lastConnection: Pair<JunctionBox, JunctionBox>? = null
 
     for (i in 0 until min(nrOfConnections, sortedDistances.size)) {
@@ -57,9 +60,9 @@ private fun connectJunctionBoxes(junctionBoxes: List<JunctionBox>, nrOfConnectio
         val circuit1 = connection.first.circuit
         val circuit2 = connection.second.circuit
 
-        if (circuit1 == circuit2) continue
+        if (circuit1 == circuit2) continue // If same circuit, no need to merge
 
-        // If not part of same circuit, merge circuits (and update circuit property of junctionboxes)
+        // Merge circuits
         circuits[circuit2]!!.forEach { circuit -> circuit.circuit = circuit1 }
         circuits[circuit1] = circuits[circuit1]!!.plus(circuits[circuit2]!!)
         circuits.remove(circuit2)
@@ -67,7 +70,7 @@ private fun connectJunctionBoxes(junctionBoxes: List<JunctionBox>, nrOfConnectio
         lastConnection = connection
     }
 
-    return lastConnection!! to circuits
+    return circuits to lastConnection!!
 }
 
 private fun parseJunctionBoxes(input: List<String>) =
