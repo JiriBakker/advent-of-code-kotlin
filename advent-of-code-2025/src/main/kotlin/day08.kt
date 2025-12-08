@@ -49,14 +49,14 @@ private fun connectJunctionBoxes(junctionBoxes: List<JunctionBox>, nrOfConnectio
         }
     }
 
-    val sortedDistances = distances.toList().sortedBy { (_, distance) -> distance }
+    val sortedConnections = distances.entries.sortedBy { it.value }.map { it.key}
 
     val circuits = junctionBoxes.associate { it.circuit to listOf(it) }.toMutableMap()
 
     var lastConnection: Pair<JunctionBox, JunctionBox>? = null
 
-    for (i in 0 until min(nrOfConnections, sortedDistances.size)) {
-        val (connection, _) = sortedDistances[i]
+    for (i in 0 until min(nrOfConnections, sortedConnections.size)) {
+        val connection = sortedConnections[i]
         val circuit1 = connection.first.circuit
         val circuit2 = connection.second.circuit
 
