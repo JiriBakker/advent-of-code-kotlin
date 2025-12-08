@@ -60,11 +60,13 @@ fun day07b(input: List<String>): Long {
         }
 
         // If we pass a splitter, combine the pathCounts and start a new path above the splitter
-        if (curX - 1 in input[curY].indices && input[curY][curX - 1] == '^') {
-            branchPath(curX - 1, curY)
+        val leftX = curX - 1
+        if (leftX in input[curY].indices && input[curY][leftX] == '^') {
+            branchPath(leftX, curY)
         }
-        if (curX + 1 in input[curY].indices && input[curY][curX + 1] == '^') {
-            branchPath(curX + 1, curY)
+        val rightX = curX + 1
+        if (rightX in input[curY].indices && input[curY][rightX] == '^') {
+            branchPath(rightX, curY)
         }
 
         // Add path straight up (will dissolve if we hit upper boundary)
