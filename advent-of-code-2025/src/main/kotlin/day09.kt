@@ -15,7 +15,7 @@ fun day09a(input: List<String>): Long {
     return rectangleSizes.maxOf { it.value }
 }
 
-fun day09b(input: List<String>): Long {
+fun day09b(input: List<String>, xRequirement: Int? = null): Long {
     val redTilePositions = input.map { it.split(",").map(String::toInt).toPair() }
 
     // Determine positions of border tiles
@@ -44,7 +44,9 @@ fun day09b(input: List<String>): Long {
             val rectangleSize = width * height
             (redTilePositions[i] to redTilePositions[j]) to rectangleSize
         }
-    }.sortedByDescending { (_, size) -> size }
+    }
+        .filter { xRequirement == null || (it.first.first.first == xRequirement || it.first.second.first == xRequirement) }
+        .sortedByDescending { (_, size) -> size }
 
     // Find rectangle that fully lies within borders
     for (entry in rectangleSizes) {

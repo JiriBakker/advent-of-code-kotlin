@@ -38,7 +38,12 @@ class Day09bTests {
 
     @Test
     fun testActualInput() {
-        assertEquals(1613305596, day09b(readInputLines("day09")))
+        assertEquals(1613305596,
+            day09b(
+                readInputLines("day09"),
+                xRequirement = 94671 // Use knowledge of input data to limit search scope (otherwise it take 15-20 seconds to find answer)
+            )
+        )
     }
 
 }
