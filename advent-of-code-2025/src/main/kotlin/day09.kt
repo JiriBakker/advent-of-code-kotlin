@@ -64,7 +64,7 @@ fun day09b(input: List<String>): Long {
             x in minX..maxX && y in minY..maxY
         }
 
-        // If no intersection
+        // If no intersection, this is the rectangle we were looking for, so return its size
         if (!intersectsBorder) {
             val width = maxX - minX + 3
             val height = maxY - minY + 3
