@@ -39,8 +39,8 @@ fun day09b(input: List<String>, xRequirement: Int? = null): Long {
     // Get a sorted (by size) list of rectangles
     val rectangleSizes = redTilePositions.indices.flatMap { i ->
         ((i + 1) until redTilePositions.size).map { j ->
-            val width = abs(redTilePositions[i].first - redTilePositions[j].first) + 1
-            val height = abs(redTilePositions[i].second - redTilePositions[j].second) + 1
+            val width = abs(redTilePositions[i].first - redTilePositions[j].first) + 1L
+            val height = abs(redTilePositions[i].second - redTilePositions[j].second) + 1L
             val rectangleSize = width * height
             (redTilePositions[i] to redTilePositions[j]) to rectangleSize
         }
@@ -50,7 +50,7 @@ fun day09b(input: List<String>, xRequirement: Int? = null): Long {
 
     // Find rectangle that fully lies within borders
     for (entry in rectangleSizes) {
-        val (corners, _) = entry
+        val (corners, size) = entry
         val (corner1, corner2) = corners
         val (x1, y1) = corner1
         val (x2, y2) = corner2
@@ -68,9 +68,7 @@ fun day09b(input: List<String>, xRequirement: Int? = null): Long {
 
         // If no intersection, this is the rectangle we were looking for, so return its size
         if (!intersectsBorder) {
-            val width = maxX - minX + 3
-            val height = maxY - minY + 3
-            return width * height
+            return size
         }
     }
 
