@@ -31,95 +31,76 @@ private data class DeviceState(
 
 fun day11b(input: List<String>): Long {
     // Assumption: no loops in dependency graph
-    // Assumption: if there are no loops, we either hit dac first or fft first (so we can hardcode the order into our logic)
+    // Assumption: if there are no loops, we either hit dac first or fft first (so we can hardcode an order into our logic, and swap if it doesn't give the correct answer)
     // Strategy:
     // - Keep track of dependencies both ways
     // - Start at end and traverse dependencies
     // - If for a device all the 'parents' (downstream devices) are known, we can determine the number of paths to out (sum of 'parent' paths)
     // - For each device, keep track of whether dac or fft have been passed (so if dac/fft appear in the paths downstream)
-    // - Globally keep track of if we 'completed' dac/fft
     // - When a 'parent' does not have dac/fft but globally we have seen it, it is not on a valid path, so we can ignore their path count
     // - Once we reach srv, we should have only counted paths that have dac and fft on its path, so we get the correct result
-    val inverseLinks = mutableMapOf<String, MutableList<String>>()
+    val upstreamLinks = mutableMapOf<String, MutableList<String>>()
 
-    val links = input.associate { line ->
+    val downstreamLinks = input.associate { line ->
         val source = line.split(':').first()
         val destinations = line.split(": ").last().split(' ')
 
         for (destination in destinations) {
-            inverseLinks.getOrPut(destination) { mutableListOf() }.add(source)
+            upstreamLinks.getOrPut(destination) { mutableListOf() }.add(source)
         }
         source to destinations
     }
 
-
     val states = mutableMapOf<String, DeviceState>()
+    states["out"] = DeviceState(totalPaths = 1)
 
     val toVisit = mutableListOf<String>()
-
-    for (source in inverseLinks["out"]!!) {
-        states[source] = DeviceState(totalPaths = 1)
-        toVisit.add(source)
-    }
-
-    var globalVisitedDac = false
-    var globalVisitedFft = false
+    toVisit.addAll(upstreamLinks["out"]!!)
 
     while (toVisit.isNotEmpty() && "svr" !in states) {
         val cur = toVisit.removeFirst()
 
-        if (cur in states) {
-            if (cur != "svr") {
-                for (source in inverseLinks[cur]!!) {
-                    if (source !in toVisit) {
-                        toVisit.add(source)
-                    }
-                }
-            }
-            continue
+        if (downstreamLinks[cur]!!.any { it !in states }) {
+            toVisit.add(cur)
         }
-
-        if (links[cur]!!.all { it in states }) {
+        else if (cur !in states) {
             var totalPaths = 0L
             var curVisitedDac = cur == "dac"
             var curVisitedFft = cur == "fft"
 
-            for (destination in links[cur]!!) {
+            for (destination in downstreamLinks[cur]!!) {
                 val state = states[destination]!!
-                if (globalVisitedDac && !globalVisitedFft) {
-                    if (state.visitedDac && !state.visitedFft) {
+
+                if (cur == "fft") {
+                    // If we reach fft, we only accept paths that have dac in them
+                    if (state.visitedDac) {
                         totalPaths += state.totalPaths
-                        curVisitedDac = true
                     }
-                } else if (globalVisitedFft) {
-                    if (state.visitedFft) {
+                } else if (cur == "svr") {
+                    // If we reach svr, we only accept paths that have both dac and fft in them
+                    if (state.visitedDac && state.visitedFft) {
                         totalPaths += state.totalPaths
-                        curVisitedFft = true
                     }
-                } else {
+                } else if (("dac" !in states || state.visitedDac) && ("fft" !in states || state.visitedFft)) {
+                    // If dac and/or fft have been reached, only include paths that contain them
                     totalPaths += state.totalPaths
                 }
-            }
-            states[cur] = DeviceState(totalPaths = totalPaths, visitedDac = curVisitedDac, visitedFft = curVisitedFft)
-            if (cur != "svr") {
-                for (source in inverseLinks[cur]!!) {
-                    if (source !in toVisit) {
-                        toVisit.add(source)
-                    }
-                }
+
+                curVisitedDac = curVisitedDac || state.visitedDac
+                curVisitedFft = curVisitedFft || state.visitedFft
             }
 
-            if (cur == "dac") {
-                globalVisitedDac = true
+            if (cur == "svr") {
+                return totalPaths
             }
-            if (cur == "fft") {
-                globalVisitedFft = true
-            }
+
+            states[cur] = DeviceState(totalPaths = totalPaths, visitedDac = curVisitedDac, visitedFft = curVisitedFft)
         }
-        else {
-            toVisit.add(cur)
+
+        if (cur != "svr") {
+            toVisit.addAll(upstreamLinks[cur]!!.filter { it !in toVisit })
         }
     }
 
-    return states["svr"]!!.totalPaths
+    throw Exception("svr not reached")
 }
