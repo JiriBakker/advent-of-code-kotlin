@@ -1,0 +1,8 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm' version '2.2.20'
+    id("advent-of-code-build")
+}
+
+dependencies {
+    implementation project(':advent-of-code-util')
+}
