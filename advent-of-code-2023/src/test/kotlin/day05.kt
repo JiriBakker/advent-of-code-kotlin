@@ -93,7 +93,7 @@ class Day05bTests {
 
     @Test
     fun testActualInputAsync() {
-        assertEquals(7873084, day05b_async(readInputLines("day05")))
+        assertEquals(7873084, day05bAsync(readInputLines("day05")))
     }
 
 }
