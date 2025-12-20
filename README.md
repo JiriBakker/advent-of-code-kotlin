@@ -4,6 +4,7 @@
 
 * 2025 - [Challenges](https://adventofcode.com/2025) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/advent-of-code-2025/src/main/kotlin)
 * 2024 - [Challenges](https://adventofcode.com/2024) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/advent-of-code-2024/src/main/kotlin)
+* 2023 - [Challenges](https://adventofcode.com/2023) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/advent-of-code-2023/src/main/kotlin)
 * 2022 - [Challenges](https://adventofcode.com/2022) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/advent-of-code-2022/src/main/kotlin)
 * 2021 - [Challenges](https://adventofcode.com/2021) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/advent-of-code-2021/src/main/kotlin)
 * 2020 - [Challenges](https://adventofcode.com/2020) - [Solutions](https://github.com/JiriBakker/advent-of-code-kotlin/tree/master/advent-of-code-2020/src/main/kotlin)
