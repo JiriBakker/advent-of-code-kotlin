@@ -263,5 +263,8 @@ fun <T> Stack<T>.popMultiple(amount: Int) =
 fun <T> List<T>.toPair() =
     this[0] to this[1]
 
+fun <T, U> List<Pair<T, U>>.split() =
+    this.map { it.first } to this.map { it.second }
+
 fun keepCounting() =
     generateSequence(0) { it + 1 }
