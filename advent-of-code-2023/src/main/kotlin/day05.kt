@@ -1,9 +1,6 @@
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.async
 import kotlinx.coroutines.awaitAll
-import kotlinx.coroutines.flow.asFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.toList
 import kotlinx.coroutines.runBlocking
 import java.util.concurrent.Executors
 import kotlin.collections.component1
@@ -45,7 +42,7 @@ fun day05b(input: List<String>): Long {
     return findLowestReachableLocation(0 .. Long.MAX_VALUE, reversedMaps, seedRanges)!!
 }
 
-fun day05bAsync(input: List<String>): Long {
+fun day05bParallel(input: List<String>): Long {
     val seedRanges = parseSeedRanges(input.first())
     val reversedMaps = parseReverseMappings(input.drop(2))
 
@@ -56,19 +53,18 @@ fun day05bAsync(input: List<String>): Long {
         for (location in 0L until Long.MAX_VALUE step batchSize * nrOfConcurrentBatches) {
             val minValueOrNull =
                 runBlocking {
-                    (0..nrOfConcurrentBatches)
-                        .asFlow()
-                        .map { batchIndex ->
+                    (0 .. nrOfConcurrentBatches)
+                        .map { batchNr ->
                             async(context) {
-                                val range = location + batchIndex * batchSize until location + batchIndex * batchSize + batchSize
+                                val startLocation = location + batchNr * batchSize
+                                val range = startLocation until startLocation + batchSize
                                 findLowestReachableLocation(range, reversedMaps, seedRanges)
                             }
                         }
-                        .toList()
                         .awaitAll()
+                        .filterNotNull()
+                        .minOrNull()
                 }
-                    .filterNotNull()
-                    .minOrNull()
 
             if (minValueOrNull != null) {
                 return minValueOrNull

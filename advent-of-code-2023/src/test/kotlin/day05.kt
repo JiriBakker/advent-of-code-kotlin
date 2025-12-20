@@ -92,8 +92,8 @@ class Day05bTests {
     }
 
     @Test
-    fun testActualInputAsync() {
-        assertEquals(7873084, day05bAsync(readInputLines("day05")))
+    fun testActualInputParallel() {
+        assertEquals(7873084, day05bParallel(readInputLines("day05")))
     }
 
 }
