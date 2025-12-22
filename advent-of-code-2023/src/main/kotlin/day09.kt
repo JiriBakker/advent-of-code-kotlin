@@ -1,7 +1,7 @@
 import util.sumOfLong
 
-fun day09a(input: List<String>): Long {
-    return input.sumOfLong { line ->
+fun day09a(input: List<String>) =
+    input.sumOfLong { line ->
         var nrs = line.split(" ").map(String::toLong)
 
         var nextNumber = 0L
@@ -12,10 +12,9 @@ fun day09a(input: List<String>): Long {
 
         nextNumber
     }
-}
 
-fun day09b(input: List<String>): Long {
-    return input.sumOfLong { line ->
+fun day09b(input: List<String>) =
+    input.sumOfLong { line ->
         var nrs = line.split(" ").map(String::toLong)
 
         val diffs = mutableListOf<Long>()
@@ -26,8 +25,6 @@ fun day09b(input: List<String>): Long {
 
         diffs.reversed().reduce { prev, cur -> cur - prev }
     }
-}
 
-private fun findDiffs(nrs: List<Long>): List<Long> {
-    return nrs.zipWithNext { nr1, nr2 -> nr2 - nr1 }
-}
+private fun findDiffs(nrs: List<Long>) =
+    nrs.zipWithNext { nr1, nr2 -> nr2 - nr1 }
