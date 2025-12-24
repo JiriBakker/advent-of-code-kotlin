@@ -1,62 +1,57 @@
 import util.sumOfLong
 import kotlin.text.indices
 
-fun day12a(input: List<String>): Long {
-    val values = input.map { line ->
+fun day12a(input: List<String>) =
+    input.sumOfLong { line ->
         val record = line.split(" ").first()
         val groups = line.split(" ").last().split(",").map(String::toInt)
 
-        countPossibilities(record, 0, groups, mutableMapOf())
+        countPossibilities(record, groups)
     }
-    return values.sum()
-}
 
-fun day12b(input: List<String>): Long {
-    return input.sumOfLong { line ->
-        val chars = line.split(" ").first()
-        val lengths = line.split(" ").last()
+fun day12b(input: List<String>) =
+    input.sumOfLong { line ->
+        val record = line.split(" ").first()
+        val groups = line.split(" ").last()
 
-        val unfoldedChars = "$chars?$chars?$chars?$chars?$chars"
-        val unfoldedGroups = "$lengths,$lengths,$lengths,$lengths,$lengths".split(",").map(String::toInt)
+        val unfoldedRecord = "$record?$record?$record?$record?$record"
+        val unfoldedGroups = "$groups,$groups,$groups,$groups,$groups".split(",").map(String::toInt)
 
-        countPossibilities(unfoldedChars, 0, unfoldedGroups, mutableMapOf())
+        countPossibilities(unfoldedRecord, unfoldedGroups)
     }
-}
 
-private fun countPossibilities(
-    record: String,
-    curIndex: Int,
-    remainingGroups: List<Int>,
-    cache: MutableMap<String, Long>
-): Long {
-    val hash = "${curIndex}_${remainingGroups.joinToString(",")}"
+private fun countPossibilities(record: String, groups: List<Int>): Long {
+    val cache = mutableMapOf<Pair<Int, Int>, Long>()
 
-    return cache.getOrPut(hash) {
-        if (curIndex !in record.indices) {
-            // Reached end, check if all groups have been placed
-            if (remainingGroups.isEmpty()) 1 else 0
-        } else if (record[curIndex] == '.') {
-            // If current is . we can skip it
-            countPossibilities(record, curIndex + 1, remainingGroups, cache)
-        } else {
-            var sum = 0L
-            if (record[curIndex] == '?') {
-                // Option where we replace ? with .
-                sum += countPossibilities(record, curIndex + 1, remainingGroups, cache)
-            }
-            if (remainingGroups.isNotEmpty()) {
-                val endIndex = curIndex + remainingGroups.first()
-                if (
-                    endIndex - 1 in record.indices // Check if we have sufficient space for this group
-                    && record.substring(curIndex, endIndex).none { it == '.' } // Check if there are no dots that disallow the group
-                    && (endIndex !in record.indices || record[endIndex] != '#') // Check if we can place a dot after the group, or if we reached the end of the record
-                ) {
-                    // Mark group as completed and check if we can fulfill remaining groups with the rest of the record
-                    sum += countPossibilities(record, endIndex + 1, remainingGroups.drop(1), cache)
+    fun recursePossibilities(recordIndex: Int, groupIndex: Int): Long {
+        return cache.getOrPut(recordIndex to groupIndex) {
+            if (recordIndex !in record.indices) {
+                // Reached end, check if all groups have been placed
+                if (groupIndex == groups.size) 1 else 0
+            } else if (record[recordIndex] == '.') {
+                // If current is . we can continue to the next character
+                recursePossibilities(recordIndex + 1, groupIndex)
+            } else {
+                var sum = 0L
+                if (record[recordIndex] == '?') {
+                    // Count the possibilities if we replace ? with .
+                    sum += recursePossibilities(recordIndex + 1, groupIndex)
                 }
+                if (groupIndex in groups.indices) {
+                    val endIndex = recordIndex + groups[groupIndex]
+                    if (
+                        endIndex - 1 in record.indices // Check if we have sufficient space for current group
+                        && record.substring(recordIndex, endIndex).none { it == '.' } // Check if there are no dots in the way that block the group
+                        && (endIndex !in record.indices || record[endIndex] != '#') // Check if we can place a dot after the group, or if we reached the end of the record
+                    ) {
+                        // Mark group as completed and check if we can place remaining groups with the rest of the record
+                        sum += recursePossibilities(endIndex + 1, groupIndex + 1)
+                    }
+                }
+                sum
             }
-            sum
         }
-
     }
+
+    return recursePossibilities(0, 0)
 }
