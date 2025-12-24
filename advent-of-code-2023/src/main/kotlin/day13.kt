@@ -1,8 +1,5 @@
-import util.countLetters
 import util.splitByDoubleNewLine
-import util.sumOfLong
 import util.transpose
-import kotlin.math.abs
 import kotlin.math.min
 import kotlin.text.indices
 
