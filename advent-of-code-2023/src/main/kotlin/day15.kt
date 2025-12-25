@@ -5,15 +5,15 @@ fun day15a(input: List<String>): Int {
 }
 
 fun day15b(input: List<String>): Long {
-    val boxes = List(size = 256) { mutableListOf<Pair<String, Int>>() }
+    val boxes = List(size = 256) { mutableListOf<Pair<String, Long>>() }
 
     val steps = input.first().split(',')
 
     steps.forEach { step ->
+        val label = step.split('=')[0]
+        val boxIndex = hash(label)
         if ('=' in step) {
-            val label = step.split('=')[0]
-            val focalLength = step.split('=')[1].toInt()
-            val boxIndex = hash(label)
+            val focalLength = step.split('=')[1].toLong()
             val existing = boxes[boxIndex].withIndex().firstOrNull { it.value.first == label }
             if (existing != null) {
                 boxes[boxIndex][existing.index] = label to focalLength
@@ -21,8 +21,6 @@ fun day15b(input: List<String>): Long {
                 boxes[boxIndex].add(label to focalLength)
             }
         } else {
-            val label = step.split('-')[0]
-            val boxIndex = hash(label)
             boxes[boxIndex].removeIf { it.first == label }
         }
     }
@@ -30,7 +28,7 @@ fun day15b(input: List<String>): Long {
     return boxes.withIndex().sumOfLong { (boxIndex, box) ->
         box.withIndex().sumOfLong { (slotIndex, step) ->
             val (_, focalLength) = step
-            (boxIndex + 1L) * (slotIndex + 1) * focalLength
+            (boxIndex + 1) * (slotIndex + 1) * focalLength
         }
     }
 }
