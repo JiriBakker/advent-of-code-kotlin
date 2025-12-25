@@ -11,7 +11,7 @@ fun day14a(input: List<String>): Long {
 fun day14b(input: List<String>): Long {
     val grid = input.map { it.toMutableList() }
 
-    val weights = (0 until 100_000)
+    val weights = (0 until 1000)
         .map {
             grid.moveAll(0, -1)
             grid.moveAll(-1, 0)
@@ -22,36 +22,25 @@ fun day14b(input: List<String>): Long {
 
     return weights
         .findCycle()
-        .extrapolateTo(999_999_999, weights)
+        .extrapolateTo(1_000_000_000, weights)
 }
 
 private fun List<MutableList<Char>>.moveAll(dx: Int, dy: Int) {
     var y = if (dy == -1) 0 else this.size - 1
-    var x = if (dx == -1) 0 else this[0].size - 1
 
-    if (dx != 0) {
+    while (y in this.indices) {
+        var x = if (dx == -1) 0 else this[0].size - 1
         while (x in this[0].indices) {
-            for (y in this.indices) {
-                if (this[y][x] == 'O') {
-                    this.move(x, y, dx, dy)
-                }
+            if (this[y][x] == 'O') {
+                this.move(x, y, dx, dy)
             }
-            x += -dx
+            x -= if (dx == 0) 1 else dx
         }
-    } else {
-        while (y in this.indices) {
-            for (x in this[0].indices) {
-                if (this[y][x] == 'O') {
-                    this.move(x, y, dx, dy)
-                }
-            }
-            y += -dy
-        }
+        y -= if (dy == 0) 1 else dy
     }
 }
 
-
-private fun List<MutableList<Char>>.move(x: Int, y: Int, dx: Int, dy: Int) {
+private fun List<MutableList<Char>>.move2(x: Int, y: Int, dx: Int, dy: Int) {
     var curX = x + dx
     var curY = y + dy
 
@@ -62,6 +51,28 @@ private fun List<MutableList<Char>>.move(x: Int, y: Int, dx: Int, dy: Int) {
 
         curX += dx
         curY += dy
+    }
+}
+
+private fun List<MutableList<Char>>.move(x: Int, y: Int, dx: Int, dy: Int) {
+    var curX = x + dx
+    var curY = y + dy
+
+    var placeX = x
+    var placeY = y
+
+    while (curX in this[0].indices && curY in this.indices) {
+        if (this[curY][curX] != '.') break
+        placeX = curX
+        placeY = curY
+
+        curX += dx
+        curY += dy
+    }
+
+    if (placeX != x || placeY != y) {
+        this[placeY][placeX] = 'O'
+        this[y][x] = '.'
     }
 }
 
@@ -91,5 +102,5 @@ private fun List<Long>.isCycle(offset: Int, cycleSize: Int): Boolean {
 
 private fun Pair<Int, Int>.extrapolateTo(cycle: Int, weights: List<Long>): Long {
     val (offset, cycleSize) = this
-    return weights[(cycle - offset) % cycleSize + offset]
+    return weights[(cycle - 1 - offset) % cycleSize + offset]
 }
