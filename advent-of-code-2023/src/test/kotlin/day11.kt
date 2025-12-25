@@ -3,7 +3,6 @@ import org.junit.jupiter.api.Test
 import util.readInputLines
 
 class Day11aTests {
-
     @Test
     fun testExampleInput1() {
         assertEquals(374, day11a(listOf(

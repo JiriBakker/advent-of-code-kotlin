@@ -2,9 +2,7 @@ import util.sumOfLong
 
 fun day14a(input: List<String>): Long {
     val grid = input.map { it.toMutableList() }
-
     grid.moveAll(0, -1)
-
     return grid.measureWeight()
 }
 
@@ -40,38 +38,21 @@ private fun List<MutableList<Char>>.moveAll(dx: Int, dy: Int) {
     }
 }
 
-private fun List<MutableList<Char>>.move2(x: Int, y: Int, dx: Int, dy: Int) {
-    var curX = x + dx
-    var curY = y + dy
-
-    while (curX in this[0].indices && curY in this.indices) {
-        if (this[curY][curX] != '.') return
-        this[curY][curX] = 'O'
-        this[curY - dy][curX - dx] = '.'
-
-        curX += dx
-        curY += dy
-    }
-}
-
 private fun List<MutableList<Char>>.move(x: Int, y: Int, dx: Int, dy: Int) {
     var curX = x + dx
     var curY = y + dy
 
-    var placeX = x
-    var placeY = y
-
     while (curX in this[0].indices && curY in this.indices) {
         if (this[curY][curX] != '.') break
-        placeX = curX
-        placeY = curY
-
         curX += dx
         curY += dy
     }
 
-    if (placeX != x || placeY != y) {
-        this[placeY][placeX] = 'O'
+    curX -= dx
+    curY -= dy
+
+    if (curX != x || curY != y) {
+        this[curY][curX] = 'O'
         this[y][x] = '.'
     }
 }
