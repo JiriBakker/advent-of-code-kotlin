@@ -19,3 +19,6 @@ fun List<String>.countLetters(): Map<Char, Int> {
 }
 
 fun String.sorted() = toCharArray().sorted().toString()
+
+fun String.splitAt(index: Int) =
+    this.take(index) to this.drop(index)
