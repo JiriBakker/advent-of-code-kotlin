@@ -10,9 +10,6 @@ dependencies {
 }
 
 test {
-
-    kotlinDaemonJvmArguments.add("-Xmx22512m")
-
     outputs.upToDateWhen { false }
 
     useJUnitPlatform()
