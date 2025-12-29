@@ -26,6 +26,29 @@ fun <T> Collection<T>.permute(maxSize: Int = Int.MAX_VALUE): List<List<T>> {
     return permute(this, listOf())
 }
 
+fun <T> Collection<T>.permuteSequence(maxSize: Int = Int.MAX_VALUE): Sequence<Set<T>> {
+    val todo = mutableListOf<Set<T>>()
+    todo.add(setOf())
+
+    val collection = this
+
+    return sequence {
+        while (todo.isNotEmpty()) {
+            val used = todo.removeFirst()
+
+            if (used.size == collection.size - 1 || used.size == maxSize - 1) {
+                collection.minus(used).forEach { current ->
+                    yield(used + current)
+                }
+            } else {
+                collection.minus(used).forEach { current ->
+                    todo.add(used + current)
+                }
+            }
+        }
+    }
+}
+
 fun <T> Collection<T>.combine(maxSize: Int): List<List<T>> {
     val available = this
 
