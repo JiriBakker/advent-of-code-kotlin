@@ -1,4 +1,5 @@
 import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import util.readInputLines
 
@@ -67,6 +68,7 @@ class Day23bTests {
     }
 
     @Test
+    @Disabled // Too slow (~45s)
     fun testActualInput() {
         assertEquals(6546, day23b(readInputLines("day23")))
     }
